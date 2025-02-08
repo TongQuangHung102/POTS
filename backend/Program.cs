@@ -14,6 +14,8 @@ builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbContext")));
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
 builder.Services.AddScoped<RegisterService>();
+builder.Services.AddScoped<PasswordResetService>();
+builder.Services.AddScoped<SendMailService>();
 builder.Services.AddScoped<AuthDAO>();
 builder.Services.AddScoped<LoginService>();
 
