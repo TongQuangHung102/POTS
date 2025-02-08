@@ -1,4 +1,5 @@
 ﻿using backend.DataAccess.DAO;
+using backend.Dtos;
 using backend.Models;
 
 namespace backend.Repositories
@@ -20,6 +21,11 @@ namespace backend.Repositories
         public Task<User> GetUserByEmail(string email)
         {
              return _authDAO.GetUserByEmailAsync(email);
+        }
+        // Phương thức cập nhật mật khẩu
+        public async Task UpdatePasswordAsync(string email, string newPassword)
+        {
+            await _authDAO.UpdatePasswordAsync(email, newPassword);
         }
     }
 }

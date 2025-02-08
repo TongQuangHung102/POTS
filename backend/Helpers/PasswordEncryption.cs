@@ -11,5 +11,13 @@
         {
             return BCrypt.Net.BCrypt.Verify(enteredPassword, hashedPassword);
         }
+        public static string GenerateRandomPassword()
+        {
+            const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            Random random = new Random();
+            return new string(Enumerable.Repeat(chars, 8)
+                .Select(s => s[random.Next(s.Length)]).ToArray());
+        }
+
     }
 }
