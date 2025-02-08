@@ -9,6 +9,7 @@ namespace backend.Models
         public int ContestParticipantId { get; set; }
         public int ContestId { get; set; }
         public int UserId { get; set; }
+        public DateTime Register_At { get; set; }
 
         [ForeignKey("ContestId")]
         public virtual Contest Contest { get; set; }

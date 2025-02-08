@@ -6,9 +6,9 @@ namespace backend.Models
     {
         public int UserId { get; set; }
         public int LessonId { get; set; }
-        public string ProgressStatus { get; set; }
+        public double ProgressPercent { get; set; }
         public DateTime LastUpdate { get; set; }
-
+        public bool IsCompleted { get; set; }
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
 
