@@ -12,10 +12,12 @@ namespace backend.Controllers
     {
         private readonly RegisterService _registerService;
         private readonly LoginService _loginService;
-        public AuthController(RegisterService registerService, LoginService loginService)
+        private readonly PasswordResetService _passwordResetService;
+        public AuthController(RegisterService registerService, LoginService loginService, PasswordResetService passwordResetService)
         {
             _registerService = registerService;
             _loginService = loginService;
+            _passwordResetService = passwordResetService;
         }
 
         [HttpPost("Register")]
@@ -31,7 +33,7 @@ namespace backend.Controllers
             return result;
         }
 
-        [HttpPost("login")]
+        [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
             var response = await _loginService.LoginAsync(request);
@@ -42,5 +44,20 @@ namespace backend.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost("Reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] PasswordResetRequestDto request)
+        {
+            try
+            {
+                await _passwordResetService.ResetPasswordAsync(request.Email);
+                return Ok("Password reset successfully. Check your email.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }

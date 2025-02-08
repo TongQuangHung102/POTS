@@ -106,7 +106,8 @@
               "RelativeToolTip": "Services\\RegisterService.cs",
               "ViewState": "AgIAABAAAAAAAAAAAAAQwBYAAABdAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T07:15:13.304Z"
+              "WhenOpened": "2025-02-08T07:15:13.304Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -131,7 +132,8 @@
               "RelativeToolTip": "appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAIAAAA5AAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-02-08T02:53:10.773Z"
+              "WhenOpened": "2025-02-08T02:53:10.773Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -143,7 +145,8 @@
               "RelativeToolTip": "Program.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T02:54:10.629Z"
+              "WhenOpened": "2025-02-08T02:54:10.629Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -155,7 +158,8 @@
               "RelativeToolTip": "Controllers\\AuthController.cs",
               "ViewState": "AgIAABcAAAAAAAAAAAAAwDMAAAANAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T06:49:18.146Z"
+              "WhenOpened": "2025-02-08T06:49:18.146Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -167,7 +171,8 @@
               "RelativeToolTip": "Helpers\\PasswordEncryption.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T07:40:12.456Z"
+              "WhenOpened": "2025-02-08T07:40:12.456Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -179,7 +184,8 @@
               "RelativeToolTip": "Models\\User.cs",
               "ViewState": "AgIAAA8AAAAAAAAAAAAowBIAAAAHAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T08:26:28.548Z"
+              "WhenOpened": "2025-02-08T08:26:28.548Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -191,7 +197,8 @@
               "RelativeToolTip": "DataAccess\\DAO\\AuthDAO.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAABXAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T06:56:30.505Z"
+              "WhenOpened": "2025-02-08T06:56:30.505Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -203,7 +210,8 @@
               "RelativeToolTip": "Services\\SendMailService.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAABGAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T07:18:21.298Z"
+              "WhenOpened": "2025-02-08T07:18:21.298Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -215,7 +223,8 @@
               "RelativeToolTip": "Repositories\\AuthRepository.cs",
               "ViewState": "AgIAAAMAAAAAAAAAAAAAAAoAAAAuAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T06:56:09.422Z"
+              "WhenOpened": "2025-02-08T06:56:09.422Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -227,7 +236,8 @@
               "RelativeToolTip": "Repositories\\IAuthRepository.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAwAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T06:55:35.353Z"
+              "WhenOpened": "2025-02-08T06:55:35.353Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -239,7 +249,8 @@
               "RelativeToolTip": "Services\\LoginService.cs",
               "ViewState": "AgIAAAsAAAAAAAAAAAAQwCMAAAAyAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T07:00:05.126Z"
+              "WhenOpened": "2025-02-08T07:00:05.126Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
@@ -251,7 +262,8 @@
               "RelativeToolTip": "Dtos\\PasswordResetRequestDto.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAApAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2025-02-08T07:33:36.783Z"
+              "WhenOpened": "2025-02-08T07:33:36.783Z",
+              "EditorCaption": ""
             }
           ]
         }
