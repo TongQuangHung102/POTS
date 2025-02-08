@@ -12,7 +12,8 @@ namespace backend.Models
         public DateTime StartTime { get; set; }
         public DateTime EndTime { get; set; }
         public string Status { get; set; }
-
+        public string Description { get; set; }
+        public DateTime Create_At { get; set; }
         public virtual ICollection<ContestParticipant> ContestParticipants { get; set; }
         public virtual ICollection<ContestQuestion> ContestQuestions { get; set; }
     }
