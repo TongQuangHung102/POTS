@@ -16,5 +16,10 @@ namespace backend.Repositories
         {
             await _authDAO.AddUser(user);
         }
+
+        public Task<User> GetUserByEmail(string email)
+        {
+             return _authDAO.GetUserByEmailAsync(email);
+        }
     }
 }
