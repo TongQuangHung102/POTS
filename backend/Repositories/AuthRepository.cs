@@ -22,10 +22,18 @@ namespace backend.Repositories
         {
              return _authDAO.GetUserByEmailAsync(email);
         }
+
+        public async Task UpdateLastLoginTimeAsync(User user)
+        {
+            await _authDAO.UpdateLastLoginTimeAsync(user);
+        }
+
         // Phương thức cập nhật mật khẩu
         public async Task UpdatePasswordAsync(string email, string newPassword)
         {
             await _authDAO.UpdatePasswordAsync(email, newPassword);
         }
+
+
     }
 }
