@@ -7,7 +7,9 @@ namespace backend.Repositories
         Task AddUser(User user);
         Task<User> GetUserByEmail(string email);
         Task UpdatePasswordAsync(string email, string newPassword);
-  
-      
+        Task UpdateLastLoginTimeAsync(User user);
+
+
+
     }
 }
