@@ -33,6 +33,13 @@ namespace backend.Controllers
             return result;
         }
 
+        [HttpGet("Confirm-email")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string token)
+        {
+            var result = await _registerService.ConfirmEmailAsync(token);
+            return result;
+        }
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
