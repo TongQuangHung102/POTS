@@ -18,6 +18,16 @@ namespace backend.Repositories
             await _authDAO.AddUser(user);
         }
 
+        public async Task UpdateUser(User user)
+        {
+            await _authDAO.UpdateUserAsync(user);
+        }
+
+        public async Task<User> GetUserByToken(string token)
+        {
+            return await _authDAO.GetUserByTokenAsync(token);
+        }
+
         public Task<User> GetUserByEmail(string email)
         {
              return _authDAO.GetUserByEmailAsync(email);
