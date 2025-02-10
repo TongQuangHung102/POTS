@@ -17,7 +17,11 @@ namespace backend.Services
 
         public async Task<IActionResult> Register(RegisterDto model)
         {
-
+            var existingUser = await _authRepository.GetUserByEmail(model.Email);
+            if (existingUser != null)
+            {
+                return new BadRequestObjectResult(new { message = "Email already exists." });
+            }
             string hashedPassword = PasswordEncryption.HashPassword(model.Password);
 
             var user = new User

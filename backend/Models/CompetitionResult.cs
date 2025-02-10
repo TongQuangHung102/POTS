@@ -8,7 +8,7 @@ namespace backend.Models
         public int ContestId { get; set; }
         public int Score { get; set; }
         public TimeSpan TimeTaken { get; set; }
-
+        public DateTime Completed_At { get; set; }
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
 

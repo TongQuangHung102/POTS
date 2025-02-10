@@ -11,10 +11,13 @@ namespace backend.Controllers
     public class AuthController : ControllerBase
     {
         private readonly RegisterService _registerService;
-
-        public AuthController(RegisterService registerService)
+        private readonly LoginService _loginService;
+        private readonly PasswordResetService _passwordResetService;
+        public AuthController(RegisterService registerService, LoginService loginService, PasswordResetService passwordResetService)
         {
             _registerService = registerService;
+            _loginService = loginService;
+            _passwordResetService = passwordResetService;
         }
 
         [HttpPost("Register")]
@@ -29,5 +32,32 @@ namespace backend.Controllers
 
             return result;
         }
+
+        [HttpPost("Login")]
+        public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
+        {
+            var response = await _loginService.LoginAsync(request);
+            if (response == null)
+            {
+                return Unauthorized(new { Message = "Invalid username or password" });
+            }
+
+            return Ok(response);
+        }
+
+        [HttpPost("Reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] PasswordResetRequestDto request)
+        {
+            try
+            {
+                await _passwordResetService.ResetPasswordAsync(request.Email);
+                return Ok("Password reset successfully. Check your email.");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
     }
 }
