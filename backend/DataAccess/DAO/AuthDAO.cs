@@ -31,5 +31,12 @@ namespace backend.DataAccess.DAO
                 await _context.SaveChangesAsync();
           
         }
+
+        public async Task UpdateLastLoginTimeAsync(User user)
+        {
+            user.LastLogin = DateTime.UtcNow;
+            _context.Users.Update(user); 
+            await _context.SaveChangesAsync();
+        }
     }
 }
