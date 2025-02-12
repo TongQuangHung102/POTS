@@ -13,11 +13,17 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<MyDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DbContext")));
 builder.Services.AddScoped<IAuthRepository, AuthRepository>();
+builder.Services.AddScoped<ISubscriptionPlanRepository, SubscriptionPlanRepository>();
+builder.Services.AddScoped<ICurriculumRepository, CurriculumRepository>();
 builder.Services.AddScoped<RegisterService>();
 builder.Services.AddScoped<PasswordResetService>();
 builder.Services.AddScoped<SendMailService>();
+builder.Services.AddScoped<ChapterService>();
 builder.Services.AddScoped<AuthDAO>();
 builder.Services.AddScoped<LoginService>();
+builder.Services.AddScoped<SubscriptionPlanService>();
+builder.Services.AddScoped<SubscriptionPlanDAO>();
+builder.Services.AddScoped<CurriculumDAO>();
 
 builder.Services.AddCors(options =>
 {
@@ -43,7 +49,10 @@ builder.Services.AddAuthentication(options =>
         ValidateAudience = false
     };
 });
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddNewtonsoftJson(options =>
+{
+    options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
+}); ;
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
