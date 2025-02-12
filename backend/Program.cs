@@ -18,7 +18,12 @@ builder.Services.AddScoped<PasswordResetService>();
 builder.Services.AddScoped<SendMailService>();
 builder.Services.AddScoped<AuthDAO>();
 builder.Services.AddScoped<LoginService>();
-
+builder.Services.AddScoped<UserDAO>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<UserService>();
+builder.Services.AddScoped<RoleDAO>();
+builder.Services.AddScoped<IRoleRepository, RoleRepository>();
+builder.Services.AddScoped<RoleService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
