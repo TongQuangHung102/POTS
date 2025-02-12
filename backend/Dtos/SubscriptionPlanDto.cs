@@ -1,12 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
-
-namespace backend.Models
+﻿namespace backend.Dtos
 {
-    public class SubscriptionPlan
+    public class SubscriptionPlanDto
     {
-        [Key]
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int PlanId { get; set; }
         public string PlanName { get; set; }
         public decimal Price { get; set; }
@@ -19,6 +14,5 @@ namespace backend.Models
         public bool IsAdvancedStatistics { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
-        public virtual ICollection<UserSubscription> UserSubscriptions { get; set; }
     }
 }
