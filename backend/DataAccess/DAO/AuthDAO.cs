@@ -18,6 +18,17 @@ namespace backend.DataAccess.DAO
             await _context.SaveChangesAsync();
         }
 
+        public async Task UpdateUserAsync(User user)
+        {
+            _context.Users.Update(user);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<User> GetUserByTokenAsync(string token)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.EmailVerificationToken == token);
+        }
+
         public async Task<User> GetUserByEmailAsync(string email)
         {
             return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
@@ -30,6 +41,13 @@ namespace backend.DataAccess.DAO
                 _context.Users.Update(user);
                 await _context.SaveChangesAsync();
           
+        }
+
+        public async Task UpdateLastLoginTimeAsync(User user)
+        {
+            user.LastLogin = DateTime.UtcNow;
+            _context.Users.Update(user); 
+            await _context.SaveChangesAsync();
         }
     }
 }

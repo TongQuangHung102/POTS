@@ -25,5 +25,23 @@ namespace backend.Services
                 await smtpClient.SendMailAsync(mailMessage);
             }
         }
+
+        public async Task SendConfirmationEmailAsync(string email, string token)
+        {
+            string confirmationLink = $"https://localhost:7259/api/Auth/Confirm-email?token={token}";
+            var subject = "Confirm Your Email";
+            var body = $"Click this link to confirm your email: <a href='{confirmationLink}'>Confirm Email</a>";
+
+            using (var smtpClient = new SmtpClient(_smtpHost))
+            {
+                smtpClient.Credentials = new NetworkCredential(_smtpUser, _smtpPassword);
+                smtpClient.Port = 587;
+                smtpClient.EnableSsl = true;
+
+                var mailMessage = new MailMessage(_smtpUser, email, subject, body);
+                mailMessage.IsBodyHtml = true;
+                await smtpClient.SendMailAsync(mailMessage);
+            }
+        }
     }
 }

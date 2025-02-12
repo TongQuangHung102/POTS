@@ -25,6 +25,11 @@ namespace backend.Services
 
             if (!PasswordEncryption.VerifyPassword(request.Password, user.Password)) return null;
 
+            if (!user.IsActive)
+            {
+                throw new UnauthorizedAccessException("Tài khoản chưa được kích hoạt");
+            }
+            await _authRepository.UpdateLastLoginTimeAsync(user);
             return new LoginResponseDto
             {
                 Username = user.UserName,

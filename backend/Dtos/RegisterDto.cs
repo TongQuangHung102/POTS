@@ -17,5 +17,8 @@ namespace backend.Dtos
         public string FullName { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public string? EmailVerificationToken { get; set; }
+        public DateTime? TokenExpiry { get; set; }
     }
 }

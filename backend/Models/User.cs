@@ -18,6 +18,8 @@ namespace backend.Models
         public string? GoogleId { get; set; }
         public string? FullName { get; set; }
         public bool IsActive { get; set; }
+        public string? EmailVerificationToken { get; set; }
+        public DateTime? TokenExpiry { get; set; }
 
         [ForeignKey("Role")]
         public virtual Role RoleNavigation { get; set; }

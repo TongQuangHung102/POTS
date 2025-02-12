@@ -33,16 +33,35 @@ namespace backend.Controllers
             return result;
         }
 
+        [HttpGet("Confirm-email")]
+        public async Task<IActionResult> ConfirmEmail([FromQuery] string token)
+        {
+            var result = await _registerService.ConfirmEmailAsync(token);
+            return result;
+        }
+
         [HttpPost("Login")]
         public async Task<IActionResult> Login([FromBody] LoginRequestDto request)
         {
-            var response = await _loginService.LoginAsync(request);
-            if (response == null)
+            try
             {
-                return Unauthorized(new { Message = "Invalid username or password" });
-            }
+                var response = await _loginService.LoginAsync(request);
 
-            return Ok(response);
+                if (response == null)
+                {
+                    return Unauthorized(new { Message = "Tài khoản hoặc mật khẩu không chính xác!" });
+                }
+
+                return Ok(response);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                return StatusCode(403, new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Đã có lỗi xảy ra", Details = ex.Message });
+            }
         }
 
         [HttpPost("Reset-password")]
