@@ -48,6 +48,9 @@ namespace backend.Models
             modelBuilder.Entity<CompetitionResult>()
                 .HasKey(cr => new { cr.UserId, cr.ContestId });
 
+            modelBuilder.Entity<Prerequisite>()
+                .HasKey(p => new { p.LessonId, p.TestId });
+
             modelBuilder.Entity<UserParentStudent>()
                 .HasOne(ups => ups.Student)
                 .WithMany()
