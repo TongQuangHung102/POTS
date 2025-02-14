@@ -1,4 +1,6 @@
-﻿using backend.Models;
+﻿using backend.Dtos;
+using backend.Helpers;
+using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
@@ -49,7 +51,6 @@ namespace backend.Services
                         u.UserId,
                         u.UserName,
                         u.Email,
-                        u.FullName,
                         u.CreateAt,
                         u.LastLogin,
                         u.IsActive,
@@ -69,7 +70,108 @@ namespace backend.Services
             }
         }
 
+        public async Task<IActionResult> GetUserByIdAsync(int userId)
+        {
+            try
+            {
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                {
+                    return new NotFoundObjectResult(new { Message = "User not found" });
+                }
+
+                var response = new
+                {
+                    user.UserId,
+                    user.UserName,
+                    user.Email,
+                    user.CreateAt,
+                    user.LastLogin,
+                    user.IsActive,
+                    RoleId = user.Role,
+                    RoleName = user.RoleNavigation?.RoleName
+                };
+
+                return new OkObjectResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = "An error occurred while retrieving the user.", error = ex.Message })
+                {
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<IActionResult> UpdateUserAsync(int userId, UserDto userDto)
+        {
+            try
+            {
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                {
+                    return new NotFoundObjectResult(new { Message = "User not found" });
+                }
 
 
+                user.UserName = userDto.UserName;
+                user.Email = userDto.Email;
+                user.Role = userDto.Role;
+                user.IsActive = userDto.IsActive;
+
+      
+                if (!string.IsNullOrEmpty(userDto.Password))
+                {
+                    user.Password = PasswordEncryption.HashPassword(userDto.Password);
+                }
+
+                await _userRepository.UpdateUserAsync(user);
+
+                return new OkObjectResult(new { Message = "User updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = "An error occurred while updating the user.", error = ex.Message })
+                {
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<IActionResult> CreateUserAsync(UserDto userDto)
+        {
+            try
+            {
+
+                var existingUser = await _userRepository.GetUserByEmailAsync(userDto.Email);
+                if (existingUser != null)
+                {
+                    return new BadRequestObjectResult(new { Message = "Email already exists" });
+                }
+
+
+                var newUser = new User
+                {
+                    UserName = userDto.UserName,
+                    Email = userDto.Email,
+                    Role = userDto.Role,
+                    IsActive = userDto.IsActive,
+                    CreateAt = DateTime.UtcNow,
+                    LastLogin = null,
+                    Password = PasswordEncryption.HashPassword(userDto.Password)
+                };
+
+                await _userRepository.CreateUserAsync(newUser);
+
+                return new OkObjectResult(new { Message = "User created successfully" });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = "An error occurred while creating the user.", error = ex.Message })
+                {
+                    StatusCode = 500
+                };
+            }
+        }
     }
 }

@@ -12,8 +12,8 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250210131914_UpdateTokenUser")]
-    partial class UpdateTokenUser
+    [Migration("20250214042144_AddfeatureTestDb")]
+    partial class AddfeatureTestDb
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -114,7 +114,6 @@ namespace backend.Migrations
                         .HasColumnType("int");
 
                     b.Property<int?>("UserId")
-                        .IsRequired()
                         .HasColumnType("int");
 
                     b.HasKey("ChapterId");
@@ -305,6 +304,9 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("SubscriptionPlanPlanId")
+                        .HasColumnType("int");
+
                     b.Property<string>("TransactionId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -314,9 +316,28 @@ namespace backend.Migrations
 
                     b.HasKey("PaymentId");
 
+                    b.HasIndex("SubscriptionPlanPlanId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Payments");
+                });
+
+            modelBuilder.Entity("backend.Models.Prerequisite", b =>
+                {
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int")
+                        .HasColumnOrder(0);
+
+                    b.Property<int>("TestId")
+                        .HasColumnType("int")
+                        .HasColumnOrder(1);
+
+                    b.HasKey("LessonId", "TestId");
+
+                    b.HasIndex("TestId");
+
+                    b.ToTable("Prerequisite");
                 });
 
             modelBuilder.Entity("backend.Models.Question", b =>
@@ -372,6 +393,9 @@ namespace backend.Migrations
                     b.Property<int>("Level")
                         .HasColumnType("int");
 
+                    b.Property<int?>("LevelId")
+                        .HasColumnType("int");
+
                     b.Property<TimeSpan>("Time")
                         .HasColumnType("time");
 
@@ -381,6 +405,8 @@ namespace backend.Migrations
                     b.HasKey("AttemptId");
 
                     b.HasIndex("LessonId");
+
+                    b.HasIndex("LevelId");
 
                     b.HasIndex("UserId");
 
@@ -418,6 +444,9 @@ namespace backend.Migrations
                     b.Property<int>("QuestionId")
                         .HasColumnType("int");
 
+                    b.Property<int?>("QuizAttemptAttemptId")
+                        .HasColumnType("int");
+
                     b.Property<int>("SelectedAnswer")
                         .HasColumnType("int");
 
@@ -426,6 +455,8 @@ namespace backend.Migrations
                     b.HasIndex("AttemptId");
 
                     b.HasIndex("QuestionId");
+
+                    b.HasIndex("QuizAttemptAttemptId");
 
                     b.ToTable("StudentAnswers");
                 });
@@ -483,6 +514,38 @@ namespace backend.Migrations
                     b.ToTable("StudentProgresses");
                 });
 
+            modelBuilder.Entity("backend.Models.StudentTest", b =>
+                {
+                    b.Property<int>("StudentTestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("StudentTestId"), 1L, 1);
+
+                    b.Property<DateTime?>("EndTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<double?>("Score")
+                        .HasColumnType("float");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("TestId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("StudentTestId");
+
+                    b.HasIndex("TestId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("StudentTest");
+                });
+
             modelBuilder.Entity("backend.Models.SubscriptionPlan", b =>
                 {
                     b.Property<int>("PlanId")
@@ -498,8 +561,8 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<DateTime>("Duration")
-                        .HasColumnType("datetime2");
+                    b.Property<int>("Duration")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsAIAnalysis")
                         .HasColumnType("bit");
@@ -531,6 +594,88 @@ namespace backend.Migrations
                     b.ToTable("SubscriptionPlans");
                 });
 
+            modelBuilder.Entity("backend.Models.Test", b =>
+                {
+                    b.Property<int>("TestId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TestId"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("time");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("MaxScore")
+                        .HasColumnType("int");
+
+                    b.Property<string>("TestName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("TestId");
+
+                    b.ToTable("Test");
+                });
+
+            modelBuilder.Entity("backend.Models.TestQuestion", b =>
+                {
+                    b.Property<int>("TestQuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TestQuestionId"), 1L, 1);
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("TestQuestionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("TestId");
+
+                    b.ToTable("TestQuestion");
+                });
+
+            modelBuilder.Entity("backend.Models.TestSubmission", b =>
+                {
+                    b.Property<int>("SubmissionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubmissionId"), 1L, 1);
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("StudentAnswer")
+                        .HasColumnType("int");
+
+                    b.Property<int>("StudentTestId")
+                        .HasColumnType("int");
+
+                    b.HasKey("SubmissionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("StudentTestId");
+
+                    b.ToTable("TestSubmission");
+                });
+
             modelBuilder.Entity("backend.Models.User", b =>
                 {
                     b.Property<int>("UserId")
@@ -549,9 +694,6 @@ namespace backend.Migrations
                     b.Property<string>("EmailVerificationToken")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("FullName")
-                        .HasColumnType("nvarchar(max)");
-
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
 
@@ -562,7 +704,6 @@ namespace backend.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("Password")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<int>("Role")
@@ -684,9 +825,7 @@ namespace backend.Migrations
                 {
                     b.HasOne("backend.Models.User", "User")
                         .WithMany("Chapters")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });
@@ -761,13 +900,36 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Payment", b =>
                 {
+                    b.HasOne("backend.Models.SubscriptionPlan", null)
+                        .WithMany("Payments")
+                        .HasForeignKey("SubscriptionPlanPlanId");
+
                     b.HasOne("backend.Models.User", "User")
-                        .WithMany()
+                        .WithMany("Payments")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.Prerequisite", b =>
+                {
+                    b.HasOne("backend.Models.Lesson", "Lesson")
+                        .WithMany("Prerequisites")
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Test", "Test")
+                        .WithMany("Prerequisites")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+
+                    b.Navigation("Test");
                 });
 
             modelBuilder.Entity("backend.Models.Question", b =>
@@ -797,6 +959,10 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("backend.Models.Level", null)
+                        .WithMany("QuizAttempt")
+                        .HasForeignKey("LevelId");
+
                     b.HasOne("backend.Models.User", "User")
                         .WithMany("QuizAttempts")
                         .HasForeignKey("UserId")
@@ -817,10 +983,14 @@ namespace backend.Migrations
                         .IsRequired();
 
                     b.HasOne("backend.Models.Question", "Question")
-                        .WithMany()
+                        .WithMany("StudentAnswers")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+
+                    b.HasOne("backend.Models.QuizAttempt", null)
+                        .WithMany("StudentAnswers")
+                        .HasForeignKey("QuizAttemptAttemptId");
 
                     b.Navigation("Question");
 
@@ -871,6 +1041,63 @@ namespace backend.Migrations
                     b.Navigation("Lesson");
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.StudentTest", b =>
+                {
+                    b.HasOne("backend.Models.Test", "Test")
+                        .WithMany("StudentTests")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.User", "User")
+                        .WithMany("StudentTests")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Test");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("backend.Models.TestQuestion", b =>
+                {
+                    b.HasOne("backend.Models.Question", "Question")
+                        .WithMany("TestQuestions")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.Test", "Test")
+                        .WithMany("TestQuestions")
+                        .HasForeignKey("TestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("Test");
+                });
+
+            modelBuilder.Entity("backend.Models.TestSubmission", b =>
+                {
+                    b.HasOne("backend.Models.Question", "Question")
+                        .WithMany("TestSubmissions")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.StudentTest", "StudentTest")
+                        .WithMany("TestSubmissions")
+                        .HasForeignKey("StudentTestId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("StudentTest");
                 });
 
             modelBuilder.Entity("backend.Models.User", b =>
@@ -938,6 +1165,8 @@ namespace backend.Migrations
                 {
                     b.Navigation("AIQuestions");
 
+                    b.Navigation("Prerequisites");
+
                     b.Navigation("Questions");
 
                     b.Navigation("QuizAttempts");
@@ -953,6 +1182,8 @@ namespace backend.Migrations
 
                     b.Navigation("Questions");
 
+                    b.Navigation("QuizAttempt");
+
                     b.Navigation("StudentPerformance");
                 });
 
@@ -961,6 +1192,17 @@ namespace backend.Migrations
                     b.Navigation("AnswerQuestions");
 
                     b.Navigation("ContestQuestions");
+
+                    b.Navigation("StudentAnswers");
+
+                    b.Navigation("TestQuestions");
+
+                    b.Navigation("TestSubmissions");
+                });
+
+            modelBuilder.Entity("backend.Models.QuizAttempt", b =>
+                {
+                    b.Navigation("StudentAnswers");
                 });
 
             modelBuilder.Entity("backend.Models.Role", b =>
@@ -968,9 +1210,25 @@ namespace backend.Migrations
                     b.Navigation("Users");
                 });
 
+            modelBuilder.Entity("backend.Models.StudentTest", b =>
+                {
+                    b.Navigation("TestSubmissions");
+                });
+
             modelBuilder.Entity("backend.Models.SubscriptionPlan", b =>
                 {
+                    b.Navigation("Payments");
+
                     b.Navigation("UserSubscriptions");
+                });
+
+            modelBuilder.Entity("backend.Models.Test", b =>
+                {
+                    b.Navigation("Prerequisites");
+
+                    b.Navigation("StudentTests");
+
+                    b.Navigation("TestQuestions");
                 });
 
             modelBuilder.Entity("backend.Models.User", b =>
@@ -981,11 +1239,15 @@ namespace backend.Migrations
 
                     b.Navigation("ContestParticipants");
 
+                    b.Navigation("Payments");
+
                     b.Navigation("QuizAttempts");
 
                     b.Navigation("StudentPerformances");
 
                     b.Navigation("StudentProgresses");
+
+                    b.Navigation("StudentTests");
 
                     b.Navigation("UserSubscriptions");
                 });
