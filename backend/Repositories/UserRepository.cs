@@ -22,5 +22,24 @@ namespace backend.Repositories
             return await _userDAO.GetTotalUsersAsync(roleId, email);
         }
 
+        public async Task<User?> GetUserByIdAsync(int userId)
+        {
+            return await _userDAO.GetUserByIdAsync(userId);
+        }
+
+        public async Task UpdateUserAsync(User user)
+        {
+            await _userDAO.UpdateUserAsync(user);
+        }
+
+        public async Task<User?> GetUserByEmailAsync(string email)
+        {
+            return await _userDAO.GetUserByEmailAsync(email);
+        }
+
+        public async Task CreateUserAsync(User user)
+        {
+            await _userDAO.CreateUserAsync(user);
+        }
     }
 }
