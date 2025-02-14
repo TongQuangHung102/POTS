@@ -1,4 +1,5 @@
-﻿using backend.Services;
+﻿using backend.Dtos;
+using backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -25,5 +26,22 @@ namespace backend.Controllers
             return await _userService.GetUsersAsync(roleId, email, page, pageSize);
         }
 
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetUserById(int userId)
+        {
+            return await _userService.GetUserByIdAsync(userId);
+        }
+
+        [HttpPut("{userId}")]
+        public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserDto userDto)
+        {
+            return await _userService.UpdateUserAsync(userId, userDto);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
+        {
+            return await _userService.CreateUserAsync(userDto);
+        }
     }
 }
