@@ -31,7 +31,6 @@ namespace backend.Services
                 UserName = model.UserName,
                 Email = model.Email,
                 Password = hashedPassword,
-                FullName = model.FullName,
                 Role = model.Role,
                 IsActive = false,
                 CreateAt = DateTime.UtcNow,
