@@ -21,5 +21,10 @@ namespace backend.Models
         public virtual Level Level { get; set; }
         public virtual ICollection<AnswerQuestion> AnswerQuestions { get; set; }
         public virtual ICollection<ContestQuestion> ContestQuestions { get; set; }
+        public virtual ICollection<TestQuestion> TestQuestions { get; set; }
+        public virtual ICollection<TestSubmission> TestSubmissions { get; set; }
+        public virtual ICollection<StudentAnswer> StudentAnswers { get; set; }
+
+
     }
 }

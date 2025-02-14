@@ -19,5 +19,7 @@ namespace backend.Models
 
         [ForeignKey("LessonId")]
         public virtual Lesson Lesson { get; set; }
+
+        public virtual ICollection<StudentAnswer> StudentAnswers { get; set; } 
     }
 }

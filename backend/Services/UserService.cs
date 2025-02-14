@@ -51,7 +51,6 @@ namespace backend.Services
                         u.UserId,
                         u.UserName,
                         u.Email,
-                        u.FullName,
                         u.CreateAt,
                         u.LastLogin,
                         u.IsActive,
@@ -86,7 +85,6 @@ namespace backend.Services
                     user.UserId,
                     user.UserName,
                     user.Email,
-                    user.FullName,
                     user.CreateAt,
                     user.LastLogin,
                     user.IsActive,
@@ -118,7 +116,6 @@ namespace backend.Services
 
                 user.UserName = userDto.UserName;
                 user.Email = userDto.Email;
-                user.FullName = userDto.FullName;
                 user.Role = userDto.Role;
                 user.IsActive = userDto.IsActive;
 
@@ -157,7 +154,6 @@ namespace backend.Services
                 {
                     UserName = userDto.UserName,
                     Email = userDto.Email,
-                    FullName = userDto.FullName,
                     Role = userDto.Role,
                     IsActive = userDto.IsActive,
                     CreateAt = DateTime.UtcNow,
