@@ -49,5 +49,16 @@ namespace backend.DataAccess.DAO
             _context.Users.Update(user); 
             await _context.SaveChangesAsync();
         }
+
+        public async Task<User?> FindByGoogleIdAsync(string googleId)
+        {
+            return await _context.Users.FirstOrDefaultAsync(u => u.GoogleId == googleId);
+        }
+
+        public async Task CreateUserAsync(User user)
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+        }
     }
 }

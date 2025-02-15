@@ -11,7 +11,8 @@ namespace backend.Repositories
         Task UpdatePasswordAsync(string email, string newPassword);
         Task UpdateLastLoginTimeAsync(User user);
 
-
+        Task<User?> FindByGoogleIdAsync(string googleId);
+        Task CreateUserAsync(User user);
 
     }
 }
