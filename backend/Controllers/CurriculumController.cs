@@ -1,5 +1,6 @@
 ﻿using backend.Dtos;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -14,13 +15,14 @@ namespace backend.Controllers
         {
             _chapterService = chapterService;
         }
+        [Authorize]
         [HttpGet("get-all-chapter")]
         public async Task<ActionResult<List<ChapterDto>>> GetAllPlans()
         {
             var chapters = await _chapterService.GetAllChaptersAsync();
             return Ok(chapters);
         }
-
+        [Authorize]
         [HttpPost("add-chapters")]
         public async Task<IActionResult> AddChapters([FromBody] string input)
         {

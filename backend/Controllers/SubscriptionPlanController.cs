@@ -2,6 +2,7 @@
 using backend.Dtos;
 using backend.Models;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -23,7 +24,7 @@ namespace backend.Controllers
             var plans = await _spService.GetAllPlansAsync();
             return Ok(plans);
         }
-
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateSubscriptionPlan([FromBody] SubscriptionPlanDto dto)
         {
@@ -52,7 +53,7 @@ namespace backend.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
-
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdatePlan(int id, [FromBody] SubscriptionPlanDto dto)
         {
