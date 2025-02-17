@@ -34,10 +34,11 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoleDAO>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<RoleService>();
+builder.Services.AddScoped<LessonService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:3000")
+        builder => builder.WithOrigins("http://localhost:3000", "https://localhost:7259")
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
