@@ -1,23 +1,34 @@
-import React, { useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
-//import { useNavigate } from "react-router-dom";
+import React, { useState } from 'react';
+import { Link } from "react-router-dom";
+import './Auth.css';
 
-const LoginForm = ({ onRegister, onForgotPassword }) => {
-  // const navigate = useNavigate();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+const LoginForm = () => {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: '',
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+
+  const handleChange = async (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setIsLoading(true);
-    setError("");
+    setError('');
 
-    if (!email || !password) {
-      setError("Vui lòng điền đầy đủ thông tin.");
-      setIsLoading(false);
+    if (!formData.email) {
+      setError('Vui lòng nhập email');
+      return;
+    }
+
+    if (!formData.password) {
+      setError('Vui lòng nhập mật khẩu');
       return;
     }
 
@@ -25,102 +36,112 @@ const LoginForm = ({ onRegister, onForgotPassword }) => {
       const response = await fetch("https://localhost:7259/api/Auth/Login", {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
+          "Content-Type": "application/json"
         },
         body: JSON.stringify({
-          email: email,
-          password: password,
-        }),
+          email: formData.email,
+          password: formData.password
+        })
       });
 
-      const responseData = await response.json();
+      const data = await response.json();
 
-      if (response.ok) {
-        // Lưu token vào sessionStorage
-        const token = responseData.token;
-        sessionStorage.setItem("token", token);
-        // Điều hướng đến dashboard
-        //navigate("/dashboard");
-        setSuccess(true);
-      } else {
-        setError(responseData.message || "Lỗi đăng nhập. Vui lòng thử lại.");
-      }
-    } catch (err) {
-      setError("Lỗi kết nối đến server. Hãy thử lại sau.");
-    } finally {
-      setIsLoading(false);
+    if (!response.ok) {
+      setError(data.message || "Đăng nhập thất bại");
+      return;
     }
+
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+      }
+  
+ 
+      window.location.href = "/admin";
+  
+    } catch (error) {
+      console.error("Lỗi khi đăng nhập:", error);
+      setError("Có lỗi xảy ra, vui lòng thử lại!");
+    }
+
+    console.log('Đăng nhập với:', formData);
   };
 
+  const handleGoogleLogin = () => {
+    window.location.href = "https://localhost:7259/api/auth/login-google";
+  };
+  
+
   return (
-    <div>
-      <h2 style={{ color: "#AAB7B7", textAlign: "center", marginBottom: "30px" }}>Đăng nhập</h2>
-      <Form onSubmit={handleSubmit}>
-        {/* Email */}
-        <Form.Group className="mb-3" controlId="formBasicEmail">
-          <Form.Label style={{ color: "#C0C8CA" }}>Email</Form.Label>
-          <Form.Control
-            type="email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            style={{ backgroundColor: "#D4D8DD", color: "#1A2D42" }}
-            placeholder="Nhập email của bạn"
-          />
-        </Form.Group>
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">Đăng nhập</h2>
+        
+        <form onSubmit={handleSubmit} className="auth-form">
+          {error && (
+            <div className="error-message">
+              {error}
+            </div>
+          )}
 
-        {/* Mật khẩu */}
-        <Form.Group className="mb-3" controlId="formBasicPassword">
-          <Form.Label style={{ color: "#C0C8CA" }}>Mật khẩu</Form.Label>
-          <Form.Control
-            type="password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            style={{ backgroundColor: "#D4D8DD", color: "#1A2D42" }}
-            placeholder="Nhập mật khẩu của bạn"
-          />
-        </Form.Group>
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Email của bạn"
+              value={formData.email}
+              onChange={handleChange}
+              className="form-input"
+            />
+          </div>
 
-        {/* Hiển thị lỗi hoặc thông báo thành công */}
-        {error && <Alert variant="danger" style={{ marginBottom: "10px" }}>{error}</Alert>}
-        {success && <Alert variant="success" style={{ marginBottom: "10px" }}>Đăng nhập thành công!</Alert>}
+          <div className="form-group">
+            <label className="form-label">Mật khẩu</label>
+            <div className="password-input">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Mật khẩu của bạn"
+                value={formData.password}
+                onChange={handleChange}
+                className="form-input"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="toggle-password"
+              >
+                {showPassword ? "Ẩn" : "Hiện"}
+              </button>
+            </div>
+          </div>
 
-        {/* Nút đăng nhập */}
-        <Button
-          type="submit"
-          style={{
-            width: "100%",
-            padding: "10px",
-            backgroundColor: "#AAB7B7",
-            color: "#1A2D42",
-            border: "none",
-            borderRadius: "5px",
-          }}
-          disabled={isLoading}
-        >
-          {isLoading ? "Đang xử lý..." : "Đăng nhập"}
-        </Button>
-      </Form>
+          <button type="submit" className="submit-button">
+            Đăng nhập
+          </button>
 
-      {/* Chuyển đến đăng ký */}
-      <div style={{ textAlign: "center", marginTop: "20px" }}>
-        <Button
-          variant="link"
-          style={{ color: "#AAB7B7", textDecoration: "none" }}
-          onClick={onRegister}
-        >
-          Chưa có tài khoản? Đăng ký
-        </Button>
-      </div>
+          <div className="login-links">
+            <a href="#" className="auth-link">Quên mật khẩu?</a>
+            <Link to='/register'>Đăng ký tài khoản mới</Link>
+          </div>
 
-      {/* Quên mật khẩu */}
-      <div style={{ textAlign: "center", marginTop: "10px" }}>
-        <Button
-          variant="link"
-          style={{ color: "#AAB7B7", textDecoration: "none" }}
-          onClick={onForgotPassword}
-        >
-          Quên mật khẩu?
-        </Button>
+          <div className="divider">
+            <span className="divider-text">Hoặc</span>
+          </div>
+
+          <button 
+            type="button"
+            className="google-button"
+            onClick={handleGoogleLogin}
+          >
+            <img 
+              src="https://www.google.com/favicon.ico" 
+              alt="Google"
+              className="google-icon"
+            />
+            Đăng nhập với Google
+          </button>
+        </form>
       </div>
     </div>
   );

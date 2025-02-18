@@ -4,14 +4,15 @@ import AdminDashboard from '../pages/AdminDashboard';
 import Register from '../pages/RegisterForm';
 import Login from '../pages/LoginForm';
 import ListChapter from '../pages/admin/ListChapter';
+import ListLesson from '../pages/admin/ListLesson';
+import GoogleCallback from '../pages/GoogleCallback';
 import { useAuth } from '../hooks/useAuth';
 import ListPackage from '../pages/admin/ListPackage';
 import PackageDetail from '../pages/admin/PackageDetail';
 import AddPackage from '../pages/admin/AddPackage';
 const AppRoutes = () => {
-    const { user, loading } = useAuth(); // Lấy cả user và loading
+    const { user, loading } = useAuth(); 
 
-    // Nếu đang tải, hiển thị loading
     if (loading) {
         return <div>Loading...</div>;
     }
@@ -23,6 +24,8 @@ const AppRoutes = () => {
             <Route path='/register' element={<Register />} />
             <Route path='/admin' element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
+                <Route path="/admin/listchapter" element={<ListChapter />} />
+                <Route path="/admin/listchapter/:chapterId" element={<ListLesson />} />
                 <Route path='/admin/listchapter' element={<ListChapter />} />
                 <Route path='/admin/listpackage' element={<ListPackage />} />
                 <Route
