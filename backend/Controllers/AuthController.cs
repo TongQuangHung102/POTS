@@ -29,10 +29,6 @@ namespace backend.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
             var result = await _registerService.Register(model);
 
