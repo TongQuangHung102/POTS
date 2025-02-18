@@ -22,5 +22,41 @@ namespace backend.DataAccess.DAO
         {
             return await _context.Chapters.Include(m => m.User).ToListAsync();
         }
+        public async Task<Chapter> GetChapterByIdAsync(int id)
+        {
+            return await _context.Chapters.FirstOrDefaultAsync(ch => ch.ChapterId == id);
+        }
+
+        public async Task UpdateChapterAsync(Chapter chapter)
+        {
+            _context.Chapters.Update(chapter);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task AddLessonsAsync(List<Lesson> lessons)
+        {
+            await _context.Lessons.AddRangeAsync(lessons);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<List<Lesson>> GetAllLessonAsync()
+        {
+            return await _context.Lessons.ToListAsync();
+        }
+        public async Task<Lesson> GetLessonByIdAsync(int id)
+        {
+            return await _context.Lessons.FirstOrDefaultAsync(ls => ls.LessonId == id);
+        }
+
+        public async Task<List<Lesson>> GetLessonByChapterIdAsync(int id)
+        {
+            return await _context.Lessons.Where(ls => ls.ChapterId == id).ToListAsync();
+        }
+
+        public async Task UpdateLessonAsync(Lesson lesson)
+        {
+            _context.Lessons.Update(lesson);
+            await _context.SaveChangesAsync();
+        }
     }
 }
