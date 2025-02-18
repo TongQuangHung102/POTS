@@ -58,5 +58,31 @@ namespace backend.Services
             await _spRepository.UpdateAsync(existingPlan);
             return true;
         }
+        public async Task<SubscriptionPlanDto> GetPlanDetailAsync(int id)
+        {
+            var plan = await _spRepository.GetByIdAsync(id);
+
+            if (plan == null)
+            {
+                return null;  
+            }
+
+            return new SubscriptionPlanDto
+            {
+                PlanId = plan.PlanId,
+                PlanName = plan.PlanName,
+                Price = plan.Price,
+                Description = plan.Description,
+                Duration = plan.Duration,
+                MaxExercisesPerDay = plan.MaxExercisesPerDay,
+                IsAIAnalysis = plan.IsAIAnalysis,
+                IsPersonalization = plan.IsPersonalization,
+                IsBasicStatistics = plan.IsBasicStatistics,
+                IsAdvancedStatistics = plan.IsAdvancedStatistics,
+                CreatedAt = plan.CreatedAt,  
+                UpdatedAt = plan.UpdatedAt   
+            };
+        }
+
     }
 }

@@ -7,8 +7,9 @@ import ListChapter from '../pages/admin/ListChapter';
 import ListLesson from '../pages/admin/ListLesson';
 import GoogleCallback from '../pages/GoogleCallback';
 import { useAuth } from '../hooks/useAuth';
-
-
+import ListPackage from '../pages/admin/ListPackage';
+import PackageDetail from '../pages/admin/PackageDetail';
+import AddPackage from '../pages/admin/AddPackage';
 const AppRoutes = () => {
     const { user, loading } = useAuth(); 
 
@@ -19,16 +20,24 @@ const AppRoutes = () => {
     return (
         <Routes>
             {/* Route cho login */}
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/google-callback" element={<GoogleCallback />} />
-            <Route path="/admin" element={<AdminLayout />}>
+            <Route path='/login' element={<Login />} />
+            <Route path='/register' element={<Register />} />
+            <Route path='/admin' element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="/admin/listchapter" element={<ListChapter />} />
                 <Route path="/admin/listchapter/:chapterId" element={<ListLesson />} />
+                <Route path='/admin/listchapter' element={<ListChapter />} />
+                <Route path='/admin/listpackage' element={<ListPackage />} />
+                <Route
+                    path='/admin/package/:planId'
+                    element={<PackageDetail />}
+                />
+                <Route path='/admin/addpackage/' element={<AddPackage />} />
             </Route>
             {/* Nếu chưa đăng nhập, điều hướng đến login */}
-            {!user && <Route path="/" element={<Navigate to="/login" replace />} />}
+            {!user && (
+                <Route path='/' element={<Navigate to='/login' replace />} />
+            )}
         </Routes>
     );
 };
