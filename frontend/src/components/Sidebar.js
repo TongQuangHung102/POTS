@@ -25,7 +25,7 @@ const Sidebar = () => {
         <NavLink to="/users" className="nav-link" activeClassName="active">
           <BiSolidUserDetail className="me-2" /> Người dùng
         </NavLink>
-        <NavLink to="/profile" className="nav-link" activeClassName="active">
+        <NavLink to="/admin/listpackage" className="nav-link" activeClassName="active">
           <BiPackage  className="me-2" /> Gói
         </NavLink>
         <NavLink to="/profile" className="nav-link" activeClassName="active">
