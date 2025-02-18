@@ -25,6 +25,9 @@ const Sidebar = () => {
           <BiGrid className="me-2" /> Người dùng
         </Link>
         <Link to="/profile" className="nav-link">
+          <BiGrid className="me-2" /> Gói
+        </Link>
+        <Link to="/profile" className="nav-link">
           <BiGrid className="me-2" /> Thông tin cá nhân
         </Link>
       </nav>
