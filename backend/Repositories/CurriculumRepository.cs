@@ -17,9 +17,44 @@ namespace backend.Repositories
             await _curriculumDAO.AddChaptersAsync(chapters);
         }
 
+        public async Task AddLessonsAsync(List<Lesson> lessons)
+        {
+            await _curriculumDAO.AddLessonsAsync(lessons);
+        }
+
         public async Task<List<Chapter>> GetAllChapterAsync()
         {
             return await _curriculumDAO.GetAllChapterAsync();
+        }
+
+        public async Task<List<Lesson>> GetAllLessonAsync()
+        {
+            return await _curriculumDAO.GetAllLessonAsync();
+        }
+
+        public async Task<Chapter> GetChapterByIdAsync(int id)
+        {
+            return await _curriculumDAO.GetChapterByIdAsync(id);
+        }
+
+        public async Task<List<Lesson>> GetLessonByChapterIdAsync(int id)
+        {
+            return await _curriculumDAO.GetLessonByChapterIdAsync(id);
+        }
+
+        public async Task<Lesson> GetLessonByIdAsync(int id)
+        {
+            return await _curriculumDAO.GetLessonByIdAsync(id);
+        }
+
+        public async Task UpdateChapterAsync(Chapter chapter)
+        {
+            await _curriculumDAO.UpdateChapterAsync(chapter);
+        }
+
+        public async Task UpdateLessonAsync(Lesson lesson)
+        {
+            await _curriculumDAO.UpdateLessonAsync(lesson);
         }
     }
 }

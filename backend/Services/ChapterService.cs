@@ -35,8 +35,32 @@ namespace backend.Services
 
             var chapters = ParseChapters(input);
 
+            await ValidateDuplicateChaptersAsync(chapters);
+
             await _curriculumRepository.AddChaptersAsync(chapters);
         }
+
+        public async Task EditChapterAsync(int id, ChapterDto chapterDto)
+        {
+            var existingChapter = await _curriculumRepository.GetChapterByIdAsync(id);
+            if (existingChapter == null)
+            {
+                throw new KeyNotFoundException();
+            }
+
+            var duplicateChapter = await _curriculumRepository.GetAllChapterAsync();
+            if (duplicateChapter.Any(ch => (ch.Order == chapterDto.Order || ch.ChapterName == chapterDto.ChapterName) && ch.ChapterId != id))
+            {
+                throw new InvalidOperationException("A chapter with the same Order or Name already exists.");
+            }
+
+            existingChapter.Order = chapterDto.Order;
+            existingChapter.ChapterName = chapterDto.ChapterName;
+            existingChapter.IsVisible = chapterDto.IsVisible;
+
+            await _curriculumRepository.UpdateChapterAsync(existingChapter);
+        }
+
         private static List<Chapter> ParseChapters(string input)
         {
             var chapters = new List<Chapter>();
@@ -66,6 +90,21 @@ namespace backend.Services
             }
 
             return chapters;
+        }
+
+        private async Task ValidateDuplicateChaptersAsync(List<Chapter> chapters)
+        {
+            var existingChapters = await _curriculumRepository.GetAllChapterAsync();
+
+            var duplicateChapters = chapters.Where(ch =>
+                existingChapters.Any(ec => ec.Order == ch.Order || ec.ChapterName == ch.ChapterName)
+            ).ToList();
+
+            if (duplicateChapters.Any())
+            {
+                var duplicatesInfo = string.Join(", ", duplicateChapters.Select(c => $"Order: {c.Order}, Name: {c.ChapterName}"));
+                throw new InvalidOperationException($"Duplicate chapters found: {duplicatesInfo}");
+            }
         }
     }
 }

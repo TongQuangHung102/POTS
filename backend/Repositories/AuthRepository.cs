@@ -43,7 +43,14 @@ namespace backend.Repositories
         {
             await _authDAO.UpdatePasswordAsync(email, newPassword);
         }
+        public async Task<User?> FindByGoogleIdAsync(string googleId)
+        {
+            return await _authDAO.FindByGoogleIdAsync(googleId);
+        }
 
-
+        public async Task CreateUserAsync(User user)
+        {
+            await _authDAO.CreateUserAsync(user);
+        }
     }
 }
