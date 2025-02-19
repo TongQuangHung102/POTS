@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { Link } from "react-router-dom";
 import './Auth.css';
+
+const clientId = "486727453623-gisg4i179stste58r793ru3j30iasd4k.apps.googleusercontent.com";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +12,38 @@ const LoginForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+
+  const handleSuccess = async (response) => {
+    try {
+        // Lấy Google Token từ response
+        const googleToken = response.credential;
+
+        // Gửi token lên backend bằng fetch
+        const res = await fetch("https://localhost:7259/api/Auth/google-login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ token: googleToken })
+        });
+
+        if (!res.ok) {
+            throw new Error("Failed to authenticate");
+        }
+
+        const data = await res.json();
+        console.log("JWT Token:", data.token);
+
+        // Lưu JWT vào localStorage
+        localStorage.setItem("token", data.token);
+
+        // Chuyển hướng sau khi đăng nhập thành công
+        window.location.href = "/admin";
+    } catch (error) {
+        console.error("Google Login Failed:", error);
+    }
+};
+
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
@@ -129,18 +164,14 @@ const LoginForm = () => {
             <span className="divider-text">Hoặc</span>
           </div>
 
-          <button 
-            type="button"
-            className="google-button"
-            onClick={handleGoogleLogin}
-          >
-            <img 
-              src="https://www.google.com/favicon.ico" 
-              alt="Google"
-              className="google-icon"
-            />
-            Đăng nhập với Google
-          </button>
+          <GoogleOAuthProvider clientId={clientId}>
+            <div>
+                <GoogleLogin
+                    onSuccess={handleSuccess}
+                    onError={() => console.log("Login Failed")}
+                />
+            </div>
+        </GoogleOAuthProvider>
         </form>
       </div>
     </div>

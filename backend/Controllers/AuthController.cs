@@ -9,6 +9,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authorization;
 using static System.Net.WebRequestMethods;
 using backend.Models;
+using Google.Apis.Auth;
 
 namespace backend.Controllers
 {
@@ -79,42 +80,29 @@ namespace backend.Controllers
             }
         }
 
-        [HttpGet("login-google")]
-        public IActionResult LoginWithGoogle()
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthRequest request)
         {
-            var properties = new AuthenticationProperties
+            try
             {
-                RedirectUri = Url.Action("GoogleCallback", "Auth", null, Request.Scheme)
-            };
+                var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token);
 
-            return Challenge(properties, GoogleDefaults.AuthenticationScheme);
-        }
+                var googleDto = new UserGoogleDto
+                {
+                    GoogleId = payload.Subject,
+                    Email = payload.Email,
+                    UserName = payload.Name,
+                    Role = 1
+                };
 
-        [HttpGet("google-callback")]
-        public async Task<IActionResult> GoogleCallback()
-        {
-            var authenticateResult = await HttpContext.AuthenticateAsync(GoogleDefaults.AuthenticationScheme);
+                var loginResponse = await _loginService.FindOrCreateUserGoogleAsync(googleDto);
 
-            if (!authenticateResult.Succeeded)
-                return Unauthorized();
-
-            var claims = authenticateResult.Principal.Identities.First().Claims.ToList();
-
-            var googleUserDto = new UserGoogleDto
+                return Ok(loginResponse);
+            }
+            catch (Exception ex)
             {
-                GoogleId = claims.FirstOrDefault(c => c.Type == ClaimTypes.NameIdentifier)?.Value,
-                Email = claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value,
-                UserName = claims.FirstOrDefault(c => c.Type == "name")?.Value
-               ?? claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value
-               ?? "Unknown",
-                CreateAt = DateTime.UtcNow,
-                IsActive = true,
-                Role = 1
-            };
-
-            var response = await _loginService.FindOrCreateUserGoogleAsync(googleUserDto);
-
-            return Ok(response);
+                return BadRequest(new { message = "Invalid Google token", error = ex.Message });
+            }
         }
 
     }

@@ -53,6 +53,7 @@ namespace backend.Controllers
                 return StatusCode(500, "An error occurred while processing your request");
             }
         }
+        
         [HttpPut("edit-chapter/{id}")]
         public async Task<IActionResult> EditChapter(int id, [FromBody] ChapterDto chapterDto)
         {
