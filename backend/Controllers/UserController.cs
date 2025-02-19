@@ -1,5 +1,6 @@
 ﻿using backend.Dtos;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -15,7 +16,7 @@ namespace backend.Controllers
         {
             _userService = userService;
         }
-
+        [Authorize]
         [HttpGet("List")]
         public async Task<IActionResult> GetUsers(
             [FromQuery] int? roleId = null,
@@ -25,19 +26,19 @@ namespace backend.Controllers
         {
             return await _userService.GetUsersAsync(roleId, email, page, pageSize);
         }
-
+        [Authorize]
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetUserById(int userId)
         {
             return await _userService.GetUserByIdAsync(userId);
         }
-
+        [Authorize]
         [HttpPut("{userId}")]
         public async Task<IActionResult> UpdateUser(int userId, [FromBody] UserDto userDto)
         {
             return await _userService.UpdateUserAsync(userId, userDto);
         }
-
+        [Authorize]
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] UserDto userDto)
         {

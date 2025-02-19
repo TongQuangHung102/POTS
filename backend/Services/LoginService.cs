@@ -32,7 +32,46 @@ namespace backend.Services
             await _authRepository.UpdateLastLoginTimeAsync(user);
             return new LoginResponseDto
             {
-                Username = user.UserName,
+                UserId = user.UserId,
+                Role = user.Role,
+                Token = GenerateJwtToken(user)
+            };
+        }
+
+        public async Task<LoginResponseDto> FindOrCreateUserGoogleAsync(UserGoogleDto userGoogleDto)
+        {
+            var user = await _authRepository.GetUserByEmail(userGoogleDto.Email);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    GoogleId = userGoogleDto.GoogleId,
+                    Email = userGoogleDto.Email,
+                    UserName = userGoogleDto.UserName,
+                    CreateAt = DateTime.UtcNow,
+                    IsActive = true,
+                    Role = userGoogleDto.Role,
+                    LastLogin = DateTime.Now
+                };
+
+                await _authRepository.CreateUserAsync(user);
+            }
+
+            if(user != null && user.GoogleId == null)
+            {
+                user.GoogleId = userGoogleDto.GoogleId;
+                user.LastLogin = DateTime.UtcNow;
+
+                await _authRepository.UpdateUser(user);
+            }
+
+            user.LastLogin = DateTime.UtcNow;
+
+            await _authRepository.UpdateUser(user);
+            return new LoginResponseDto
+            {
+                UserId = user.UserId,
                 Role = user.Role,
                 Token = GenerateJwtToken(user)
             };

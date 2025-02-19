@@ -1,8 +1,15 @@
 ﻿using backend.DataAccess.DAO;
 using backend.Dtos;
 using backend.Services;
+using Microsoft.AspNetCore.Authentication.Google;
+using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authorization;
+using static System.Net.WebRequestMethods;
+using backend.Models;
+using Google.Apis.Auth;
 
 namespace backend.Controllers
 {
@@ -23,10 +30,6 @@ namespace backend.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
-            if (!ModelState.IsValid)
-            {
-                return BadRequest(ModelState);
-            }
 
             var result = await _registerService.Register(model);
 
@@ -63,7 +66,6 @@ namespace backend.Controllers
                 return StatusCode(500, new { Message = "Đã có lỗi xảy ra", Details = ex.Message });
             }
         }
-
         [HttpPost("Reset-password")]
         public async Task<IActionResult> ResetPassword([FromBody] PasswordResetRequestDto request)
         {
@@ -75,6 +77,31 @@ namespace backend.Controllers
             catch (Exception ex)
             {
                 return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPost("google-login")]
+        public async Task<IActionResult> GoogleLogin([FromBody] GoogleAuthRequest request)
+        {
+            try
+            {
+                var payload = await GoogleJsonWebSignature.ValidateAsync(request.Token);
+
+                var googleDto = new UserGoogleDto
+                {
+                    GoogleId = payload.Subject,
+                    Email = payload.Email,
+                    UserName = payload.Name,
+                    Role = 1
+                };
+
+                var loginResponse = await _loginService.FindOrCreateUserGoogleAsync(googleDto);
+
+                return Ok(loginResponse);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = "Invalid Google token", error = ex.Message });
             }
         }
 

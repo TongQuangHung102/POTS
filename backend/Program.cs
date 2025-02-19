@@ -1,4 +1,4 @@
-using backend.DataAccess.DAO;
+﻿using backend.DataAccess.DAO;
 using backend.Models;
 using backend.Repositories;
 using backend.Services;
@@ -6,6 +6,10 @@ using Microsoft.EntityFrameworkCore;
 using System.Text;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authentication;
+using System.Security.Claims;
+using Microsoft.AspNetCore.Authentication.Google;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,30 +34,20 @@ builder.Services.AddScoped<UserService>();
 builder.Services.AddScoped<RoleDAO>();
 builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<RoleService>();
+builder.Services.AddScoped<LessonService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:3000")
+        builder => builder.WithOrigins("http://localhost:3000") 
+            .AllowCredentials()
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
 
 var key = Encoding.ASCII.GetBytes("UltraSecureKey_ForJWTAuth!987654321@2025$");
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-});
+
+
+builder.Services.AddAuthorization();
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
     options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore;
@@ -73,8 +67,12 @@ if (app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 
-app.UseAuthorization();
 app.UseCors("AllowSpecificOrigin");
+
+app.UseAuthentication();
+
+app.UseAuthorization();
+
 app.MapControllers();
 
 app.Run();

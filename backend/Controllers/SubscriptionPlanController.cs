@@ -2,6 +2,7 @@
 using backend.Dtos;
 using backend.Models;
 using backend.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Controllers
@@ -71,5 +72,17 @@ namespace backend.Controllers
             return Ok(new { message = "Subscription plan updated successfully." });
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<SubscriptionPlanDto>> GetPlanDetail(int id)
+        {
+            var planDetail = await _spService.GetPlanDetailAsync(id);
+
+            if (planDetail == null)
+            {
+                return NotFound(new { message = "Subscription plan not found." });
+            }
+
+            return Ok(planDetail);
+        }
     }
 }
