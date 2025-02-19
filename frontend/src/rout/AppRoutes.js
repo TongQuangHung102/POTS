@@ -22,6 +22,7 @@ const AppRoutes = () => {
             {/* Route cho login */}
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
+            <Route path='/google-callback' element={<GoogleCallback />}></Route>
             <Route path='/admin' element={<AdminLayout />}>
                 <Route index element={<AdminDashboard />} />
                 <Route path="/admin/listchapter" element={<ListChapter />} />
