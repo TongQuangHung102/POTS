@@ -22,11 +22,15 @@
   .lesson-table button {
     margin-left: 10px;
       padding: 5px 10px;
-      background-color: #ffbb34;
+      background-color: #AAB7B7;
       color: white !important;
       border: none;
       border-radius: 5px;
       cursor: pointer;
+  }
+  .lesson-table button:hover {
+    background-color: #0c2246;
+    color : white !important;
   }
   .instruction-text {
     color: #6c757d; /* Màu xám */
@@ -49,15 +53,16 @@
   
   .add-lesson-form button {
     padding: 8px 12px;
-    background-color: #28a745;
-    color: white;
+    background-color: #AAB7B7;
+    color: #0c2246 !important;
     border: none;
     border-radius: 5px;
     cursor: pointer;
   }
   
   .add-lesson-form button:hover {
-    background-color: #218838;
+    background-color: #0c2246;
+    color : white !important;
   }
 
 .add-lesson{

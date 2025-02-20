@@ -21,8 +21,8 @@ h2 {
 }
 
 .package-table th {
-    background: #007bff;
-    color: white;
+    background: #f4f4f4;
+    color: rgb(0, 0, 0);
     text-align: left;
 }
 
@@ -69,10 +69,15 @@ h2 {
 .add-package-button {
     padding: 10px 20px;
     font-size: 16px;
-    background-color: #28a745;
-    color: white;
+    background-color: #AAB7B7;
+    color: #1A2D42;
     border: none;
     border-radius: 5px;
     cursor: pointer;
     text-decoration: none;
+}
+
+.add-package-button:hover{
+    background-color:#1A2D42 ;
+    color :#ffffff !important;
 }

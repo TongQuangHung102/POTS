@@ -92,7 +92,7 @@ namespace backend.Controllers
                     GoogleId = payload.Subject,
                     Email = payload.Email,
                     UserName = payload.Name,
-                    Role = 1
+                    Role = null
                 };
 
                 var loginResponse = await _loginService.FindOrCreateUserGoogleAsync(googleDto);
