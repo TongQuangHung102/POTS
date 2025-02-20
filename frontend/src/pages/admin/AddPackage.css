@@ -1,0 +1,77 @@
+/* PackageDetail.css */
+
+/* Điều chỉnh container cho PackageDetail */
+.package-detail-container {
+    padding: 20px;
+    margin-left: var(
+        --sidebar-width
+    ); /* Đặt margin để container bắt đầu từ cạnh phải của sidebar */
+    max-width: 1200px; /* Điều chỉnh chiều rộng tối đa của container */
+    margin-right: 30px; /* Khoảng cách giữa container và mép phải */
+}
+
+/* Đảm bảo các form group không bị rộng quá */
+.form-group {
+    margin-bottom: 15px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Tạo sự căn chỉnh đẹp cho các trường nhập liệu */
+.form-group input {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    box-sizing: border-box;
+}
+
+/* Căn chỉnh các nút và làm cho chúng nổi bật */
+.save-button,
+.cancel-button,
+.edit-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+
+.save-button {
+    background-color: #28a745;
+    color: white;
+}
+
+.cancel-button {
+    background-color: #dc3545;
+    color: white;
+}
+
+.edit-button {
+    background-color: #007bff;
+    color: white;
+}
+
+.error-message {
+    color: red;
+    padding: 10px;
+    margin-top: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+}
+.error-text {
+    color: red;
+    font-size: 14px;
+    margin-top: 5px;
+    font-weight: bold;
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    padding: 5px;
+    border-radius: 4px;
+    display: inline-block;
+}

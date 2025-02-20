@@ -1,168 +1,187 @@
-import React, { useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import React, { useState } from 'react';
+import { Link } from "react-router-dom";
+import './Auth.css';
 
-const RegisterForm = ({ onLogin }) => {
-    const [email, setEmail] = useState("");
-    const [username, setUsername] = useState("");
-    const [password, setPassword] = useState("");
-    const [confirmPassword, setConfirmPassword] = useState("");
-    const [role, setRole] = useState(""); // Không đặt mặc định
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState(false);
+const RegisterForm = () => {
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    password: '',
+    confirmPassword: ''
+  });
+  const [showPassword, setShowPassword] = useState(false);
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false); 
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-        if (!email || !username || !password || !confirmPassword || !role) {
-            setError("Vui lòng điền đầy đủ thông tin.");
-            return;
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+
+    if (!formData.name) {
+      setError('Vui lòng nhập họ tên');
+      return;
+    }
+
+    if (!formData.email) {
+      setError('Vui lòng nhập email');
+      return;
+    }
+
+    if (!formData.password) {
+      setError('Vui lòng nhập mật khẩu');
+      return;
+    }
+
+    if (formData.password.length < 6) {
+      setError('Mật khẩu phải có ít nhất 6 ký tự');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Mật khẩu xác nhận không khớp');
+      return;
+    }
+
+    const registerData = {
+        userName: formData.name, 
+        email: formData.email,
+        password: formData.password,
+        role: formData.role,
+      };
+
+    try {
+        // Gửi yêu cầu đăng ký đến API
+        const response = await fetch('https://localhost:7259/api/Auth/Register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(registerData), 
+        });
+  
+        const result = await response.json();
+        
+        if (response.ok) {
+          console.log('Đăng ký thành công:', result);
+          window.location.href = '/login'; 
+        } else {
+          setError(result.message || 'Đăng ký không thành công');
         }
+      } catch (error) {
+        console.error('Lỗi khi đăng ký:', error);
+        setError('Đã có lỗi xảy ra. Vui lòng thử lại.');
+      } finally {
+        setLoading(false); 
+      }
 
-        if (!/\S+@\S+\.\S+/.test(email)) {
-            setError("Email không hợp lệ.");
-            return;
-        }
+    console.log('Đăng ký với:', formData);
+  };
 
-        if (password !== confirmPassword) {
-            setError("Mật khẩu không trùng khớp.");
-            return;
-        }
 
-        setError("");
-        setSuccess(false);
-
-        try {
-            const response = await fetch("https://localhost:7259/api/Auth/Register", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({
-                    userName: username,
-                    email: email,
-                    password: password,
-                    role: role === "sinh viên" ? 1 : 2, // Tránh lỗi undefined
-                    createAt: new Date().toISOString(),
-                    fullName: "",
-                    isActive: true,
-                }),
-            });
-
-            const responseData = await response.json();
-
-            if (response.ok) {
-                setSuccess(true);
-            } else {
-                setError(responseData.message || "Lỗi đăng ký.");
-                if (responseData.errors) {
-                    console.log("Lỗi chi tiết:", responseData.errors);
-                }
-            }
-        } catch (error) {
-            setError("Lỗi kết nối đến server. Hãy thử lại sau.");
-        }
-    };
-
-    return (
-        <div>
-            <h2 style={{ color: "#AAB7B7", textAlign: "center", marginBottom: "30px" }}>Đăng ký</h2>
-            <Form onSubmit={handleSubmit}>
-                {/* Tên đăng nhập */}
-                <Form.Group className="mb-3" controlId="formBasicUsername">
-                    <Form.Label style={{ color: "#C0C8CA" }}>Tên đăng nhập</Form.Label>
-                    <Form.Control
-                        type="text"
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
-                        style={{ backgroundColor: "#D4D8DD", color: "#1A2D42" }}
-                        placeholder="Nhập tên đăng nhập của bạn"
-                    />
-                </Form.Group>
-
-                {/* Email */}
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label style={{ color: "#C0C8CA" }}>Email</Form.Label>
-                    <Form.Control
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        style={{ backgroundColor: "#D4D8DD", color: "#1A2D42" }}
-                        placeholder="Nhập email của bạn"
-                    />
-                </Form.Group>
-
-                {/* Mật khẩu */}
-                <Form.Group className="mb-3" controlId="formBasicPassword">
-                    <Form.Label style={{ color: "#C0C8CA" }}>Mật khẩu</Form.Label>
-                    <Form.Control
-                        type="password"
-                        value={password}
-                        onChange={(e) => setPassword(e.target.value)}
-                        style={{ backgroundColor: "#D4D8DD", color: "#1A2D42" }}
-                        placeholder="Nhập mật khẩu của bạn"
-                    />
-                </Form.Group>
-
-                {/* Xác nhận mật khẩu */}
-                <Form.Group className="mb-3" controlId="formBasicConfirmPassword">
-                    <Form.Label style={{ color: "#C0C8CA" }}>Xác nhận mật khẩu</Form.Label>
-                    <Form.Control
-                        type="password"
-                        value={confirmPassword}
-                        onChange={(e) => setConfirmPassword(e.target.value)}
-                        style={{ backgroundColor: "#D4D8DD", color: "#1A2D42" }}
-                        placeholder="Nhập lại mật khẩu của bạn"
-                    />
-                </Form.Group>
-
-                {/* Chọn vai trò */}
-                <Form.Group className="mb-3" controlId="formBasicRole">
-                    <Form.Label style={{ color: "#C0C8CA" }}>Vai trò</Form.Label>
-                    <Form.Control
-                        as="select"
-                        value={role}
-                        onChange={(e) => setRole(e.target.value)}
-                        style={{ backgroundColor: "#D4D8DD", color: "#1A2D42" }}
-                    >
-                        <option value="">-- Chọn vai trò --</option> {/* Đảm bảo người dùng phải chọn */}
-                        <option value="sinh viên">Sinh viên</option>
-                        <option value="phụ huynh">Phụ huynh</option>
-                    </Form.Control>
-                </Form.Group>
-
-                {/* Hiển thị lỗi hoặc thông báo thành công */}
-                {error && <Alert variant="danger" style={{ marginBottom: "10px" }}>{error}</Alert>}
-                {success && <Alert variant="success" style={{ marginBottom: "10px" }}>Đăng ký thành công!</Alert>}
-
-                {/* Nút đăng ký */}
-                <Button
-                    type="submit"
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        backgroundColor: "#AAB7B7",
-                        color: "#1A2D42",
-                        border: "none",
-                        borderRadius: "5px",
-                    }}
-                >
-                    Đăng ký
-                </Button>
-            </Form>
-
-            {/* Chuyển đến trang đăng nhập */}
-            <div style={{ textAlign: "center", marginTop: "20px" }}>
-                <span style={{ color: "#C0C8CA" }}>Bạn đã có tài khoản? </span>
-                <Button
-                    variant="link"
-                    style={{ color: "#AAB7B7", textDecoration: "none" }}
-                    onClick={onLogin}
-                >
-                    Đăng nhập
-                </Button>
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">Đăng ký tài khoản</h2>
+        
+        <form onSubmit={handleSubmit} className="auth-form">
+          {error && (
+            <div className="error-message">
+              {error}
             </div>
-        </div>
-    );
+          )}
+
+          <div className="form-group">
+            <label className="form-label">Họ tên</label>
+            <input
+              type="text"
+              name="name"
+              placeholder="Nhập họ tên của bạn"
+              value={formData.name}
+              onChange={handleChange}
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Nhập email của bạn"
+              value={formData.email}
+              onChange={handleChange}
+              className="form-input"
+            />
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Mật khẩu</label>
+            <div className="password-input">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder="Nhập mật khẩu"
+                value={formData.password}
+                onChange={handleChange}
+                className="form-input"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="toggle-password"
+              >
+                {showPassword ? "Ẩn" : "Hiện"}
+              </button>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Xác nhận mật khẩu</label>
+            <div className="password-input">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="confirmPassword"
+                placeholder="Nhập lại mật khẩu"
+                value={formData.confirmPassword}
+                onChange={handleChange}
+                className="form-input"
+              />
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label className="form-label">Vai trò</label>
+            <select
+              name="role"
+              value={formData.role}
+              onChange={handleChange}
+              className="form-input"
+            >
+              <option value="">Chọn vai trò</option>
+              <option value="1">Học sinh</option>
+              <option value="2">Phụ huynh</option>
+            </select>
+          </div>
+
+          <button type="submit" className="submit-button">
+            Đăng ký
+          </button>
+
+          <div className="auth-links">
+            <Link to='/login'>Bạn đã có tài khoản? Đăng nhập</Link>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default RegisterForm;
