@@ -1,9 +1,49 @@
-
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { BiGrid , BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass , BiSolidUserDetail, BiPackage, BiInfoSquare } from "react-icons/bi";
+import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare } from "react-icons/bi";
+import { useAuth } from "../hooks/useAuth"; 
+import { useLocation } from "react-router-dom";
 
 const Sidebar = () => {
+  const { user } = useAuth(); 
+  const roleId = user?.roleId; // roleId là số
+  const location = useLocation(); // Lấy đường dẫn hiện tại
+
+  const roleMap = {
+    1: "student",
+    2: "parent",
+    3: "admin",
+  };
+
+  const role = roleMap[roleId] || "guest"; 
+
+  // Danh sách menu theo từng role
+  const menuConfig = {
+    admin: [
+      { path: "/admin/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/admin/chapter", icon: <BiAlignRight />, label: "Chương trình" },
+      { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
+      { path: "/users", icon: <BiSolidUserDetail />, label: "Người dùng" },
+      { path: "/admin/package", icon: <BiPackage />, label: "Gói" },
+      { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
+    ],
+    Parent: [
+      { path: "/", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/teacher/classes", icon: <BiAlignRight />, label: "Lớp học" },
+      { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
+      { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
+    ],
+    student: [
+      { path: "/", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/student/courses", icon: <BiAlignRight />, label: "Khóa học" },
+      { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
+      { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
+    ],
+    guest: [], 
+  };
+
+  const menuItems = menuConfig[role];
+
   return (
     <div className="sidebar d-none d-md-block">
       <div className="mb-4">
@@ -13,24 +53,11 @@ const Sidebar = () => {
         </h5>
       </div>
       <nav className="nav flex-column">
-        <NavLink to="/" className="nav-link" activeClassName="active">
-          <BiSolidDashboard  className="me-2" /> Dashboard
-        </NavLink>
-        <NavLink to="/admin/listchapter" className="nav-link" activeClassName="active">
-          <BiAlignRight className="me-2" /> Chương trình
-        </NavLink>
-        <NavLink to="/competitions" className="nav-link" activeClassName="active">
-          <BiSolidHourglass className="me-2" /> Cuộc thi
-        </NavLink>
-        <NavLink to="/users" className="nav-link" activeClassName="active">
-          <BiSolidUserDetail className="me-2" /> Người dùng
-        </NavLink>
-        <NavLink to="/admin/listpackage" className="nav-link" activeClassName="active">
-          <BiPackage  className="me-2" /> Gói
-        </NavLink>
-        <NavLink to="/profile" className="nav-link" activeClassName="active">
-          <BiInfoSquare className="me-2" /> Thông tin cá nhân
-        </NavLink>
+        {menuItems.map((item, index) => (
+          <NavLink key={index} to={item.path} className="nav-link">
+            {item.icon} {item.label}
+          </NavLink>
+        ))}
       </nav>
     </div>
   );

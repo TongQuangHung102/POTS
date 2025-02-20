@@ -48,7 +48,7 @@ const ListPackage = () => {
                         <th>Thống kê nâng cao</th>
                         <th>Thống kê cơ bản</th>
                         <th>Personalization</th>
-                        <th>Chi tiết</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>

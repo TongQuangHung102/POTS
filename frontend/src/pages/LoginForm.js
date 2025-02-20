@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
+import { GoogleOAuthProvider, GoogleLogin } from "@react-oauth/google";
 import { Link } from "react-router-dom";
 import './Auth.css';
+
+const clientId = "486727453623-gisg4i179stste58r793ru3j30iasd4k.apps.googleusercontent.com";
 
 const LoginForm = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +12,29 @@ const LoginForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+
+  const handleSuccess = async (response) => {
+    try {
+        const googleToken = response.credential;
+        const res = await fetch("https://localhost:7259/api/Auth/google-login", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ token: googleToken })
+        });
+
+        if (!res.ok) {
+            throw new Error("Failed to authenticate");
+        }
+
+        const data = await res.json();
+        handleLoginSuccess(data);
+    } catch (error) {
+        console.error("Google Login Failed:", error);
+    }
+};
+
 
   const handleChange = async (e) => {
     const { name, value } = e.target;
@@ -51,12 +77,8 @@ const LoginForm = () => {
       return;
     }
 
-      if (data.token) {
-        localStorage.setItem("token", data.token);
-      }
-  
- 
-      window.location.href = "/admin";
+    handleLoginSuccess(data);
+
   
     } catch (error) {
       console.error("Lỗi khi đăng nhập:", error);
@@ -66,10 +88,19 @@ const LoginForm = () => {
     console.log('Đăng nhập với:', formData);
   };
 
-  const handleGoogleLogin = () => {
-    window.location.href = "https://localhost:7259/api/auth/login-google";
+  const handleLoginSuccess = (data) => {
+    if (data.token) {
+      sessionStorage.setItem("token", data.token);
+      sessionStorage.setItem("roleId", data.role);
+      sessionStorage.setItem("userId", data.userId);
+
+      if (data.role === 1) window.location.href = "/student";
+      else if (data.role === 2) window.location.href = "/parent";
+      else if (data.role === 3) window.location.href = "/admin";
+      else window.location.href = "/choose-role";
+    }
   };
-  
+
 
   return (
     <div className="auth-container">
@@ -129,18 +160,14 @@ const LoginForm = () => {
             <span className="divider-text">Hoặc</span>
           </div>
 
-          <button 
-            type="button"
-            className="google-button"
-            onClick={handleGoogleLogin}
-          >
-            <img 
-              src="https://www.google.com/favicon.ico" 
-              alt="Google"
-              className="google-icon"
-            />
-            Đăng nhập với Google
-          </button>
+          <GoogleOAuthProvider clientId={clientId}>
+            <div>
+                <GoogleLogin
+                    onSuccess={handleSuccess}
+                    onError={() => console.log("Login Failed")}
+                />
+            </div>
+        </GoogleOAuthProvider>
         </form>
       </div>
     </div>

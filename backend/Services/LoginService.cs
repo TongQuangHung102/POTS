@@ -52,7 +52,7 @@ namespace backend.Services
                     CreateAt = DateTime.UtcNow,
                     IsActive = true,
                     Role = userGoogleDto.Role,
-                    LastLogin = DateTime.UtcNow
+                    LastLogin = DateTime.Now
                 };
 
                 await _authRepository.CreateUserAsync(user);

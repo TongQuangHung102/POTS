@@ -1,4 +1,4 @@
-using backend.DataAccess.DAO;
+﻿using backend.DataAccess.DAO;
 using backend.Models;
 using backend.Repositories;
 using backend.Services;
@@ -38,40 +38,15 @@ builder.Services.AddScoped<LessonService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:3000", "https://localhost:7259")
+        builder => builder.WithOrigins("http://localhost:3000") 
+            .AllowCredentials()
                           .AllowAnyHeader()
                           .AllowAnyMethod());
 });
 
 var key = Encoding.ASCII.GetBytes("UltraSecureKey_ForJWTAuth!987654321@2025$");
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = GoogleDefaults.AuthenticationScheme;
-})
-.AddCookie()
-.AddJwtBearer(options =>
-{
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuerSigningKey = true,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-        ValidateIssuer = false,
-        ValidateAudience = false
-    };
-})
-.AddGoogle(googleOptions =>
-{
-    googleOptions.ClientId = builder.Configuration["Authentication:Google:ClientId"];
-    googleOptions.ClientSecret = builder.Configuration["Authentication:Google:ClientSecret"];
 
-    googleOptions.Scope.Add("openid");
-    googleOptions.Scope.Add("profile");
-    googleOptions.Scope.Add("email");
-});
+
 builder.Services.AddAuthorization();
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
