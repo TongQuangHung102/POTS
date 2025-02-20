@@ -10,6 +10,7 @@ import { useAuth } from '../hooks/useAuth';
 import ListPackage from '../pages/admin/ListPackage';
 import PackageDetail from '../pages/admin/PackageDetail';
 import AddPackage from '../pages/admin/AddPackage';
+import ChooseRole from '../pages/ChooseRole';
 const AppRoutes = () => {
     const { user, loading } = useAuth(); 
 
@@ -23,12 +24,13 @@ const AppRoutes = () => {
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
             <Route path='/google-callback' element={<GoogleCallback />}></Route>
+            <Route path='/choose-role' element={<ChooseRole />}></Route>
             <Route path='/admin' element={<AdminLayout />}>
-                <Route index element={<AdminDashboard />} />
-                <Route path="/admin/listchapter" element={<ListChapter />} />
-                <Route path="/admin/listchapter/:chapterId" element={<ListLesson />} />
-                <Route path='/admin/listchapter' element={<ListChapter />} />
-                <Route path='/admin/listpackage' element={<ListPackage />} />
+                <Route index element={<Navigate to="/admin/dashboard" replace />} />  
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />  
+                <Route path="/admin/chapter" element={<ListChapter />} />
+                <Route path="/admin/chapter/:chapterId" element={<ListLesson />} />
+                <Route path='/admin/package' element={<ListPackage />} />
                 <Route
                     path='/admin/package/:planId'
                     element={<PackageDetail />}

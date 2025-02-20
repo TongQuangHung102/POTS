@@ -12,7 +12,7 @@ namespace backend.Models
         public string UserName { get; set; }
         public string Email { get; set; }
         public string? Password { get; set; }
-        public int Role { get; set; }
+        public int? Role { get; set; }
         public DateTime CreateAt { get; set; }
         public DateTime? LastLogin { get; set; }
         public string? GoogleId { get; set; }
