@@ -24,7 +24,7 @@ namespace backend.Controllers
             var plans = await _spService.GetAllPlansAsync();
             return Ok(plans);
         }
-        [Authorize]
+
         [HttpPost]
         public async Task<IActionResult> CreateSubscriptionPlan([FromBody] SubscriptionPlanDto dto)
         {
@@ -53,7 +53,7 @@ namespace backend.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
-        [Authorize]
+
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdatePlan(int id, [FromBody] SubscriptionPlanDto dto)
         {
@@ -72,5 +72,17 @@ namespace backend.Controllers
             return Ok(new { message = "Subscription plan updated successfully." });
         }
 
+        [HttpGet("{id}")]
+        public async Task<ActionResult<SubscriptionPlanDto>> GetPlanDetail(int id)
+        {
+            var planDetail = await _spService.GetPlanDetailAsync(id);
+
+            if (planDetail == null)
+            {
+                return NotFound(new { message = "Subscription plan not found." });
+            }
+
+            return Ok(planDetail);
+        }
     }
 }

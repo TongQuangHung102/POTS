@@ -53,6 +53,7 @@ namespace backend.Controllers
                 return StatusCode(500, "An error occurred while processing your request");
             }
         }
+        
         [HttpPut("edit-chapter/{id}")]
         public async Task<IActionResult> EditChapter(int id, [FromBody] ChapterDto chapterDto)
         {
@@ -76,12 +77,16 @@ namespace backend.Controllers
         }
 
         [HttpPost("add-lessons")]
-        public async Task<IActionResult> AddLessons(int chapterId, [FromBody] string input)
+        public async Task<IActionResult> AddLessons([FromBody] AddLessonsRequest request)
         {
             try
             {
-                await _lessonService.AddLessonsFromStringAsync(chapterId, input);
-                return Ok("Lessons added successfully");
+                if (request == null || string.IsNullOrWhiteSpace(request.Input))
+                {
+                    return BadRequest("Input is required.");
+                }
+                await _lessonService.AddLessonsFromStringAsync(request.ChapterId, request.Input);
+                return Ok("Lessons added successfully.");
             }
             catch (ArgumentException ex)
             {
@@ -93,9 +98,10 @@ namespace backend.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while processing your request");
+                return StatusCode(500, "An error occurred while processing your request.");
             }
         }
+
 
         [HttpPut("edit-lesson/{id}")]
         public async Task<IActionResult> EditLesson(int id, [FromBody] LessonDto lessonDto)

@@ -1,63 +1,63 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
-import './ListChapter.css';
-
-
-const ListChapter = () => {
-  const [chapters, setChapters] = useState([]);
-  const [newChapterTitle, setNewChapterTitle] = useState('');
-  const [showAddChapter, setShowAddChapter] = useState(false);
+import { useParams } from "react-router-dom";
+import './ListLesson.css';
+const ListLesson = () => {
+  const {chapterId } = useParams();
+  const [lessons, setLessons] = useState([]);
+  const [showAddLesson, setShowAddLesson] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
+  const [newLessonTitle, setNewLessonTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedChapter, setSelectedChapter] = useState(null);
+  const [selectedLesson, setSelectedLesson] = useState(null);
 
-  //get du lieu
   useEffect(() => {
-    const fetchChapters = async () => {
+    const fetchLessons = async () => {
       try {
-        const response = await fetch('https://localhost:7259/api/Curriculum/get-all-chapter');
+        const response = await fetch(`https://localhost:7259/api/Curriculum/get-lesson-by-chapterId?chapterId=${chapterId}`);
         const data = await response.json();
-        setChapters(data);
+        setLessons(data);
       } catch (error) {
-        console.error("Có lỗi khi lấy dữ liệu chương", error);
+        console.error("Có lỗi khi lấy bài học", error);
       }
     };
 
-    fetchChapters();
-  }, []);
+    fetchLessons();
+  }, [chapterId]);
 
-  //add new chapter
-  const handleAddChapter = async () => {
-    if (!newChapterTitle.trim()) return;
+  const handleAddLesson = async () => {
+    if (!newLessonTitle.trim()) return;
 
     try {
-      const response = await fetch('https://localhost:7259/api/Curriculum/add-chapters', {
+      const response = await fetch('https://localhost:7259/api/Curriculum/add-lessons', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newChapterTitle),
+        body: JSON.stringify({
+          chapterId: chapterId, 
+          input: newLessonTitle
+        })
       });
 
       if (!response.ok) {
         const errorResponse = await response.text();
-        const errorMessage = errorResponse ? errorResponse : 'Không thể thêm chương mới';
+        const errorMessage = errorResponse ? errorResponse : 'Không thể thêm bài mới';
         throw new Error(errorMessage);
       }
 
-      const chaptersResponse = await fetch('https://localhost:7259/api/Curriculum/get-all-chapter', {
+      const lessonsResponse = await fetch(`https://localhost:7259/api/Curriculum/get-lesson-by-chapterId?chapterId=${chapterId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      const chaptersData = await chaptersResponse.json();
-      setChapters(chaptersData);
-      setNewChapterTitle('');
-      setShowAddChapter(false);
+      const lessons = await lessonsResponse.json();
+      setLessons(lessons);
+      setNewLessonTitle('');
+      setShowAddLesson(false);
       setErrorMessage('');
-      setSuccessMessage('Chương đã được thêm thành công!');
+      setSuccessMessage('Bài đã được thêm thành công!');
 
 
       setTimeout(() => {
@@ -69,29 +69,28 @@ const ListChapter = () => {
     }
   };
 
-  //edit chapter
-  const handleEdit = (chapter) => {
-    setSelectedChapter(chapter);
+  const handleEdit = (lesson) => {
+    setSelectedLesson(lesson);
     setIsEditing(true);
   };
 
   const handleClose = () => {
     setIsEditing(false);
-    setSelectedChapter(null);
+    setSelectedLesson(null);
   };
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`https://localhost:7259/api/Curriculum/edit-chapter/${selectedChapter.chapterId}`, {
+      const response = await fetch(`https://localhost:7259/api/Curriculum/edit-lesson/${selectedLesson.lessonId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          chapterId: selectedChapter.chapterId,
-          order: selectedChapter.order,
-          chapterName: selectedChapter.chapterName,
-          isVisible: selectedChapter.isVisible,
+          lessonId: selectedLesson.lessonId,
+          order: selectedLesson.order,
+          lessonName: selectedLesson.lessonName,
+          isVisible: selectedLesson.isVisible,
         }),
       });
       const message = await response.text();
@@ -104,104 +103,104 @@ const ListChapter = () => {
       alert("Cập nhật thành công!");
       setIsEditing(false);
       setErrorMessage("");
-      const chaptersResponse = await fetch('https://localhost:7259/api/Curriculum/get-all-chapter', {
+      const lessonsResponse = await fetch(`https://localhost:7259/api/Curriculum/get-lesson-by-chapterId?chapterId=${chapterId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      const chaptersData = await chaptersResponse.json();
-      setChapters(chaptersData);
+      const lessonData = await lessonsResponse.json();
+      setLessons(lessonData);
     } catch (error) {
       setErrorMessage(error.message);
     }
   };
 
-
-
-
   return (
-    <div className="chapter-list-container">
-      <h2>Danh Sách Chương</h2>
-      <button className="add-chapter" onClick={() => setShowAddChapter(true)}>Thêm Chương Mới</button>
-      {showAddChapter && (
+    <div className="lesson-container">
+      <h2>Danh sách bài học</h2>
+
+      <button className="add-chapter" onClick={() => setShowAddLesson(true)}>Thêm Bài Mới</button>
+      {showAddLesson && (
         <div>
-          <div className="add-chapter-form">
+          <div className="add-lesson-form">
             <input
               type="text"
-              placeholder="Nhập tên chương mới"
-              value={newChapterTitle}
-              onChange={(e) => setNewChapterTitle(e.target.value)}
+              placeholder="Nhập tên bài mới"
+              value={newLessonTitle}
+              onChange={(e) => setNewLessonTitle(e.target.value)}
             />
             <div className="action-buttons">
-              <button onClick={handleAddChapter}>Thêm</button>
-              <button onClick={() => setShowAddChapter(false)}>Hủy</button>
+              <button onClick={handleAddLesson}>Thêm</button>
+              <button onClick={() => setShowAddLesson(false)}>Hủy</button>
             </div>
           </div>
           <div>
-            <p className="instruction-text">* Vui lòng nhập tên chương theo định dạng: "Chương X: Tên chương"</p>
-            <p className="instruction-text">* Có thể nhập nhiều chương cùng một lúc, ví dụ: "Chương 1: ABC Chương 2: XYZ..."</p>
+            <p className="instruction-text">* Vui lòng nhập tên bài theo định dạng: "Bài X: Tên bài"</p>
+            <p className="instruction-text">* Có thể nhập nhiều bài cùng một lúc, ví dụ: "Bài 1: ABC Bài 2: XYZ..."</p>
           </div>
         </div>
 
       )}
       {errorMessage && <div className="error-message">{errorMessage}</div>}
       {successMessage && <div className="success-message">{successMessage}</div>}
-      <table className="chapter-table">
+
+      <table className="lesson-table">
         <thead>
           <tr>
-            <th style={{ width: "10%" }}>Chương</th>
-            <th style={{ width: "50%" }}>Tên Chương</th>
+            <th style={{ width: "10%" }}>Bài</th>
+            <th style={{ width: "50%" }}>Tên bài học</th>
             <th style={{ width: "20%" }}>Trạng thái</th>
             <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
-          {chapters.map((chapter) => (
-            <tr key={chapter.chapterId}>
-              <td>{chapter.order}</td>
-              <td>{chapter.chapterName}</td>
-              <td>{chapter.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
+          {lessons.map(lesson => (
+            <tr key={lesson.lessonId}>
+              <td>{lesson.order}</td>
+              <td>{lesson.lessonName}</td>
+              <td>{lesson.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
-                  <Link to={`/admin/chapter/${chapter.chapterId}`}>Xem bài học</Link>
+                  Xem
                 </button>
-                <button onClick={() => handleEdit(chapter)}>Chỉnh sửa</button>
+                <button onClick={() => handleEdit(lesson)}>Chỉnh sửa</button>
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
       {/* Form chỉnh sửa */}
       {isEditing && (
         <div className="modal">
           <div className="modal-content">
-            <h3>Chỉnh sửa chương</h3>
+            <h3>Chỉnh sửa bài</h3>
             <label>
-              Chương:
+              Bài:
               <input
                 type="text"
-                value={selectedChapter?.order}
+                value={selectedLesson?.order}
                 disabled
               />
             </label>
             <label>
-              Tên chương:
+              Tên Bài:
               <input
                 type="text"
-                value={selectedChapter?.chapterName}
+                value={selectedLesson?.lessonName}
                 onChange={(e) =>
-                  setSelectedChapter({ ...selectedChapter, chapterName: e.target.value })
+                  setSelectedLesson({ ...selectedLesson, lessonName: e.target.value })
                 }
               />
             </label>
             <label>
               Trạng thái:
               <select
-                value={selectedChapter?.isVisible}
+                value={selectedLesson?.isVisible}
                 onChange={(e) =>
-                  setSelectedChapter({
-                    ...selectedChapter,
+                  setSelectedLesson({
+                    ...selectedLesson,
                     isVisible: e.target.value === "true"
                   })
                 }
@@ -245,9 +244,8 @@ const ListChapter = () => {
             
         `}
       </style>
-
     </div>
   );
 };
 
-export default ListChapter;
+export default ListLesson;
