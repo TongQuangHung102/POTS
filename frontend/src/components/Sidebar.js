@@ -34,8 +34,8 @@ const Sidebar = () => {
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
     student: [
-      { path: "/", icon: <BiSolidDashboard />, label: "Dashboard" },
-      { path: "/student/courses", icon: <BiAlignRight />, label: "Khóa học" },
+      { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/student/course", icon: <BiAlignRight />, label: "Khóa học" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
