@@ -19,7 +19,7 @@ const PackageDetail = () => {
         const fetchPackageDetail = async () => {
             try {
                 const response = await fetch(
-                    `https://localhost:7259/api/SubscriptionPlan/${planId}`
+                    `https://localhost:7259/api/SubscriptionPlan/get-subscriptionplan-by/${planId}`
                 );
                 if (!response.ok) {
                     throw new Error('Lỗi khi lấy chi tiết gói');
@@ -81,7 +81,7 @@ const PackageDetail = () => {
 
         try {
             const response = await fetch(
-                `https://localhost:7259/api/SubscriptionPlan/${planId}`,
+                `https://localhost:7259/api/SubscriptionPlan/edit-subscriptionplan/${planId}`,
                 {
                     method: 'PUT',
                     headers: {
