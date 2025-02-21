@@ -20,7 +20,7 @@ namespace backend.DataAccess.DAO
 
         public async Task<List<Chapter>> GetAllChapterAsync()
         {
-            return await _context.Chapters.Include(m => m.User).ToListAsync();
+            return await _context.Chapters.Include(m => m.User).Include(ls => ls.Lessons).ToListAsync();
         }
         public async Task<Chapter> GetChapterByIdAsync(int id)
         {

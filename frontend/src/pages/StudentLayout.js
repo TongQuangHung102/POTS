@@ -2,7 +2,7 @@ import React from "react";
 import Sidebar from "../components/Sidebar";
 import { Outlet } from "react-router-dom"; 
 import './Layout.css';
-const AdminLayout = () => {
+const StudentLayout = () => {
   return (
     <div>
       <Sidebar />
@@ -13,4 +13,4 @@ const AdminLayout = () => {
   );
 };
 
-export default AdminLayout;
+export default StudentLayout;

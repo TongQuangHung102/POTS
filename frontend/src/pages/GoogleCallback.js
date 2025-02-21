@@ -22,7 +22,6 @@ const GoogleCallback = () => {
         sessionStorage.setItem("userId", data.userId);
         sessionStorage.setItem("role", data.role);
 
-        // Điều hướng người dùng tới trang phù hợp theo role
         switch (data.role) {
           case 1:
             navigate("/admin");
@@ -37,11 +36,11 @@ const GoogleCallback = () => {
             navigate("/student-dashboard");
             break;
           default:
-            navigate("/"); // Mặc định, chuyển về trang chủ
+            navigate("/"); 
         }
       } catch (error) {
         console.error("Lỗi khi xử lý Google Login:", error);
-        navigate("/login"); // Nếu có lỗi, quay lại trang đăng nhập
+        navigate("/login"); 
       }
     };
 
