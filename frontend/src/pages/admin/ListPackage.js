@@ -10,7 +10,7 @@ const ListPackage = () => {
         const fetchPackages = async () => {
             try {
                 const response = await fetch(
-                    'https://localhost:7259/api/SubscriptionPlan'
+                    'https://localhost:7259/api/SubscriptionPlan/get-all-subscriptionplan'
                 );
                 if (!response.ok) {
                     throw new Error('Lỗi khi lấy danh sách gói');
