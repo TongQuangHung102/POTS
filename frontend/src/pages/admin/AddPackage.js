@@ -73,7 +73,7 @@ const AddPackage = () => {
 
         try {
             const response = await fetch(
-                'https://localhost:7259/api/SubscriptionPlan',
+                'https://localhost:7259/api/SubscriptionPlan/add-subscriptionplan',
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },

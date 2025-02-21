@@ -15,13 +15,13 @@ namespace backend.Controllers
             _roleService = roleService;
         }
 
-        [HttpGet("List")]
+        [HttpGet("get-all-role")]
         public async Task<IActionResult> GetAllRoles()
         {
             return await _roleService.GetAllRolesAsync();
         }
 
-        [HttpGet("{roleId}")]
+        [HttpGet("get-role-by/{roleId}")]
         public async Task<IActionResult> GetRoleById(int roleId)
         {
             return await _roleService.GetRoleByIdAsync(roleId);
