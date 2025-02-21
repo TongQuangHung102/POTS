@@ -36,6 +36,7 @@ const ChooseRole = () => {
       }
 
       setUser((prevUser) => ({ ...prevUser, roleId }));
+      sessionStorage.setItem("roleId", roleId);
       navigate(roleRedirects[roleId] || "/dashboard");
     } catch (error) {
       console.error("Lỗi:", error);

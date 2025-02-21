@@ -7,7 +7,7 @@ const AdminLayout = () => {
     <div>
       <Sidebar />
       <div>
-        <Outlet /> {/* Đây là nơi sẽ render nội dung trang con */}
+        <Outlet />
       </div>
     </div>
   );
