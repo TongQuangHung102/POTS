@@ -98,7 +98,7 @@ const PackageDetail = () => {
             const updatedPackage = await response.json();
             setPackageDetail(updatedPackage);
 
-            navigate(`/admin/listpackage`);
+            navigate(`/admin/package`);
         } catch (error) {
             setErrorMessage(error.message);
             console.error('Có lỗi khi cập nhật gói:', error);
@@ -110,7 +110,7 @@ const PackageDetail = () => {
     };
 
     const handleCancel = () => {
-        navigate('/admin/listpackage');
+        navigate('/admin/package');
     };
 
     if (errorMessage) {
