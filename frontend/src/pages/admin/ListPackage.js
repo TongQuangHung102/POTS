@@ -44,11 +44,11 @@ const ListPackage = () => {
                         <th>Tên Gói</th>
                         <th>Giá</th>
                         <th>Mô tả</th>
-                        <th>AI Analysis</th>
-                        <th>Thống kê nâng cao</th>
-                        <th>Thống kê cơ bản</th>
-                        <th>Personalization</th>
-                        <th>Chi tiết</th>
+                        <th>Tính năng AI Analysis</th>
+                        <th>Tính năng Advanced Statistics</th>
+                        <th>Tính năng Basic Statistics</th>
+                        <th>Tính năng Personalization</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>

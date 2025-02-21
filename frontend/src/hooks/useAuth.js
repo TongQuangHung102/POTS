@@ -8,9 +8,10 @@ export function useAuth() {
   useEffect(() => {
     const token = sessionStorage.getItem('token');
     const roleId = sessionStorage.getItem('roleId');
+    const userId = sessionStorage.getItem('userId')
 
     if (token && roleId) {
-      setUser({ token, roleId });
+      setUser({ token, roleId, userId });
     } else {
       setUser(null); 
     }
@@ -18,5 +19,5 @@ export function useAuth() {
     setLoading(false);  
   }, []);
 
-  return { user, loading };
+  return { user, loading, setUser };
 };

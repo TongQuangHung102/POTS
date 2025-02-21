@@ -51,7 +51,7 @@
   
   .add-chapter-form button {
     padding: 8px 12px;
-    background-color: #28a745;
+    background-color: #AAB7B7;
     color: white;
     border: none;
     border-radius: 5px;
@@ -59,16 +59,21 @@
   }
   
   .add-chapter-form button:hover {
-    background-color: #218838;
+    background-color: #2E4156;
   }
 
 .add-chapter{
   padding: 8px 12px;
-    background-color: #28a745;
-    color: white;
+    background-color: #AAB7B7;
+    color: #1A2D42;
     border: none;
     border-radius: 5px;
     cursor: pointer;
+}
+
+.add-chapter:hover{
+  background-color:#1A2D42 ;
+  color :#ffffff !important;
 }
 
 .instruction-text {
@@ -105,12 +110,17 @@
 .chapter-table button {
   margin-left: 10px;
     padding: 5px 10px;
-    background-color: #ffbb34;
+    background-color: #AAB7B7;
     color: white !important;
     border: none;
     border-radius: 5px;
     cursor: pointer;
 }
+.chapter-table button:hover{
+  background-color:#1A2D42 ;
+  color :#ffffff !important;
+}
+
 
 .button-group {
   display: flex;

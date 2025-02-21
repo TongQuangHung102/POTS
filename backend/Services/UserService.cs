@@ -175,6 +175,35 @@ namespace backend.Services
             }
         }
 
-        
+        public async Task<IActionResult> UpdateRoleUserAsync(int userId, int roleId)
+        {
+            try
+            {
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                {
+                    return new NotFoundObjectResult(new { Message = "User not found" });
+                }
+
+                if (user.Role != null && user.Role > 0)
+                {
+                    return new BadRequestObjectResult(new { Message = "You have already selected a role. Role cannot be changed." });
+                }
+
+                user.Role = roleId;
+
+                await _userRepository.UpdateUserAsync(user);
+
+                return new OkObjectResult(new { Message = "User role updated successfully" });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = "An error occurred while updating the user.", error = ex.Message })
+                {
+                    StatusCode = 500
+                };
+            }
+        }
+
     }
 }
