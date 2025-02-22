@@ -30,10 +30,15 @@ namespace backend.Controllers
         [HttpPost("Register")]
         public async Task<IActionResult> Register([FromBody] RegisterDto model)
         {
-
-            var result = await _registerService.Register(model);
-
-            return result;
+            try
+            {
+                var result = await _registerService.Register(model);
+                return result;
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi trong quá trình đăng ký.", error = ex.Message });
+            }
         }
 
         [HttpGet("Confirm-email")]
@@ -72,7 +77,7 @@ namespace backend.Controllers
             try
             {
                 await _passwordResetService.ResetPasswordAsync(request.Email);
-                return Ok("Password reset successfully. Check your email.");
+                return Ok("Mật khẩu mới đã được gửi về email của bạn");
             }
             catch (Exception ex)
             {
@@ -101,7 +106,7 @@ namespace backend.Controllers
             }
             catch (Exception ex)
             {
-                return BadRequest(new { message = "Invalid Google token", error = ex.Message });
+                return BadRequest(new { message = "Mã token của Google không hợp lệ", error = ex.Message });
             }
         }
 

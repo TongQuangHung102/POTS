@@ -30,7 +30,7 @@ namespace backend.Services
         {
             if (string.IsNullOrWhiteSpace(input))
             {
-                throw new ArgumentException("Input cannot be null or empty");
+                throw new ArgumentException("Không được bỏ trống");
             }
 
             var chapters = ParseChapters(input);
@@ -51,7 +51,7 @@ namespace backend.Services
             var duplicateChapter = await _curriculumRepository.GetAllChapterAsync();
             if (duplicateChapter.Any(ch => (ch.Order == chapterDto.Order || ch.ChapterName == chapterDto.ChapterName) && ch.ChapterId != id))
             {
-                throw new InvalidOperationException("A chapter with the same Order or Name already exists.");
+                throw new InvalidOperationException("Một chương có cùng thứ tự hoặc tên đã tồn tại.");
             }
 
             existingChapter.Order = chapterDto.Order;
@@ -102,8 +102,8 @@ namespace backend.Services
 
             if (duplicateChapters.Any())
             {
-                var duplicatesInfo = string.Join(", ", duplicateChapters.Select(c => $"Order: {c.Order}, Name: {c.ChapterName}"));
-                throw new InvalidOperationException($"Duplicate chapters found: {duplicatesInfo}");
+                var duplicatesInfo = string.Join(", ", duplicateChapters.Select(c => $"Chương: {c.Order} : {c.ChapterName}"));
+                throw new InvalidOperationException($"Chương đã tồn tại : {duplicatesInfo}");
             }
         }
     }
