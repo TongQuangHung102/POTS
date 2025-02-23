@@ -13,10 +13,11 @@ namespace backend.Services
     public class LoginService
     {
         private readonly IAuthRepository _authRepository;
-
-        public LoginService(IAuthRepository authRepository)
+        private readonly PasswordEncryption _passwordEncryption;
+        public LoginService(IAuthRepository authRepository, PasswordEncryption passwordEncryption)
         {
             _authRepository = authRepository;
+            _passwordEncryption = passwordEncryption;
         }
         public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
         {
@@ -24,7 +25,7 @@ namespace backend.Services
             if (user == null) return null;
             if (user.Password == null) return null;
 
-            if (!PasswordEncryption.VerifyPassword(request.Password, user.Password)) return null;
+            if (!_passwordEncryption.VerifyPassword(request.Password, user.Password)) return null;
 
             if (!user.IsActive)
             {
