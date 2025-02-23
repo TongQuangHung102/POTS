@@ -28,18 +28,6 @@ namespace backend.Services
 
         public async Task AddLessonsFromStringAsync(int chapterId, string input)
         {
-            if (string.IsNullOrWhiteSpace(input))
-            {
-                throw new ArgumentException("Input cannot be empty.");
-            }
-
-            var chapter = await _curriculumRepository.GetChapterByIdAsync(chapterId);
-            if (chapter == null)
-            {
-                throw new KeyNotFoundException("Chapter not found");
-            }
-
-            var existingLessons = await _curriculumRepository.GetAllLessonAsync();
             var lessons = ParseLessons(input, chapterId);
 
             await ValidateDuplicateLessonsAsync(chapterId, lessons);
@@ -49,15 +37,11 @@ namespace backend.Services
         public async Task EditLessonAsync(int id, LessonDto lessonDto)
         {
             var existingLesson = await _curriculumRepository.GetLessonByIdAsync(id);
-            if (existingLesson == null)
-            {
-                throw new KeyNotFoundException();
-            }
-
+            
             var duplicateLesson = await _curriculumRepository.GetLessonByChapterIdAsync(existingLesson.ChapterId);
             if (duplicateLesson.Any(ch => (ch.Order == lessonDto.Order || ch.LessonName == lessonDto.LessonName) && ch.LessonId != id))
             {
-                throw new InvalidOperationException("A chapter with the same Order or Name already exists.");
+                throw new InvalidOperationException("Một bài có cùng thứ tự hoặc tên đã tồn tại.");
             }
 
             existingLesson.Order = lessonDto.Order;
@@ -109,8 +93,8 @@ namespace backend.Services
 
             if (duplicateLessons.Any())
             {
-                var duplicatesInfo = string.Join(", ", duplicateLessons.Select(l => $"Order: {l.Order}, Name: {l.LessonName}"));
-                throw new InvalidOperationException($"Duplicate lessons found: {duplicatesInfo}");
+                var duplicatesInfo = string.Join(", ", duplicateLessons.Select(l => $"Bài: {l.Order}: {l.LessonName}"));
+                throw new InvalidOperationException($"Bài đã tồn tại: {duplicatesInfo}");
             }
         }
 

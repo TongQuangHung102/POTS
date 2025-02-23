@@ -20,9 +20,10 @@ namespace backend.Services
         public async Task<IActionResult> Register(RegisterDto model)
         {
             var existingUser = await _authRepository.GetUserByEmail(model.Email);
+
             if (existingUser != null)
             {
-                return new BadRequestObjectResult(new { message = "Email already exists." });
+                return new BadRequestObjectResult(new { message = "Email đã tồn tại, vui lòng dùng email khác" });
             }
             string hashedPassword = PasswordEncryption.HashPassword(model.Password);
 
@@ -41,7 +42,7 @@ namespace backend.Services
 
             await _authRepository.AddUser(user);
             await _sendMailService.SendConfirmationEmailAsync(user.Email, user.EmailVerificationToken);
-            return new OkObjectResult(new { message = "User registered successfully! Please check your email to confirm your account." });
+            return new OkObjectResult(new { message = "Đăng ký thành công, vui lòng kiểm tra email để xác thực tài khoản." });
         }
         public async Task<IActionResult> ConfirmEmailAsync(string token)
         {
