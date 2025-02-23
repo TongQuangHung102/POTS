@@ -2,15 +2,15 @@ import React from "react";
 import Sidebar from "../components/Sidebar";
 import { Outlet } from "react-router-dom"; 
 import './Layout.css';
-const AdminLayout = () => {
+const StudentLayout = () => {
   return (
     <div>
       <Sidebar />
       <div>
-        <Outlet />
+        <Outlet /> 
       </div>
     </div>
   );
 };
 
-export default AdminLayout;
+export default StudentLayout;

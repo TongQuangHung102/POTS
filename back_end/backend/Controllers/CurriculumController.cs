@@ -21,15 +21,41 @@ namespace backend.Controllers
         [HttpGet("get-all-chapter")]
         public async Task<ActionResult<List<ChapterDto>>> GetAllChapter()
         {
-            var chapters = await _chapterService.GetAllChaptersAsync();
-            return Ok(chapters);
+            try
+            {
+                var chapters = await _chapterService.GetAllChaptersAsync();
+
+                if (chapters == null || !chapters.Any())
+                {
+                    return NoContent(); 
+                }
+
+                return Ok(chapters);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi máy chủ nội bộ", error = ex.Message });
+            }
         }
 
         [HttpGet("get-lesson-by-chapterId")]
         public async Task<ActionResult<List<LessonDto>>> GetAllLessonByChapterId(int chapterId)
         {
-            var lessons = await _lessonService.GetAllLessonByChapterIdAsync(chapterId);
-            return Ok(lessons);
+            try
+            {
+                var lessons = await _lessonService.GetAllLessonByChapterIdAsync(chapterId);
+
+                if (lessons == null || !lessons.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(lessons);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi máy chủ nội bộ", error = ex.Message });
+            }
         }
 
         [HttpPost("add-chapters")]
@@ -38,7 +64,7 @@ namespace backend.Controllers
             try
             {
                 await _chapterService.AddChaptersAsync(input);
-                return Ok("Chapters added successfully");
+                return Ok("Chương được thêm thành công!");
             }
             catch (ArgumentException ex)
             {
@@ -50,7 +76,7 @@ namespace backend.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while processing your request");
+                return StatusCode(500, "Lỗi máy chủ nội bộ");
             }
         }
         
@@ -60,11 +86,11 @@ namespace backend.Controllers
             try
             {
                 await _chapterService.EditChapterAsync(id, chapterDto);
-                return Ok("Chapter updated successfully");
+                return Ok("Chỉnh sửa chương thành công");
             }
             catch (KeyNotFoundException)
             {
-                return NotFound("Chapter not found");
+                return NotFound("Chương không tồn tại");
             }
             catch (InvalidOperationException ex)
             {
@@ -72,7 +98,7 @@ namespace backend.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while processing your request");
+                return StatusCode(500, "Lỗi máy chủ nội bộ");
             }
         }
 
@@ -81,16 +107,8 @@ namespace backend.Controllers
         {
             try
             {
-                if (request == null || string.IsNullOrWhiteSpace(request.Input))
-                {
-                    return BadRequest("Input is required.");
-                }
                 await _lessonService.AddLessonsFromStringAsync(request.ChapterId, request.Input);
-                return Ok("Lessons added successfully.");
-            }
-            catch (ArgumentException ex)
-            {
-                return BadRequest(ex.Message);
+                return Ok("Bài được thêm mới thành công");
             }
             catch (InvalidOperationException ex)
             {
@@ -98,7 +116,7 @@ namespace backend.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while processing your request.");
+                return StatusCode(500, "Lỗi máy chủ nội bộ");
             }
         }
 
@@ -109,11 +127,7 @@ namespace backend.Controllers
             try
             {
                 await _lessonService.EditLessonAsync(id, lessonDto);
-                return Ok("Lesson updated successfully");
-            }
-            catch (KeyNotFoundException)
-            {
-                return NotFound("Lesson not found");
+                return Ok("Cập nhật bài thành công.");
             }
             catch (InvalidOperationException ex)
             {
@@ -121,7 +135,7 @@ namespace backend.Controllers
             }
             catch (Exception)
             {
-                return StatusCode(500, "An error occurred while processing your request");
+                return StatusCode(500, "Lỗi máy chủ nội bộ");
             }
         }
 

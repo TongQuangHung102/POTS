@@ -19,7 +19,7 @@ const PackageDetail = () => {
         const fetchPackageDetail = async () => {
             try {
                 const response = await fetch(
-                    `https://localhost:7259/api/SubscriptionPlan/${planId}`
+                    `https://localhost:7259/api/SubscriptionPlan/get-subscriptionplan-by/${planId}`
                 );
                 if (!response.ok) {
                     throw new Error('Lỗi khi lấy chi tiết gói');
@@ -81,7 +81,7 @@ const PackageDetail = () => {
 
         try {
             const response = await fetch(
-                `https://localhost:7259/api/SubscriptionPlan/${planId}`,
+                `https://localhost:7259/api/SubscriptionPlan/edit-subscriptionplan/${planId}`,
                 {
                     method: 'PUT',
                     headers: {
@@ -98,7 +98,7 @@ const PackageDetail = () => {
             const updatedPackage = await response.json();
             setPackageDetail(updatedPackage);
 
-            navigate(`/admin/listpackage`);
+            navigate(`/admin/package`);
         } catch (error) {
             setErrorMessage(error.message);
             console.error('Có lỗi khi cập nhật gói:', error);
@@ -110,7 +110,7 @@ const PackageDetail = () => {
     };
 
     const handleCancel = () => {
-        navigate('/admin/listpackage');
+        navigate('/admin/package');
     };
 
     if (errorMessage) {

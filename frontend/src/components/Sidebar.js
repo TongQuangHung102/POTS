@@ -2,12 +2,11 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare } from "react-icons/bi";
 import { useAuth } from "../hooks/useAuth"; 
-import { useLocation } from "react-router-dom";
+
 
 const Sidebar = () => {
   const { user } = useAuth(); 
-  const roleId = user?.roleId; // roleId là số
-  const location = useLocation(); // Lấy đường dẫn hiện tại
+  const roleId = user?.roleId; 
 
   const roleMap = {
     1: "student",
@@ -34,8 +33,8 @@ const Sidebar = () => {
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
     student: [
-      { path: "/", icon: <BiSolidDashboard />, label: "Dashboard" },
-      { path: "/student/courses", icon: <BiAlignRight />, label: "Khóa học" },
+      { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/student/course", icon: <BiAlignRight />, label: "Khóa học" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],

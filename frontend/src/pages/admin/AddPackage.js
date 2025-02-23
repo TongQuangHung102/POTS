@@ -73,7 +73,7 @@ const AddPackage = () => {
 
         try {
             const response = await fetch(
-                'https://localhost:7259/api/SubscriptionPlan',
+                'https://localhost:7259/api/SubscriptionPlan/add-subscriptionplan',
                 {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -83,7 +83,7 @@ const AddPackage = () => {
 
             if (!response.ok) throw new Error('Lỗi khi tạo gói mới!');
 
-            navigate('/admin/listpackage'); // Chuyển về danh sách gói
+            navigate('/admin/package'); // Chuyển về danh sách gói
         } catch (error) {
             setErrorMessage(error.message);
         }
@@ -235,7 +235,7 @@ const AddPackage = () => {
                     <button
                         type='button'
                         className='cancel-button'
-                        onClick={() => navigate('/admin/listpackage')}
+                        onClick={() => navigate('/admin/package')}
                     >
                         Hủy
                     </button>

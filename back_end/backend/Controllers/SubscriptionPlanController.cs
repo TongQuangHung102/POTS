@@ -18,14 +18,14 @@ namespace backend.Controllers
             _spService = spService;
         }
 
-        [HttpGet]
+        [HttpGet("get-all-subscriptionplan")]
         public async Task<ActionResult<List<SubscriptionPlanDto>>> GetAllPlans()
         {
             var plans = await _spService.GetAllPlansAsync();
             return Ok(plans);
         }
 
-        [HttpPost]
+        [HttpPost("add-subscriptionplan")]
         public async Task<IActionResult> CreateSubscriptionPlan([FromBody] SubscriptionPlanDto dto)
         {
             try
@@ -54,7 +54,7 @@ namespace backend.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("edit-subscriptionplan/{id}")]
         public async Task<ActionResult> UpdatePlan(int id, [FromBody] SubscriptionPlanDto dto)
         {
             if (!ModelState.IsValid)
@@ -72,7 +72,7 @@ namespace backend.Controllers
             return Ok(new { message = "Subscription plan updated successfully." });
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get-subscriptionplan-by/{id}")]
         public async Task<ActionResult<SubscriptionPlanDto>> GetPlanDetail(int id)
         {
             var planDetail = await _spService.GetPlanDetailAsync(id);

@@ -22,6 +22,7 @@ namespace backend.Services
         {
             var user = await _authRepository.GetUserByEmail(request.Email);
             if (user == null) return null;
+            if (user.Password == null) return null;
 
             if (!PasswordEncryption.VerifyPassword(request.Password, user.Password)) return null;
 
