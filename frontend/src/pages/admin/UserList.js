@@ -8,7 +8,7 @@ const UsersList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('https://your-api-endpoint.com/api/User/List')
+        fetch('https://localhost:7259/api/User/List')
             .then(response => response.json())
             .then(data => setUsers(data))
             .catch(error => setErrorMessage('Lỗi khi tải danh sách người dùng!'));
@@ -18,7 +18,7 @@ const UsersList = () => {
         if (!window.confirm('Bạn có chắc chắn muốn xóa người dùng này?')) return;
 
         try {
-            await fetch(`https://your-api-endpoint.com/api/User/${userId}`, { method: 'DELETE' });
+            await fetch(`https://localhost:7259/api/User/${userId}`, { method: 'DELETE' });
             setUsers(users.filter(user => user.id !== userId));
         } catch (error) {
             setErrorMessage('Lỗi khi xóa người dùng!');
