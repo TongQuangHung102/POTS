@@ -8,6 +8,7 @@ const App = () => {
     <Router>
       <AppRoutes /> {/* Gọi AppRoutes để quản lý các route */}
     </Router>
+
   );
 };
 

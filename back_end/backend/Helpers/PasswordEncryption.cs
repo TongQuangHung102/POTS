@@ -2,16 +2,16 @@
 {
     public class PasswordEncryption
     {
-        public static string HashPassword(string password)
+        public virtual string HashPassword(string password)
         {
             return BCrypt.Net.BCrypt.HashPassword(password, workFactor: 12);
         }
 
-        public static bool VerifyPassword(string enteredPassword, string hashedPassword)
+        public virtual bool VerifyPassword(string enteredPassword, string hashedPassword)
         {
             return BCrypt.Net.BCrypt.Verify(enteredPassword, hashedPassword);
         }
-        public static string GenerateRandomPassword()
+        public virtual string GenerateRandomPassword()
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
             Random random = new Random();

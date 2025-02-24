@@ -15,25 +15,25 @@ const LoginForm = () => {
 
   const handleSuccess = async (response) => {
     try {
-        const googleToken = response.credential;
-        const res = await fetch("https://localhost:7259/api/Auth/google-login", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({ token: googleToken })
-        });
+      const googleToken = response.credential;
+      const res = await fetch("https://localhost:7259/api/Auth/google-login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ token: googleToken })
+      });
 
-        if (!res.ok) {
-            throw new Error("Failed to authenticate");
-        }
+      if (!res.ok) {
+        throw new Error("Failed to authenticate");
+      }
 
-        const data = await res.json();
-        handleLoginSuccess(data);
+      const data = await res.json();
+      handleLoginSuccess(data);
     } catch (error) {
-        console.error("Google Login Failed:", error);
+      console.error("Google Login Failed:", error);
     }
-};
+  };
 
 
   const handleChange = async (e) => {
@@ -72,14 +72,14 @@ const LoginForm = () => {
 
       const data = await response.json();
 
-    if (!response.ok) {
-      setError(data.message || "Đăng nhập thất bại");
-      return;
-    }
+      if (!response.ok) {
+        setError(data.message || "Đăng nhập thất bại");
+        return;
+      }
 
-    handleLoginSuccess(data);
+      handleLoginSuccess(data);
 
-  
+
     } catch (error) {
       console.error("Lỗi khi đăng nhập:", error);
       setError("Có lỗi xảy ra, vui lòng thử lại!");
@@ -106,7 +106,7 @@ const LoginForm = () => {
     <div className="auth-container">
       <div className="auth-card">
         <h2 className="auth-title">Đăng nhập</h2>
-        
+
         <form onSubmit={handleSubmit} className="auth-form">
           {error && (
             <div className="error-message">
@@ -162,12 +162,12 @@ const LoginForm = () => {
 
           <GoogleOAuthProvider clientId={clientId}>
             <div>
-                <GoogleLogin
-                    onSuccess={handleSuccess}
-                    onError={() => console.log("Login Failed")}
-                />
+              <GoogleLogin
+                onSuccess={handleSuccess}
+                onError={() => console.log("Login Failed")}
+              />
             </div>
-        </GoogleOAuthProvider>
+          </GoogleOAuthProvider>
         </form>
       </div>
     </div>
