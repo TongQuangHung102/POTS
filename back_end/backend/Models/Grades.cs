@@ -8,8 +8,6 @@ namespace backend.Models
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)] 
         public int GradeId { get; set; }
-        [Required]
-        [MaxLength(255)]
         public string GradeName { get; set; }
         public string Description { get; set; }
         public bool IsVisible { get; set; }
