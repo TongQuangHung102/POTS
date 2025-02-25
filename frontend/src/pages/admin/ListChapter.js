@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import {useParams, Link } from "react-router-dom";
 import './ListChapter.css';
 
 
 const ListChapter = () => {
+  const { gradeId } = useParams();
   const [chapters, setChapters] = useState([]);
   const [newChapterTitle, setNewChapterTitle] = useState('');
   const [showAddChapter, setShowAddChapter] = useState(false);
@@ -16,7 +17,7 @@ const ListChapter = () => {
   useEffect(() => {
     const fetchChapters = async () => {
       try {
-        const response = await fetch('https://localhost:7259/api/Curriculum/get-all-chapter');
+        const response = await fetch(`https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`);
         const data = await response.json();
         setChapters(data);
       } catch (error) {
@@ -37,7 +38,10 @@ const ListChapter = () => {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newChapterTitle),
+        body: JSON.stringify({
+          gradeId: gradeId,
+          input: newChapterTitle
+        })
       });
 
       if (!response.ok) {
@@ -49,7 +53,7 @@ const ListChapter = () => {
         throw new Error(errorMessage);
       }
 
-      const chaptersResponse = await fetch('https://localhost:7259/api/Curriculum/get-all-chapter', {
+      const chaptersResponse = await fetch(`https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -107,7 +111,7 @@ const ListChapter = () => {
       alert("Cập nhật thành công!");
       setIsEditing(false);
       setErrorMessage("");
-      const chaptersResponse = await fetch('https://localhost:7259/api/Curriculum/get-all-chapter', {
+      const chaptersResponse = await fetch(`https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
@@ -172,7 +176,7 @@ const ListChapter = () => {
               <td>{chapter.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
-                  <Link to={`/admin/chapter/${chapter.chapterId}`}>Xem bài học</Link>
+                  <Link to={`/admin/grade/chapter/${chapter.chapterId}`}>Xem bài học</Link>
                 </button>
                 <button onClick={() => handleEdit(chapter)}>Chỉnh sửa</button>
               </td>

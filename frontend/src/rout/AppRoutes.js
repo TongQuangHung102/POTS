@@ -42,8 +42,8 @@ const AppRoutes = () => {
             <Route path='/admin' element={<AdminLayout />}>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/chapter" element={<ListChapter />} />
-                <Route path="/admin/chapter/:chapterId" element={<ListLesson />} />
+                <Route path="/admin/grade/:gradeId" element={<ListChapter />} />
+                <Route path="/admin/grade/chapter/:chapterId" element={<ListLesson />} />
                 <Route path='/admin/package' element={<ListPackage />} />
                 <Route
                     path='/admin/package/:planId'

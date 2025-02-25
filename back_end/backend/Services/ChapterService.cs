@@ -13,9 +13,9 @@ namespace backend.Services
         {
             _curriculumRepository = curriculumRepository;
         }
-        public async Task<List<Chapter>> GetAllChaptersAsync()
+        public async Task<List<Chapter>> GetAllChaptersAsync(int gradeId)
         {
-            var chapters = await _curriculumRepository.GetAllChapterAsync();   
+            var chapters = await _curriculumRepository.GetAllChapterAsync(gradeId);   
           /*  return chapters.Select(chapter => new ChapterDto
             {
                 ChapterId = chapter.ChapterId,
@@ -26,7 +26,7 @@ namespace backend.Services
           return chapters;
         }
 
-        public async Task AddChaptersAsync(string input)
+        public async Task AddChaptersAsync(int gradeId, string input)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
@@ -35,7 +35,7 @@ namespace backend.Services
 
             var chapters = ParseChapters(input);
 
-            await ValidateDuplicateChaptersAsync(chapters);
+            await ValidateDuplicateChaptersAsync(gradeId, chapters);
 
             await _curriculumRepository.AddChaptersAsync(chapters);
         }
@@ -48,7 +48,7 @@ namespace backend.Services
                 throw new KeyNotFoundException();
             }
 
-            var duplicateChapter = await _curriculumRepository.GetAllChapterAsync();
+            var duplicateChapter = await _curriculumRepository.GetAllChapterAsync(existingChapter.GradeId);
             if (duplicateChapter.Any(ch => (ch.Order == chapterDto.Order && ch.ChapterName == chapterDto.ChapterName) && ch.ChapterId != id))
             {
                 throw new InvalidOperationException("Một chương có cùng thứ tự hoặc tên đã tồn tại.");
@@ -106,9 +106,9 @@ namespace backend.Services
         }
 
 
-        private async Task ValidateDuplicateChaptersAsync(List<Chapter> chapters)
+        private async Task ValidateDuplicateChaptersAsync(int gradeId, List<Chapter> chapters)
         {
-            var existingChapters = await _curriculumRepository.GetAllChapterAsync();
+            var existingChapters = await _curriculumRepository.GetAllChapterAsync(gradeId);
 
             var duplicateChapters = chapters.Where(ch =>
                 existingChapters.Any(ec => ec.Order == ch.Order && ec.ChapterName == ch.ChapterName)
