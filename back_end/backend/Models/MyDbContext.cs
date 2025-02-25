@@ -36,7 +36,7 @@ namespace backend.Models
         public DbSet<Level> Levels { get; set; }
         public DbSet<StudentAnswer> StudentAnswers { get; set; }
 
-
+        public DbSet<Grades> Grades { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<StudentProgress>()
@@ -85,7 +85,13 @@ namespace backend.Models
                 .HasOne(sa => sa.QuizAttempt) 
                 .WithMany() 
                 .HasForeignKey(sa => sa.AttemptId)
-                .OnDelete(DeleteBehavior.Restrict); 
+                .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<Chapter>()
+                .HasOne(c => c.Grade)
+                .WithMany(g => g.Chapters)
+                .HasForeignKey(c => c.GradeId)
+                .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
         }

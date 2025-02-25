@@ -1,5 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
 
 const UsersList = () => {
     const [users, setUsers] = useState([]);
@@ -12,6 +16,7 @@ const UsersList = () => {
 
     // Hàm gọi API khi có thay đổi các tham số tìm kiếm và phân trang
     useEffect(() => {
+<<<<<<< HEAD
         const params = new URLSearchParams({
             roleId: roleId,
             email: email,
@@ -20,6 +25,9 @@ const UsersList = () => {
         }).toString();
 
         fetch(`https://localhost:7259/api/User/get-all-user?${params}`)
+=======
+        fetch('https://localhost:7259/api/User/get-all-user')
+>>>>>>> origin/main
             .then(response => response.json())
             .then(data => setUsers(data))
             .catch(error => setErrorMessage('Lỗi khi tải danh sách người dùng!'));

@@ -48,6 +48,7 @@ const ListPackage = () => {
                         <th>Tính năng Advanced Statistics</th>
                         <th>Tính năng Basic Statistics</th>
                         <th>Tính năng Personalization</th>
+                        <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -87,6 +88,7 @@ const ListPackage = () => {
                                         disabled
                                     />
                                 </td>
+                                <td>{pkg.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
                                 <td>
                                     <Link
                                         to={`/admin/package/${pkg.planId}`}

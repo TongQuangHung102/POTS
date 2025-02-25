@@ -23,7 +23,7 @@ const Sidebar = () => {
       { path: "/admin/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
       { path: "/admin/chapter", icon: <BiAlignRight />, label: "Chương trình" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
-      { path: "/users", icon: <BiSolidUserDetail />, label: "Người dùng" },
+      { path: "/admin/users", icon: <BiSolidUserDetail />, label: "Người dùng" },
       { path: "/admin/package", icon: <BiPackage />, label: "Gói" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
