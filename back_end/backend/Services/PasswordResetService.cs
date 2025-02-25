@@ -19,7 +19,7 @@ namespace backend.Services
         public async Task ResetPasswordAsync(string email)
         {
             var user = await _authRepository.GetUserByEmail(email);
-            if (user == null) throw new Exception("User not found");
+            if (user == null || user.Password == null) throw new Exception("Không tìm thấy email");
 
             var newPassword = _passwordEncryption.GenerateRandomPassword();
           

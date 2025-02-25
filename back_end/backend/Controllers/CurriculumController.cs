@@ -74,6 +74,10 @@ namespace backend.Controllers
             {
                 return BadRequest(ex.Message);
             }
+            catch(FormatException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (Exception)
             {
                 return StatusCode(500, "Lỗi máy chủ nội bộ");

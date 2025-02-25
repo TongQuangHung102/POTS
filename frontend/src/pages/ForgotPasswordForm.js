@@ -1,121 +1,75 @@
 import React, { useState } from "react";
-import { Form, Button, Alert } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import './Auth.css';
 
-const ForgotPasswordForm = ({ onLogin }) => {
-    const [email, setEmail] = useState("");
-    const [error, setError] = useState("");
-    const [success, setSuccess] = useState(false);
-    const [loading, setLoading] = useState(false);
+const ForgotPasswordForm = () => {
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setMessage('');
 
-    const isValidEmail = (email) => /\S+@\S+\.\S+/.test(email);
+    if (!email) {
+      setError('Vui lòng nhập email');
+      return;
+    }
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+    try {
+      const response = await fetch("https://localhost:7259/api/Auth/Reset-password", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({ email })
+      });
 
-        if (!email) {
-            setError("Vui lòng điền email.");
-            return;
-        }
+      const text = await response.text();
 
-        if (!isValidEmail(email)) {
-            setError("Email không hợp lệ.");
-            return;
-        }
+      if (!response.ok) {
+        setError(text || "Có lỗi xảy ra, vui lòng thử lại!");
+        return;
+      }
 
-        setError("");
-        setSuccess(false);
-        setLoading(true);
+      setMessage(text || "Hướng dẫn đặt lại mật khẩu đã được gửi đến email của bạn.");
+    } catch (error) {
+      console.error("Lỗi khi gửi yêu cầu quên mật khẩu:", error);
+      setError("Có lỗi xảy ra, vui lòng thử lại!");
+    }
+  };
 
-        try {
-            const API_URL = "https://localhost:7259/api/Auth/Reset-password";
+  return (
+    <div className="auth-container">
+      <div className="auth-card">
+        <h2 className="auth-title">Quên mật khẩu</h2>
 
-            const response = await fetch(API_URL, {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ email }),
-            });
+        <form onSubmit={handleSubmit} className="auth-form">
+          {error && <div className="error-message">{error}</div>}
+          {message && <div className="success-message">{message}</div>}
 
-            if (!response.ok) {
-                const responseData = await response.json();
-                setError(responseData.message || "Không thể đặt lại mật khẩu. Vui lòng thử lại.");
-                return;
-            }
+          <div className="form-group">
+            <label className="form-label">Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="Nhập email của bạn"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="form-input"
+            />
+          </div>
 
-            setSuccess(true);
-            setEmail("");
-        } catch {
-            setError("Lỗi kết nối đến server. Hãy thử lại sau.");
-        } finally {
-            setLoading(false);
-        }
-    };
+          <button type="submit" className="submit-button">Gửi yêu cầu</button>
 
-    return (
-        <div>
-            <h2
-                style={{
-                    color: "#AAB7B7",
-                    textAlign: "center",
-                    marginBottom: "30px",
-                }}
-            >
-                Quên Mật Khẩu
-            </h2>
-            <Form onSubmit={handleSubmit}>
-
-                <Form.Group className="mb-3" controlId="formBasicEmail">
-                    <Form.Label style={{ color: "#C0C8CA" }}>Email</Form.Label>
-                    <Form.Control
-                        type="email"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        style={{ backgroundColor: "#D4D8DD", color: "#1A2D42" }}
-                        placeholder="Nhập email của bạn"
-                    />
-                </Form.Group>
-
-
-                {error && (
-                    <Alert variant="danger" style={{ marginBottom: "10px" }}>
-                        {error}
-                    </Alert>
-                )}
-                {success && (
-                    <Alert variant="success" style={{ marginBottom: "10px" }}>
-                        Đã gửi email đặt lại mật khẩu! Vui lòng kiểm tra hộp thư.
-                    </Alert>
-                )}
-
-
-                <Button
-                    type="submit"
-                    style={{
-                        width: "100%",
-                        padding: "10px",
-                        backgroundColor: "#AAB7B7",
-                        color: "#1A2D42",
-                        border: "none",
-                        borderRadius: "5px",
-                    }}
-                    disabled={loading}
-                >
-                    {loading ? "Đang gửi yêu cầu..." : "Đặt lại mật khẩu"}
-                </Button>
-            </Form>
-
-
-            <div style={{ textAlign: "center", marginTop: "20px" }}>
-                <Button
-                    variant="link"
-                    style={{ color: "#AAB7B7", textDecoration: "none" }}
-                    onClick={onLogin}
-                >
-                    Quay lại đăng nhập
-                </Button>
-            </div>
-        </div>
-    );
+          <div className="login-links">
+            <Link to='/login'>Quay lại đăng nhập</Link>
+          </div>
+        </form>
+      </div>
+    </div>
+  );
 };
 
 export default ForgotPasswordForm;

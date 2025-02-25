@@ -54,19 +54,32 @@ namespace backend.Services
         private static List<Lesson> ParseLessons(string input, int chapterId)
         {
             var lessons = new List<Lesson>();
-            var regex = new Regex(@"Bài\s(\d+):?\s(.*?)(?=Bài\s|$)");
+            var regex = new Regex(@"Bài\s(\d+):?\s(.+?)(?=\s*Bài\s|\s*$)", RegexOptions.Singleline);
             var matches = regex.Matches(input);
+
+            if (matches.Count == 0)
+            {
+                throw new FormatException("Định dạng bài học không hợp lệ. Vui lòng nhập theo mẫu: 'Bài <số>: <tên bài>'");
+            }
 
             var lessonOrders = new HashSet<int>();
 
             foreach (Match match in matches)
             {
-                int lessonOrder = int.Parse(match.Groups[1].Value);
+                if (!int.TryParse(match.Groups[1].Value, out int lessonOrder))
+                {
+                    throw new FormatException($"Số thứ tự bài học không hợp lệ: '{match.Groups[1].Value}'");
+                }
+
                 string lessonName = match.Groups[2].Value.Trim();
+                if (string.IsNullOrWhiteSpace(lessonName))
+                {
+                    throw new FormatException($"Tên bài học không được để trống: 'Bài {lessonOrder}'");
+                }
 
                 if (lessonOrders.Contains(lessonOrder))
                 {
-                    throw new ArgumentException($"Duplicate lesson found: Bài {lessonOrder}");
+                    throw new ArgumentException($"Bài học bị trùng lặp: Bài {lessonOrder}");
                 }
 
                 lessons.Add(new Lesson
