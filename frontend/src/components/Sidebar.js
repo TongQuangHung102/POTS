@@ -12,6 +12,7 @@ const Sidebar = () => {
     1: "student",
     2: "parent",
     3: "admin",
+    4: "content_manager"
   };
 
   const role = roleMap[roleId] || "guest"; 
@@ -22,7 +23,7 @@ const Sidebar = () => {
       { path: "/admin/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
       { path: "/admin/chapter", icon: <BiAlignRight />, label: "Chương trình" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
-      { path: "/users", icon: <BiSolidUserDetail />, label: "Người dùng" },
+      { path: "/admin/users", icon: <BiSolidUserDetail />, label: "Người dùng" },
       { path: "/admin/package", icon: <BiPackage />, label: "Gói" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
@@ -38,7 +39,16 @@ const Sidebar = () => {
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
-    guest: [], 
+    content_manager: [
+      { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/student/course", icon: <BiAlignRight />, label: "Khóa học" },
+      { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
+      { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
+    ],
+    guest: [
+      { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/contentmanage/question", icon: <BiAlignRight />, label: "Câu hỏi" },
+    ], 
   };
 
   const menuItems = menuConfig[role];

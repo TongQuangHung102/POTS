@@ -10,7 +10,7 @@ const ListPackage = () => {
         const fetchPackages = async () => {
             try {
                 const response = await fetch(
-                    'https://localhost:7259/api/SubscriptionPlan'
+                    'https://localhost:7259/api/SubscriptionPlan/get-all-subscriptionplan'
                 );
                 if (!response.ok) {
                     throw new Error('Lỗi khi lấy danh sách gói');
@@ -33,7 +33,7 @@ const ListPackage = () => {
                 <div className='error-message'>{errorMessage}</div>
             )}
             <div className='add-package-button-container'>
-                <Link to='/admin/addpackage' className='add-package-button'>
+                <Link to='/admin/package/add' className='add-package-button'>
                     Thêm Gói Mới
                 </Link>
             </div>
@@ -48,6 +48,7 @@ const ListPackage = () => {
                         <th>Tính năng Advanced Statistics</th>
                         <th>Tính năng Basic Statistics</th>
                         <th>Tính năng Personalization</th>
+                        <th>Trạng thái</th>
                         <th>Hành động</th>
                     </tr>
                 </thead>
@@ -87,6 +88,7 @@ const ListPackage = () => {
                                         disabled
                                     />
                                 </td>
+                                <td>{pkg.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
                                 <td>
                                     <Link
                                         to={`/admin/package/${pkg.planId}`}

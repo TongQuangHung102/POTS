@@ -19,7 +19,7 @@ const PackageDetail = () => {
         const fetchPackageDetail = async () => {
             try {
                 const response = await fetch(
-                    `https://localhost:7259/api/SubscriptionPlan/${planId}`
+                    `https://localhost:7259/api/SubscriptionPlan/get-subscriptionplan-by/${planId}`
                 );
                 if (!response.ok) {
                     throw new Error('Lỗi khi lấy chi tiết gói');
@@ -81,7 +81,7 @@ const PackageDetail = () => {
 
         try {
             const response = await fetch(
-                `https://localhost:7259/api/SubscriptionPlan/${planId}`,
+                `https://localhost:7259/api/SubscriptionPlan/edit-subscriptionplan/${planId}`,
                 {
                     method: 'PUT',
                     headers: {
@@ -246,6 +246,20 @@ const PackageDetail = () => {
                         </div>
                     )}
                 </div>
+                <div className='form-group'>
+                    <label>
+                        Trạng thái: 
+                        <select
+                            value={packageDetail.isVisible}
+                            onChange={(e) =>
+                                handleChange('isVisible', e.target.value)
+                            }
+                        >
+                            <option value="true">Hoạt động</option>
+                            <option value="false">Không hoạt động</option>
+                        </select>
+                    </label>
+                </div>
 
                 <div className='form-group'>
                     <label>Ngày tạo</label>
@@ -265,8 +279,8 @@ const PackageDetail = () => {
                         value={
                             packageDetail.updatedAt
                                 ? new Date(
-                                      packageDetail.updatedAt
-                                  ).toLocaleDateString()
+                                    packageDetail.updatedAt
+                                ).toLocaleDateString()
                                 : 'Chưa có cập nhật'
                         }
                         disabled
