@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './UsersList.css'; // Import file CSS
+
 
 const UsersList = () => {
     const [users, setUsers] = useState([]);
@@ -8,7 +8,7 @@ const UsersList = () => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        fetch('https://localhost:7259/api/User/List')
+        fetch('https://localhost:7259/api/User/get-all-user')
             .then(response => response.json())
             .then(data => setUsers(data))
             .catch(error => setErrorMessage('Lỗi khi tải danh sách người dùng!'));
