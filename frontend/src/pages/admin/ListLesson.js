@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import './ListLesson.css';
 const ListLesson = () => {
-  const {chapterId } = useParams();
+  const { chapterId } = useParams();
   const [lessons, setLessons] = useState([]);
   const [showAddLesson, setShowAddLesson] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -26,7 +26,13 @@ const ListLesson = () => {
   }, [chapterId]);
 
   const handleAddLesson = async () => {
-    if (!newLessonTitle.trim()) return;
+    if (!newLessonTitle.trim()) {
+      setErrorMessage("Vui lòng không bỏ trống");
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+      return;
+    }
 
     try {
       const response = await fetch('https://localhost:7259/api/Curriculum/add-lessons', {
@@ -35,7 +41,7 @@ const ListLesson = () => {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          chapterId: chapterId, 
+          chapterId: chapterId,
           input: newLessonTitle
         })
       });
@@ -119,8 +125,10 @@ const ListLesson = () => {
   return (
     <div className="lesson-container">
       <h2>Danh sách bài học</h2>
-
-      <button className="add-chapter" onClick={() => setShowAddLesson(true)}>Thêm Bài Mới</button>
+      <div className="group-header">
+        <div> <Link className="backlink" to='/admin'>Home</Link>/<Link className="backlink" to='/admin/chapter'>Chapter</Link>/ Lesson </div>
+        <button className="add-chapter" onClick={() => setShowAddLesson(true)}>Thêm Bài Mới</button>
+      </div>
       {showAddLesson && (
         <div>
           <div className="add-lesson-form">
@@ -129,6 +137,7 @@ const ListLesson = () => {
               placeholder="Nhập tên bài mới"
               value={newLessonTitle}
               onChange={(e) => setNewLessonTitle(e.target.value)}
+              required
             />
             <div className="action-buttons">
               <button onClick={handleAddLesson}>Thêm</button>
@@ -192,6 +201,7 @@ const ListLesson = () => {
                 onChange={(e) =>
                   setSelectedLesson({ ...selectedLesson, lessonName: e.target.value })
                 }
+                required
               />
             </label>
             <label>

@@ -30,5 +30,12 @@ namespace backend.DataAccess.DAO
             _context.SubscriptionPlans.Update(plan);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<SubscriptionPlan> GetByNameAsync(string planName)
+        {
+            return await _context.SubscriptionPlans
+                .FirstOrDefaultAsync(p => p.PlanName == planName);
+
+        }
     }
 }

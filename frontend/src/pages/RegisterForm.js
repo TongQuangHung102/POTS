@@ -11,7 +11,7 @@ const RegisterForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -50,37 +50,42 @@ const RegisterForm = () => {
       return;
     }
 
+    if (formData.role == '') {
+      setError('Vui lòng chọn vai trò');
+      return;
+    }
+
     const registerData = {
-        userName: formData.name, 
-        email: formData.email,
-        password: formData.password,
-        role: formData.role,
-      };
+      userName: formData.name,
+      email: formData.email,
+      password: formData.password,
+      role: formData.role,
+    };
 
     try {
-        // Gửi yêu cầu đăng ký đến API
-        const response = await fetch('https://localhost:7259/api/Auth/Register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(registerData), 
-        });
-  
-        const result = await response.json();
-        
-        if (response.ok) {
-          console.log('Đăng ký thành công:', result);
-          window.location.href = '/login'; 
-        } else {
-          setError(result.message || 'Đăng ký không thành công');
-        }
-      } catch (error) {
-        console.error('Lỗi khi đăng ký:', error);
-        setError('Đã có lỗi xảy ra. Vui lòng thử lại.');
-      } finally {
-        setLoading(false); 
+      // Gửi yêu cầu đăng ký đến API
+      const response = await fetch('https://localhost:7259/api/Auth/Register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(registerData),
+      });
+
+      const result = await response.json();
+
+      if (response.ok) {
+        console.log('Đăng ký thành công:', result);
+        window.location.href = '/login';
+      } else {
+        setError(result.message || 'Đăng ký không thành công');
       }
+    } catch (error) {
+      console.error('Lỗi khi đăng ký:', error);
+      setError('Đã có lỗi xảy ra. Vui lòng thử lại.');
+    } finally {
+      setLoading(false);
+    }
 
     console.log('Đăng ký với:', formData);
   };
@@ -90,7 +95,7 @@ const RegisterForm = () => {
     <div className="auth-container">
       <div className="auth-card">
         <h2 className="auth-title">Đăng ký tài khoản</h2>
-        
+
         <form onSubmit={handleSubmit} className="auth-form">
           {error && (
             <div className="error-message">
