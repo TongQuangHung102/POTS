@@ -7,24 +7,25 @@ namespace backend.Services
     {
         private readonly IAuthRepository _authRepository;
         private readonly SendMailService _sendMailService;
+        private readonly PasswordEncryption _passwordEncryption;
 
-        public PasswordResetService(IAuthRepository authRepository, SendMailService sendMailService)
+        public PasswordResetService(IAuthRepository authRepository, SendMailService sendMailService, PasswordEncryption passwordEncryption)
         {
             _authRepository = authRepository;
             _sendMailService = sendMailService;
+            _passwordEncryption = passwordEncryption;
         }
 
- 
         public async Task ResetPasswordAsync(string email)
         {
             var user = await _authRepository.GetUserByEmail(email);
-            if (user == null) throw new Exception("User not found");
+            if (user == null || user.Password == null) throw new Exception("Không tìm thấy email");
 
-            var newPassword = PasswordEncryption.GenerateRandomPassword();
+            var newPassword = _passwordEncryption.GenerateRandomPassword();
           
             await _sendMailService.SendPasswordResetEmailAsync(email, newPassword);
 
-            var encrytionPassword = PasswordEncryption.HashPassword(newPassword);
+            var encrytionPassword = _passwordEncryption.HashPassword(newPassword);
             
             await _authRepository.UpdatePasswordAsync(email, encrytionPassword);
         }

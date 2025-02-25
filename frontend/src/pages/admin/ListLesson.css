@@ -1,75 +1,92 @@
-.lesson-container{
-    padding: 20px;
-    margin-left: var(--sidebar-width);
+.lesson-container {
+  padding: 20px;
+  margin-left: var(--sidebar-width);
 }
-.lesson-table {
-    margin-top: 20px;
-    width: 100%;
-    border-collapse: collapse;
-  }
-  
-  .lesson-table th, .lesson-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-  }
-  
-  .lesson-table th {
-    background-color: #f4f4f4;
-    text-align: left;
-    color: black;
-  }
-  
-  .lesson-table button {
-    margin-left: 10px;
-      padding: 5px 10px;
-      background-color: #AAB7B7;
-      color: white !important;
-      border: none;
-      border-radius: 5px;
-      cursor: pointer;
-  }
-  .lesson-table button:hover {
-    background-color: #0c2246;
-    color : white !important;
-  }
-  .instruction-text {
-    color: #6c757d; /* Màu xám */
-    font-size: 0.9em;
-    margin: 5px 0 10px; /* Khoảng cách trên và dưới */
-  }
-  .add-lesson-form {
-    margin: 20px 0;
-    display: flex;
-    align-items: center;
-  }
-  
-  .add-lesson-form input {
-    flex: 1;
-    padding: 8px;
-    margin-right: 10px;
-    border-radius: 10px;
-    border: 1px solid grey;
-  }
-  
-  .add-lesson-form button {
-    padding: 8px 12px;
-    background-color: #AAB7B7;
-    color: #0c2246 !important;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-  }
-  
-  .add-lesson-form button:hover {
-    background-color: #0c2246;
-    color : white !important;
-  }
 
-.add-lesson{
+.lesson-table {
+  margin-top: 20px;
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.lesson-table th,
+.lesson-table td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.lesson-table th {
+  background-color: #f4f4f4;
+  text-align: left;
+  color: black;
+}
+
+.lesson-table button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  background-color: #AAB7B7;
+  color: white !important;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.lesson-table button:hover {
+  background-color: #0c2246;
+  color: white !important;
+}
+
+.instruction-text {
+  color: #6c757d;
+  font-size: 0.9em;
+  margin: 5px 0 10px;
+}
+
+.add-lesson-form {
+  margin: 20px 0;
+  display: flex;
+  align-items: center;
+}
+
+.add-lesson-form input {
+  flex: 1;
+  padding: 8px;
+  margin-right: 10px;
+  border-radius: 10px;
+  border: 1px solid grey;
+}
+
+.add-lesson-form button {
   padding: 8px 12px;
-    background-color: #28a745;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
+  background-color: #AAB7B7;
+  color: #0c2246 !important;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-lesson-form button:hover {
+  background-color: #0c2246;
+  color: white !important;
+}
+
+.add-lesson {
+  padding: 8px 12px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.backlink{
+  margin: 10px;
+  color: blue !important;
 }

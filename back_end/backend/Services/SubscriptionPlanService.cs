@@ -15,6 +15,11 @@ namespace backend.Services
 
         public async Task AddSubscriptionPlanAsync(SubscriptionPlan plan)
         {
+            var existingPlan = await _spRepository.GetByNameAsync(plan.PlanName);
+            if (existingPlan != null)
+            {
+                throw new Exception("Tên gói đăng ký đã tồn tại. Vui lòng chọn tên khác.");
+            }
             await _spRepository.AddSubscriptionPlanAsync(plan);
         }
 

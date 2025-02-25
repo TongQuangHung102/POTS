@@ -15,6 +15,10 @@ import PricingPage from '../pages/PricingPage';
 import StudentDashboard from '../pages/StudentDashboard';
 import StudentLayout from '../pages/StudentLayout';
 import Course from '../pages/student/Course'
+import ForgotPasswordForm from '../pages/ForgotPasswordForm';
+import Quiz from '../pages/student/Quiz';
+import QuestionManage from '../pages/content_manager/QuestionManage';
+import ContentManageLayout from '../pages/ContentManageLayout';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
@@ -30,6 +34,9 @@ const AppRoutes = () => {
             <Route path='/register' element={<Register />} />
             <Route path='/google-callback' element={<GoogleCallback />}></Route>
             <Route path='/choose-role' element={<ChooseRole />}></Route>
+            <Route path='/forgot-password' element={<ForgotPasswordForm />}></Route>
+            <Route path='/qiuz' element={<Quiz />}></Route>
+            
 
             <Route path='/admin' element={<AdminLayout />}>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
@@ -41,7 +48,8 @@ const AppRoutes = () => {
                     path='/admin/package/:planId'
                     element={<PackageDetail />}
                 />
-                <Route path='/admin/addpackage/' element={<AddPackage />} />
+                <Route path='/admin/package/add' element={<AddPackage />} />
+                <Route path='/admin/question' element={<QuestionManage />}></Route> 
             </Route>
 
             <Route path='/student' element={<StudentLayout />}> 
@@ -49,6 +57,11 @@ const AppRoutes = () => {
                 <Route path="/student/dashboard" element={<StudentDashboard />} />  
                 <Route path="/student/course" element={<Course />} />  
             </Route>
+
+
+            
+      
+
             {/* Nếu chưa đăng nhập, điều hướng đến login */}
             {!user && (
                 <Route path='/' element={<Navigate to='/login' replace />} />

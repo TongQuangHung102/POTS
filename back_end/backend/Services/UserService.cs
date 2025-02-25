@@ -10,10 +10,11 @@ namespace backend.Services
     public class UserService
     {
         private readonly IUserRepository _userRepository;
-
-        public UserService(IUserRepository userRepository)
+        private readonly PasswordEncryption _passwordEncryption;
+        public UserService(IUserRepository userRepository, PasswordEncryption passwordEncryption)
         {
             _userRepository = userRepository;
+            _passwordEncryption = passwordEncryption;
         }
 
 
@@ -123,7 +124,7 @@ namespace backend.Services
       
                 if (!string.IsNullOrEmpty(userDto.Password))
                 {
-                    user.Password = PasswordEncryption.HashPassword(userDto.Password);
+                    user.Password = _passwordEncryption.HashPassword(userDto.Password);
                 }
 
                 await _userRepository.UpdateUserAsync(user);
@@ -159,7 +160,7 @@ namespace backend.Services
                     IsActive = userDto.IsActive,
                     CreateAt = DateTime.UtcNow,
                     LastLogin = null,
-                    Password = PasswordEncryption.HashPassword(userDto.Password)
+                    Password = _passwordEncryption.HashPassword(userDto.Password)
                 };
 
                 await _userRepository.CreateUserAsync(newUser);

@@ -72,11 +72,13 @@ const CourseProgress = () => {
                 const response = await fetch(API_URL);
                 const data = await response.json();
 
-                const formattedSections = data.map(chapter => ({
+                const formattedSections = data.filter(chapter => chapter.isVisible)
+                .map(chapter => ({
                     order: chapter.order,
                     title: chapter.chapterName,
                     initialExpanded: false,
-                    lessons: chapter.lessons.map(lesson => ({
+                    lessons: chapter.lessons.filter(lesson => lesson.isVisible)
+                    .map(lesson => ({
                         number: String(lesson.order).padStart(2, "0"),
                         title: lesson.lessonName
                     }))

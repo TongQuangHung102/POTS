@@ -50,6 +50,11 @@ const RegisterForm = () => {
       return;
     }
 
+    if (formData.role == '') {
+      setError('Vui lòng chọn vai trò');
+      return;
+    }
+
     const registerData = {
       userName: formData.name,
       email: formData.email,

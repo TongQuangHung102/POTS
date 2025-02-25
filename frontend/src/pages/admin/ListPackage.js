@@ -33,7 +33,7 @@ const ListPackage = () => {
                 <div className='error-message'>{errorMessage}</div>
             )}
             <div className='add-package-button-container'>
-                <Link to='/admin/addpackage' className='add-package-button'>
+                <Link to='/admin/package/add' className='add-package-button'>
                     Thêm Gói Mới
                 </Link>
             </div>

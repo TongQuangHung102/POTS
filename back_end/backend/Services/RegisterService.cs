@@ -10,11 +10,13 @@ namespace backend.Services
     {
         private readonly IAuthRepository _authRepository;
         private readonly SendMailService _sendMailService;
+        private readonly PasswordEncryption _passwordEncryption;
         private readonly string _frontendUrl = "http://localhost:3000/";
-        public RegisterService(IAuthRepository authRepository, SendMailService sendMailService)
+        public RegisterService(IAuthRepository authRepository, SendMailService sendMailService, PasswordEncryption passwordEncryption)
         {
             _authRepository = authRepository;
             _sendMailService = sendMailService;
+            _passwordEncryption = passwordEncryption;
         }
 
         public async Task<IActionResult> Register(RegisterDto model)
@@ -25,7 +27,7 @@ namespace backend.Services
             {
                 return new BadRequestObjectResult(new { message = "Email đã tồn tại, vui lòng dùng email khác" });
             }
-            string hashedPassword = PasswordEncryption.HashPassword(model.Password);
+            string hashedPassword = _passwordEncryption.HashPassword(model.Password);
 
             var user = new User
             {
