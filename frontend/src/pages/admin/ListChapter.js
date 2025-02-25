@@ -43,6 +43,9 @@ const ListChapter = () => {
       if (!response.ok) {
         const errorResponse = await response.text();
         const errorMessage = errorResponse ? errorResponse : 'Không thể thêm chương mới';
+        setTimeout(() => {
+          setErrorMessage('');
+        }, 3000);
         throw new Error(errorMessage);
       }
 
@@ -123,7 +126,12 @@ const ListChapter = () => {
   return (
     <div className="chapter-list-container">
       <h2>Danh Sách Chương</h2>
-      <button className="add-chapter" onClick={() => setShowAddChapter(true)}>Thêm Chương Mới</button>
+      <div className="group-header">
+        <div>
+           <Link className="backlink" to='/admin'>Home</Link>/ Chapter 
+        </div>
+        <button className="add-chapter" onClick={() => setShowAddChapter(true)}>Thêm Chương Mới</button>
+      </div>
       {showAddChapter && (
         <div>
           <div className="add-chapter-form">
@@ -139,7 +147,7 @@ const ListChapter = () => {
             </div>
           </div>
           <div>
-            <p className="instruction-text">* Vui lòng nhập tên chương theo định dạng: "Chương X: Tên chương"</p>
+            <p className="instruction-text">* Vui lòng nhập tên chương theo định dạng: "Chương số: tên chương"</p>
             <p className="instruction-text">* Có thể nhập nhiều chương cùng một lúc, ví dụ: "Chương 1: ABC Chương 2: XYZ..."</p>
           </div>
         </div>
@@ -182,7 +190,9 @@ const ListChapter = () => {
               <input
                 type="text"
                 value={selectedChapter?.order}
-                disabled
+                onChange={(e) =>
+                  setSelectedChapter({ ...selectedChapter, order: e.target.value })
+                }
               />
             </label>
             <label>

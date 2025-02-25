@@ -152,7 +152,7 @@ const LoginForm = () => {
           </button>
 
           <div className="login-links">
-            <a href="#" className="auth-link">Quên mật khẩu?</a>
+          <Link to='/forgot-password'>Quên mật khẩu?</Link>
             <Link to='/register'>Đăng ký tài khoản mới</Link>
           </div>
 

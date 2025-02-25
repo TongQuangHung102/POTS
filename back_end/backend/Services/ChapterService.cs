@@ -49,7 +49,7 @@ namespace backend.Services
             }
 
             var duplicateChapter = await _curriculumRepository.GetAllChapterAsync();
-            if (duplicateChapter.Any(ch => (ch.Order == chapterDto.Order || ch.ChapterName == chapterDto.ChapterName) && ch.ChapterId != id))
+            if (duplicateChapter.Any(ch => (ch.Order == chapterDto.Order && ch.ChapterName == chapterDto.ChapterName) && ch.ChapterId != id))
             {
                 throw new InvalidOperationException("Một chương có cùng thứ tự hoặc tên đã tồn tại.");
             }
@@ -64,19 +64,32 @@ namespace backend.Services
         private static List<Chapter> ParseChapters(string input)
         {
             var chapters = new List<Chapter>();
-            var regex = new Regex(@"Chương\s(\d+):?\s(.*?)(?=Chương\s|$)");
+            var regex = new Regex(@"Chương\s(\d+):?\s(.+?)(?=\s*Chương\s|\s*$)", RegexOptions.Singleline);
             var matches = regex.Matches(input);
+
+            if (matches.Count == 0)
+            {
+                throw new FormatException("Định dạng chương không hợp lệ. Vui lòng nhập theo mẫu: 'Chương <số>: <tên chương>'");
+            }
 
             var chapterNumbers = new HashSet<int>();
 
             foreach (Match match in matches)
             {
-                int chapterNumber = int.Parse(match.Groups[1].Value);
+                if (!int.TryParse(match.Groups[1].Value, out int chapterNumber))
+                {
+                    throw new FormatException($"Số thứ tự chương không hợp lệ: '{match.Groups[1].Value}'");
+                }
+
                 string title = match.Groups[2].Value.Trim();
+                if (string.IsNullOrWhiteSpace(title))
+                {
+                    throw new FormatException($"Tên chương không được để trống: 'Chương {chapterNumber}'");
+                }
 
                 if (chapterNumbers.Contains(chapterNumber))
                 {
-                    throw new ArgumentException($"Duplicate chapter found: Chương {chapterNumber}");
+                    throw new ArgumentException($"Chương bị trùng lặp: Chương {chapterNumber}");
                 }
 
                 chapters.Add(new Chapter
@@ -92,12 +105,13 @@ namespace backend.Services
             return chapters;
         }
 
+
         private async Task ValidateDuplicateChaptersAsync(List<Chapter> chapters)
         {
             var existingChapters = await _curriculumRepository.GetAllChapterAsync();
 
             var duplicateChapters = chapters.Where(ch =>
-                existingChapters.Any(ec => ec.Order == ch.Order || ec.ChapterName == ch.ChapterName)
+                existingChapters.Any(ec => ec.Order == ch.Order && ec.ChapterName == ch.ChapterName)
             ).ToList();
 
             if (duplicateChapters.Any())

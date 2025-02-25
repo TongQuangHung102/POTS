@@ -121,7 +121,10 @@
   color :#ffffff !important;
 }
 
-
+.backlink{
+  margin: 10px;
+  color: blue !important;
+}
 .button-group {
   display: flex;
   justify-content: flex-start; 
@@ -146,4 +149,11 @@ a, .link {
 a:hover, .link:hover {
   color: inherit; 
   text-decoration: none; 
+}
+
+.group-header {
+  display: flex; 
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
 }
