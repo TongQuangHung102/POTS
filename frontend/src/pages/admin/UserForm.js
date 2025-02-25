@@ -9,7 +9,7 @@ const UserForm = () => {
 
     useEffect(() => {
         if (userId && userId !== 'new') {
-            fetch(`https://your-api-endpoint.com/api/User/${userId}`)
+            fetch(`https://localhost:7259/api/User/${userId}`)
                 .then(response => response.json())
                 .then(data => setUser(data))
                 .catch(() => alert('Lỗi khi tải thông tin người dùng'));
@@ -20,7 +20,7 @@ const UserForm = () => {
         event.preventDefault();
 
         const method = userId === 'new' ? 'POST' : 'PUT';
-        const url = userId === 'new' ? 'https://your-api-endpoint.com/api/User' : `https://your-api-endpoint.com/api/User/${userId}`;
+        const url = userId === 'new' ? 'https://localhost:7259/api/User' : `https://localhost:7259/api/User/${userId}`;
 
         try {
             const response = await fetch(url, {
