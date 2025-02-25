@@ -19,6 +19,7 @@ import ForgotPasswordForm from '../pages/ForgotPasswordForm';
 import Quiz from '../pages/student/Quiz';
 import QuestionManage from '../pages/content_manager/QuestionManage';
 import ContentManageLayout from '../pages/ContentManageLayout';
+import UserList from '../pages/admin/UserList';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
@@ -50,6 +51,7 @@ const AppRoutes = () => {
                 />
                 <Route path='/admin/package/add' element={<AddPackage />} />
                 <Route path='/admin/question' element={<QuestionManage />}></Route> 
+                <Route path='/admin/users' element={<UserList />}></Route> 
             </Route>
 
             <Route path='/student' element={<StudentLayout />}> 

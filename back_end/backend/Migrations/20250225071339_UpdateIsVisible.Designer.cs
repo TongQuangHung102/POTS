@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
@@ -11,9 +12,10 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250225071339_UpdateIsVisible")]
+    partial class UpdateIsVisible
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -105,9 +107,6 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GradeId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
@@ -118,8 +117,6 @@ namespace backend.Migrations
                         .HasColumnType("int");
 
                     b.HasKey("ChapterId");
-
-                    b.HasIndex("GradeId");
 
                     b.HasIndex("UserId");
 
@@ -234,30 +231,6 @@ namespace backend.Migrations
                     b.HasIndex("QuestionId");
 
                     b.ToTable("ContestQuestions");
-                });
-
-            modelBuilder.Entity("backend.Models.Grades", b =>
-                {
-                    b.Property<int>("GradeId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("GradeId"), 1L, 1);
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("GradeName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("bit");
-
-                    b.HasKey("GradeId");
-
-                    b.ToTable("Grades");
                 });
 
             modelBuilder.Entity("backend.Models.Lesson", b =>
@@ -859,17 +832,9 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Chapter", b =>
                 {
-                    b.HasOne("backend.Models.Grades", "Grade")
-                        .WithMany("Chapters")
-                        .HasForeignKey("GradeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("backend.Models.User", "User")
                         .WithMany("Chapters")
                         .HasForeignKey("UserId");
-
-                    b.Navigation("Grade");
 
                     b.Navigation("User");
                 });
@@ -1201,11 +1166,6 @@ namespace backend.Migrations
                     b.Navigation("ContestParticipants");
 
                     b.Navigation("ContestQuestions");
-                });
-
-            modelBuilder.Entity("backend.Models.Grades", b =>
-                {
-                    b.Navigation("Chapters");
                 });
 
             modelBuilder.Entity("backend.Models.Lesson", b =>

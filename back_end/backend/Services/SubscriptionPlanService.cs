@@ -37,7 +37,8 @@ namespace backend.Services
                 IsAIAnalysis = plan.IsAIAnalysis,
                 IsPersonalization = plan.IsPersonalization,
                 IsBasicStatistics = plan.IsBasicStatistics,
-                IsAdvancedStatistics = plan.IsAdvancedStatistics
+                IsAdvancedStatistics = plan.IsAdvancedStatistics,
+                IsVisible = plan.IsVisible
             }).ToList();
         }
         public async Task<bool> UpdatePlanAsync(int id, SubscriptionPlanDto dto)
@@ -58,6 +59,7 @@ namespace backend.Services
             existingPlan.IsPersonalization = dto.IsPersonalization;
             existingPlan.IsBasicStatistics = dto.IsBasicStatistics;
             existingPlan.IsAdvancedStatistics = dto.IsAdvancedStatistics;
+            existingPlan.IsVisible = dto.IsVisible;
             existingPlan.UpdatedAt = DateTime.UtcNow;
 
             await _spRepository.UpdateAsync(existingPlan);

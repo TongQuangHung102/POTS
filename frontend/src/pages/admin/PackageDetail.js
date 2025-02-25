@@ -246,6 +246,20 @@ const PackageDetail = () => {
                         </div>
                     )}
                 </div>
+                <div className='form-group'>
+                    <label>
+                        Trạng thái: 
+                        <select
+                            value={packageDetail.isVisible}
+                            onChange={(e) =>
+                                handleChange('isVisible', e.target.value)
+                            }
+                        >
+                            <option value="true">Hoạt động</option>
+                            <option value="false">Không hoạt động</option>
+                        </select>
+                    </label>
+                </div>
 
                 <div className='form-group'>
                     <label>Ngày tạo</label>
@@ -265,8 +279,8 @@ const PackageDetail = () => {
                         value={
                             packageDetail.updatedAt
                                 ? new Date(
-                                      packageDetail.updatedAt
-                                  ).toLocaleDateString()
+                                    packageDetail.updatedAt
+                                ).toLocaleDateString()
                                 : 'Chưa có cập nhật'
                         }
                         disabled

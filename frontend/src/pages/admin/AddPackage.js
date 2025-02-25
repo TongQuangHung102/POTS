@@ -81,9 +81,13 @@ const AddPackage = () => {
                 }
             );
 
-            if (!response.ok) throw new Error('Lỗi khi tạo gói mới!');
+            const data = await response.json(); 
 
-            navigate('/admin/package'); // Chuyển về danh sách gói
+            if (!response.ok) {
+                throw new Error(data.message || 'Lỗi khi tạo gói mới!'); 
+            }
+
+            navigate('/admin/package');
         } catch (error) {
             setErrorMessage(error.message);
         }
