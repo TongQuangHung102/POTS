@@ -19,6 +19,7 @@ namespace backend.Models
         public bool IsAdvancedStatistics { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
+        public bool IsVisible { get; set; }
         public virtual ICollection<UserSubscription> UserSubscriptions { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }  
     }

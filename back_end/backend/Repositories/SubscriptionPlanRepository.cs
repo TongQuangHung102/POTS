@@ -27,6 +27,11 @@ namespace backend.Repositories
             return await _spDAO.GetByIdAsync(id);
         }
 
+        public async Task<SubscriptionPlan> GetByNameAsync(string planName)
+        {
+            return await _spDAO.GetByNameAsync(planName);
+        }
+
         public async Task UpdateAsync(SubscriptionPlan plan)
         {
             await _spDAO.UpdateAsync(plan);

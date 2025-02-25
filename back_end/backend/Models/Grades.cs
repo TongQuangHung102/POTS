@@ -12,6 +12,7 @@ namespace backend.Models
         [MaxLength(255)]
         public string GradeName { get; set; }
         public string Description { get; set; }
+        public bool IsVisible { get; set; }
         public virtual ICollection<Chapter> Chapters { get; set; }
     }
 }
