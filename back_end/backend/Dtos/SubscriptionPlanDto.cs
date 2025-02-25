@@ -12,6 +12,7 @@
         public bool IsPersonalization { get; set; }
         public bool IsBasicStatistics { get; set; }
         public bool IsAdvancedStatistics { get; set; }
+        public bool IsVisible { get; set; }
         public DateTime CreatedAt { get; set; }
         public DateTime? UpdatedAt { get; set; }
     }

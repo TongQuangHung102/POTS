@@ -13,6 +13,7 @@ namespace backend.Models
         [ForeignKey("LevelId")]
         public int LevelId { get; set; }
         public int CorrectAnswer { get; set; }
+        public bool IsVisible { get; set; }
         public bool CreateByAI { get; set; }
         public int LessonId { get; set; }
 
