@@ -10,6 +10,7 @@ import { useAuth } from '../hooks/useAuth';
 import ListPackage from '../pages/admin/ListPackage';
 import PackageDetail from '../pages/admin/PackageDetail';
 import AddPackage from '../pages/admin/AddPackage';
+import UserForm from '../pages/admin/UserForm';
 import ChooseRole from '../pages/ChooseRole';
 import PricingPage from '../pages/PricingPage';
 import StudentDashboard from '../pages/StudentDashboard';
@@ -56,6 +57,7 @@ const AppRoutes = () => {
                 <Route path='/admin/package/add' element={<AddPackage />} />
                 <Route path='/admin/question' element={<QuestionManage />}></Route>
                 <Route path='/admin/users' element={<UserList />}></Route>
+                <Route path='/admin/user/new' element={<UserForm />}></Route>
             </Route>
 
             <Route path='/student' element={<StudentLayout />}>

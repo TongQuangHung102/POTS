@@ -13,12 +13,21 @@ const Profile = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Lấy userId từ sessionStorage
+    const userId = sessionStorage.getItem('userId');
+
     useEffect(() => {
+        if (!userId) {
+            setError('Không có ID người dùng trong session');
+            setLoading(false);
+            return;
+        }
+
         // Lấy dữ liệu người dùng từ API
         const fetchUserData = async () => {
             try {
-                const response = await axios.get(`https://localhost:7259/api/User/get-user-by/${userInfo.userId}`);
-                setUserInfo(response.data); // Giả sử dữ liệu trả về là một object với các thông tin người dùng
+                const response = await axios.get(`https://localhost:7259/api/User/get-user-by/${userId}`);
+                setUserInfo(response.data); // Dữ liệu người dùng trả về từ API
                 setLoading(false);
             } catch (error) {
                 setError('Không thể tải dữ liệu người dùng');
@@ -27,7 +36,7 @@ const Profile = () => {
         };
 
         fetchUserData();
-    }, []); // Chạy khi component load
+    }, [userId]);  // useEffect chỉ chạy khi userId thay đổi
 
     const handleChange = (e) => {
         setUserInfo({
@@ -40,7 +49,7 @@ const Profile = () => {
         e.preventDefault();
         // Gửi dữ liệu đã chỉnh sửa lên API
         try {
-            await axios.put(`https://localhost:7259/api/User/edit-user/${userInfo.userId}`, {
+            await axios.put(`https://localhost:7259/api/User/edit-user/${userId}`, {
                 userName: userInfo.userName,
                 email: userInfo.email,
                 password: userInfo.password,
