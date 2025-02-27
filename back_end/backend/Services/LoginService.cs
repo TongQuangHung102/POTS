@@ -32,6 +32,17 @@ namespace backend.Services
                 throw new UnauthorizedAccessException("Tài khoản chưa được kích hoạt");
             }
             await _authRepository.UpdateLastLoginTimeAsync(user);
+
+            if(user.Role == 1)
+            {
+                return new LoginResponseDto
+                {
+                    UserId = user.UserId,
+                    Role = user.Role,
+                    GradeId = user.GradeId,
+                    Token = GenerateJwtToken(user)
+                };
+            }
             return new LoginResponseDto
             {
                 UserId = user.UserId,
@@ -71,6 +82,16 @@ namespace backend.Services
             user.LastLogin = DateTime.UtcNow;
 
             await _authRepository.UpdateUser(user);
+            if (user.Role == 1)
+            {
+                return new LoginResponseDto
+                {
+                    UserId = user.UserId,
+                    Role = user.Role,
+                    GradeId = user.GradeId,
+                    Token = GenerateJwtToken(user)
+                };
+            }
             return new LoginResponseDto
             {
                 UserId = user.UserId,

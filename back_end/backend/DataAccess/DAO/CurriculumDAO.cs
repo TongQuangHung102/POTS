@@ -18,9 +18,9 @@ namespace backend.DataAccess.DAO
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Chapter>> GetAllChapterAsync()
+        public async Task<List<Chapter>> GetAllChapterAsync(int grade)
         {
-            return await _context.Chapters.Include(m => m.User).Include(ls => ls.Lessons).ToListAsync();
+            return await _context.Chapters.Include(m => m.User).Include(ls => ls.Lessons).Where(g => g.GradeId == grade).ToListAsync();
         }
         public async Task<Chapter> GetChapterByIdAsync(int id)
         {

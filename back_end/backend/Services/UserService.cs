@@ -91,7 +91,8 @@ namespace backend.Services
                     user.LastLogin,
                     user.IsActive,
                     RoleId = user.Role,
-                    RoleName = user.RoleNavigation?.RoleName
+                    RoleName = user.RoleNavigation?.RoleName,
+                    user.GradeId
                 };
 
                 return new OkObjectResult(response);
@@ -183,23 +184,53 @@ namespace backend.Services
                 var user = await _userRepository.GetUserByIdAsync(userId);
                 if (user == null)
                 {
-                    return new NotFoundObjectResult(new { Message = "User not found" });
+                    return new NotFoundObjectResult(new { Message = "Người dùng không tồn tại" });
                 }
 
                 if (user.Role != null && user.Role > 0)
                 {
-                    return new BadRequestObjectResult(new { Message = "You have already selected a role. Role cannot be changed." });
+                    return new BadRequestObjectResult(new { Message = "Bạn đã chọn vai trò!" });
                 }
 
                 user.Role = roleId;
 
                 await _userRepository.UpdateUserAsync(user);
 
-                return new OkObjectResult(new { Message = "User role updated successfully" });
+                return new OkObjectResult(new { Message = "Cập nhật vai trò thành công" });
             }
             catch (Exception ex)
             {
-                return new ObjectResult(new { message = "An error occurred while updating the user.", error = ex.Message })
+                return new ObjectResult(new { message = "Có lỗi xảy ra.", error = ex.Message })
+                {
+                    StatusCode = 500
+                };
+            }
+        }
+
+        public async Task<IActionResult> UpdateGradeUserAsync(int userId, int gradeId)
+        {
+            try
+            {
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                {
+                    return new NotFoundObjectResult(new { Message = "Người dùng không tồn tại" });
+                }
+
+                if (user.GradeId != null && user.GradeId > 0)
+                {
+                    return new BadRequestObjectResult(new { Message = "Bạn đã chọn lớp!" });
+                }
+
+                user.GradeId = gradeId;
+
+                await _userRepository.UpdateUserAsync(user);
+
+                return new OkObjectResult(new { Message = "Cập nhật khối lớp thành công" });
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = "Có lỗi xảy ra.", error = ex.Message })
                 {
                     StatusCode = 500
                 };
