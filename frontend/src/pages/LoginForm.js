@@ -12,8 +12,10 @@ const LoginForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const handleSuccess = async (response) => {
+    setLoading(true);
     try {
       const googleToken = response.credential;
       const res = await fetch("https://localhost:7259/api/Auth/google-login", {
@@ -33,6 +35,9 @@ const LoginForm = () => {
     } catch (error) {
       console.error("Google Login Failed:", error);
     }
+    finally {
+      setLoading(false);
+  }
   };
 
 
@@ -84,6 +89,9 @@ const LoginForm = () => {
       console.error("Lỗi khi đăng nhập:", error);
       setError("Có lỗi xảy ra, vui lòng thử lại!");
     }
+    finally {
+      setLoading(false);
+  }
 
     console.log('Đăng nhập với:', formData);
   };
@@ -94,12 +102,21 @@ const LoginForm = () => {
       sessionStorage.setItem("roleId", data.role);
       sessionStorage.setItem("userId", data.userId);
 
-      if (data.role === 1) window.location.href = "/student";
+
+      if (data.role === 1 && data.gradeId !== null){
+        sessionStorage.setItem("gradeId", data.gradeId);
+        window.location.href = "/student";
+      } 
       else if (data.role === 2) window.location.href = "/parent";
       else if (data.role === 3) window.location.href = "/admin";
+      else if (data.role === 1 && data.gradeId === null) window.location.href = "/choose-grade"
       else window.location.href = "/choose-role";
     }
   };
+
+  if (loading) {
+    return <div className="loading-spinner">Đang tải dữ liệu...</div>;
+}
 
 
   return (

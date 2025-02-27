@@ -5,7 +5,7 @@ namespace backend.Repositories
     public interface ICurriculumRepository
     {
         Task AddChaptersAsync(List<Chapter> chapters);
-        Task<List<Chapter>> GetAllChapterAsync();
+        Task<List<Chapter>> GetAllChapterAsync(int grade);
         Task<Chapter> GetChapterByIdAsync(int id);
         Task UpdateChapterAsync(Chapter chapter);
 

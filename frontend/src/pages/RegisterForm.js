@@ -11,6 +11,7 @@ const RegisterForm = () => {
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e) => {
@@ -63,7 +64,7 @@ const RegisterForm = () => {
     };
 
     try {
-      // Gửi yêu cầu đăng ký đến API
+      setLoading(true);
       const response = await fetch('https://localhost:7259/api/Auth/Register', {
         method: 'POST',
         headers: {
@@ -76,7 +77,7 @@ const RegisterForm = () => {
 
       if (response.ok) {
         console.log('Đăng ký thành công:', result);
-        window.location.href = '/login';
+        setMessage(result.message || 'Đăng ký thành công, Vui lòng mở email để xác nhận!')
       } else {
         setError(result.message || 'Đăng ký không thành công');
       }
@@ -90,6 +91,9 @@ const RegisterForm = () => {
     console.log('Đăng ký với:', formData);
   };
 
+  if (loading) {
+    return <div className="loading-spinner">Đang tải dữ liệu...</div>;
+}
 
   return (
     <div className="auth-container">
@@ -100,6 +104,11 @@ const RegisterForm = () => {
           {error && (
             <div className="error-message">
               {error}
+            </div>
+          )}
+            {message && (
+            <div className="success-message">
+              {message}
             </div>
           )}
 

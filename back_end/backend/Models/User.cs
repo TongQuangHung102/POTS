@@ -22,6 +22,10 @@ namespace backend.Models
 
         [ForeignKey("Role")]
         public virtual Role RoleNavigation { get; set; }
+        public int? GradeId { get; set; }
+
+        [ForeignKey("GradeId")]
+        public virtual Grades? Grade { get; set; }
         public virtual ICollection<Chapter> Chapters { get; set; }
         public virtual ICollection<QuizAttempt> QuizAttempts { get; set; }
         public virtual ICollection<StudentPerformance> StudentPerformances { get; set; }
