@@ -10,10 +10,14 @@ namespace backend.Models
         public int TestId { get; set; }
         public string TestName { get; set; }
         public string Description { get; set; }
-        public TimeSpan Duration { get; set; }
+        public int DurationInMinutes { get; set; }
         public int MaxScore { get; set; }
         public DateTime CreatedAt { get; set; }
         public bool IsVisible { get; set; }
+        public int Order { get; set; }
+        public int GradeId { get; set; }
+        [ForeignKey("GradeId")]
+        public virtual Grades Grade { get; set; }
         public virtual ICollection<TestQuestion> TestQuestions { get; set; }
         public virtual ICollection<StudentTest> StudentTests { get; set; }
         public virtual ICollection<Prerequisite> Prerequisites { get; set; }

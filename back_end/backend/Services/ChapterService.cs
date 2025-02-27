@@ -26,14 +26,14 @@ namespace backend.Services
           return chapters;
         }
 
-        public async Task AddChaptersAsync(int gradeId, string input)
+        public async Task AddChaptersAsync(int gradeId,int semester, string input)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
                 throw new ArgumentException("Không được bỏ trống");
             }
 
-            var chapters = ParseChapters(input);
+            var chapters = ParseChapters(input, semester);
 
             await ValidateDuplicateChaptersAsync(gradeId, chapters);
 
@@ -57,11 +57,12 @@ namespace backend.Services
             existingChapter.Order = chapterDto.Order;
             existingChapter.ChapterName = chapterDto.ChapterName;
             existingChapter.IsVisible = chapterDto.IsVisible;
+            existingChapter.Semester = chapterDto.Semester;
 
             await _curriculumRepository.UpdateChapterAsync(existingChapter);
         }
 
-        private static List<Chapter> ParseChapters(string input)
+        private static List<Chapter> ParseChapters(string input, int semester)
         {
             var chapters = new List<Chapter>();
             var regex = new Regex(@"Chương\s(\d+):?\s(.+?)(?=\s*Chương\s|\s*$)", RegexOptions.Singleline);
@@ -97,7 +98,8 @@ namespace backend.Services
                     Order = chapterNumber,
                     ChapterName = title,
                     IsVisible = true,
-                    UserId = null
+                    UserId = null,
+                    Semester = semester
                 });
                 chapterNumbers.Add(chapterNumber);
             }

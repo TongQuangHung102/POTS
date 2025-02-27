@@ -63,7 +63,7 @@ namespace backend.Controllers
         {
             try
             {
-                await _chapterService.AddChaptersAsync(chaptersRequest.GradeId, chaptersRequest.Input);
+                await _chapterService.AddChaptersAsync(chaptersRequest.GradeId,chaptersRequest.Semester, chaptersRequest.Input);
                 return Ok("Chương được thêm thành công!");
             }
             catch (ArgumentException ex)

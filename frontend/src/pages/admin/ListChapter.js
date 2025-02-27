@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import {useParams, Link } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 import './ListChapter.css';
 
 
@@ -12,6 +12,7 @@ const ListChapter = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [selectedChapter, setSelectedChapter] = useState(null);
+  const [selectedSemester, setSelectedSemester] = useState(1);
 
   //get du lieu
   useEffect(() => {
@@ -40,7 +41,8 @@ const ListChapter = () => {
         },
         body: JSON.stringify({
           gradeId: gradeId,
-          input: newChapterTitle
+          input: newChapterTitle,
+          semester: selectedSemester
         })
       });
 
@@ -99,6 +101,7 @@ const ListChapter = () => {
           order: selectedChapter.order,
           chapterName: selectedChapter.chapterName,
           isVisible: selectedChapter.isVisible,
+          semester: selectedChapter.semester
         }),
       });
       const message = await response.text();
@@ -132,7 +135,7 @@ const ListChapter = () => {
       <h2>Danh Sách Chương</h2>
       <div className="group-header">
         <div>
-           <Link className="backlink" to='/admin'>Home</Link>/ Chapter 
+          <Link className="backlink" to='/admin'>Trang chủ</Link>/<Link className="backlink" to='/admin/grade'>Khối</Link>/ Chương
         </div>
         <button className="add-chapter" onClick={() => setShowAddChapter(true)}>Thêm Chương Mới</button>
       </div>
@@ -145,6 +148,26 @@ const ListChapter = () => {
               value={newChapterTitle}
               onChange={(e) => setNewChapterTitle(e.target.value)}
             />
+            <div className="semester-selection">
+              <label>
+                <input
+                  type="radio"
+                  value={1}
+                  checked={selectedSemester === 1}
+                  onChange={() => setSelectedSemester(1)}
+                />
+                Học kỳ 1
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value={2}
+                  checked={selectedSemester === 2}
+                  onChange={() => setSelectedSemester(2)}
+                />
+                Học kỳ 2
+              </label>
+            </div>
             <div className="action-buttons">
               <button onClick={handleAddChapter}>Thêm</button>
               <button onClick={() => setShowAddChapter(false)}>Hủy</button>
@@ -163,8 +186,9 @@ const ListChapter = () => {
         <thead>
           <tr>
             <th style={{ width: "10%" }}>Chương</th>
-            <th style={{ width: "50%" }}>Tên Chương</th>
-            <th style={{ width: "20%" }}>Trạng thái</th>
+            <th style={{ width: "40%" }}>Tên Chương</th>
+            <th style={{ width: "15%" }}>Học kỳ</th>
+            <th style={{ width: "15%" }}>Trạng thái</th>
             <th>Hành động</th>
           </tr>
         </thead>
@@ -173,6 +197,7 @@ const ListChapter = () => {
             <tr key={chapter.chapterId}>
               <td>{chapter.order}</td>
               <td>{chapter.chapterName}</td>
+              <td>Học kỳ {chapter.semester}</td>
               <td>{chapter.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
@@ -209,6 +234,27 @@ const ListChapter = () => {
                 }
               />
             </label>
+            <label>Học kỳ:</label>
+            <div className="semester-selection">
+              <label>
+                <input
+                  type="radio"
+                  value={1}
+                  checked={selectedChapter?.semester === 1}
+                  onChange={() => setSelectedChapter({ ...selectedChapter, semester: 1 })}
+                />
+                Học kỳ 1
+              </label>
+              <label>
+                <input
+                  type="radio"
+                  value={2}
+                  checked={selectedChapter?.semester === 2}
+                  onChange={() => setSelectedChapter({ ...selectedChapter, semester: 2 })}
+                />
+                Học kỳ 2
+              </label>
+            </div>
             <label>
               Trạng thái:
               <select

@@ -30,7 +30,5 @@ namespace backend.DataAccess.DAO
             _context.Grades.Add(grade);
             await _context.SaveChangesAsync();
         }
-
-
     }
 }

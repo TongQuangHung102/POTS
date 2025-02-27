@@ -20,6 +20,5 @@ namespace backend.Models
         public virtual ICollection<QuizAttempt> QuizAttempts { get; set; }
         public virtual ICollection<StudentPerformance> StudentPerformances { get; set; }
         public virtual ICollection<StudentProgress> StudentProgresses { get; set; }
-        public virtual ICollection<Prerequisite> Prerequisites { get; set; }
     }
 }

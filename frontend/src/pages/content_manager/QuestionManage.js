@@ -124,7 +124,7 @@ const QuestionManage = () => {
                 <div className={styles.filter}>
                 <select id="id_name" className={styles.dropFilter}>
                         <option value="1">Active </option>
-                        <option value="4">NotActive </option>
+                        <option value="2">NotActive </option>
                     </select>
 
                     <input

@@ -3,64 +3,67 @@ import { Link } from "react-router-dom";
 import './ListChapter.css';
 
 
-const ListGrades = () => {
-  const [grades, setGrades] = useState([]);
-  const [newGrades, setNewGrades] = useState('');
-  const [showAddGrade, setShowAddGrade] = useState(false);
+const TestCategory = () => {
+  const [testCategory, setTestCategory] = useState([]);
+  const [newTestCategory, setNewTestCategory] = useState('');
+  const [showAdd, setShowAdd] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
-  const [selectedGrade, setSelectedGrade] = useState(null);
+  const [selectedTestCategory, setSelectedTestCategory] = useState(null);
 
   //get du lieu
   useEffect(() => {
-    const fetchGrades = async () => {
+    const fetchTestCategory= async () => {
       try {
-        const response = await fetch('https://localhost:7259/api/Grade/get-all-grade');
+        const response = await fetch('https://localhost:7259/api/TestCategory/get-all-test-category');
         const data = await response.json();
-        setGrades(data);
+        setTestCategory(data);
       } catch (error) {
         console.error("Có lỗi khi lấy dữ liệu lớp", error);
       }
     };
 
-    fetchGrades();
+    fetchTestCategory();
   }, []);
 
   //add new grade
-  const handleAddGrade = async () => {
-    if (!newGrades.trim()) return;
+  const handleAddTestCategory = async () => {
+    if (!newTestCategory.trim()) return;
 
     try {
-      const response = await fetch('https://localhost:7259/api/Grade/add-grade', {
+      const response = await fetch('https://localhost:7259/api/TestCategory/add-new-test-category', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newGrades),
+        body: JSON.stringify({
+          categoryName: newTestCategory,
+          isVisible: true,
+        }),
       });
 
       if (!response.ok) {
         const errorResponse = await response.text();
-        const errorMessage = errorResponse ? errorResponse : 'Không thể thêm lớp mới';
+        const errorMessage = errorResponse ? errorResponse : 'Không thể thêm loại bài mới';
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);
         throw new Error(errorMessage);
       }
 
-      const gradesResponse = await fetch('https://localhost:7259/api/Grade/get-all-grade', {
+      const tCategoryResponse = await fetch('https://localhost:7259/api/TestCategory/get-all-test-category', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      const gradesData = await gradesResponse.json();
-      setGrades(gradesData);
-      setNewGrades('');
-      setShowAddGrade(false);
+      const tCategoryData = await tCategoryResponse.json();
+      setTestCategory(tCategoryData);
+      setNewTestCategory('');
+      setShowAdd(false);
       setErrorMessage('');
-      setSuccessMessage('Lớp đã được thêm thành công!');
+      setSuccessMessage('Loại bài mới đã được thêm thành công!');
 
 
       setTimeout(() => {
@@ -73,27 +76,27 @@ const ListGrades = () => {
   };
 
   //edit chapter
-  const handleEdit = (grade) => {
-    setSelectedGrade(grade);
+  const handleEdit = (t) => {
+    setSelectedTestCategory(t);
     setIsEditing(true);
   };
 
   const handleClose = () => {
     setIsEditing(false);
-    setSelectedGrade(null);
+    setSelectedTestCategory(null);
   };
 
   const handleSave = async () => {
     try {
-      const response = await fetch(`https://localhost:7259/api/Grade/update-grade/${selectedGrade.gradeId}`, {
+      const response = await fetch(`https://localhost:7259/api/TestCategory/update-test-category/${selectedTestCategory.testCategoryId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          gradeName: selectedGrade.gradeName,
-          description: selectedGrade.gradeDescription,
-          isVisible: selectedGrade.gradeIsVisible,
+          testCategoryId: selectedTestCategory.testCategoryId,
+          categoryName: selectedTestCategory.categoryName,
+          isVisible: selectedTestCategory.isVisible,
         }),
       });
       const message = await response.json();
@@ -106,14 +109,14 @@ const ListGrades = () => {
       alert("Cập nhật thành công!");
       setIsEditing(false);
       setErrorMessage("");
-      const chaptersResponse = await fetch('https://localhost:7259/api/Grade/get-all-grade', {
+      const tCategoryResponse = await fetch('https://localhost:7259/api/TestCategory/get-all-test-category', {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
         },
       });
-      const gradesData = await chaptersResponse.json();
-      setGrades(gradesData);
+      const tCategoryData = await tCategoryResponse.json();
+      setTestCategory(tCategoryData);
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -124,29 +127,26 @@ const ListGrades = () => {
 
   return (
     <div className="chapter-list-container">
-      <h2>Danh Sách Khối Lớp</h2>
+      <h2>Danh Sách Loại Bài Kiểm Tra</h2>
       <div className="group-header">
         <div>
-           <Link className="backlink" to='/admin'>Trang chủ</Link>/ Khối lớp 
+           <Link className="backlink" to='/admin'>Trang chủ</Link>/ Loại bài 
         </div>
-        <button className="add-chapter" onClick={() => setShowAddGrade(true)}>Thêm lớp mới</button>
+        <button className="add-chapter" onClick={() => setShowAdd(true)}>Thêm mới</button>
       </div>
-      {showAddGrade && (
+      {showAdd && (
         <div>
           <div className="add-chapter-form">
             <input
               type="text"
-              placeholder="Nhập tên chương mới"
-              value={newGrades}
-              onChange={(e) => setNewGrades(e.target.value)}
+              placeholder="Nhập tên loại bài mới"
+              value={newTestCategory}
+              onChange={(e) => setNewTestCategory(e.target.value)}
             />
             <div className="action-buttons">
-              <button onClick={handleAddGrade}>Thêm</button>
-              <button onClick={() => setShowAddGrade(false)}>Hủy</button>
+              <button onClick={handleAddTestCategory}>Thêm</button>
+              <button onClick={() => setShowAdd(false)}>Hủy</button>
             </div>
-          </div>
-          <div>
-            <p className="instruction-text">* Vui lòng nhập tên lớp theo định dạng: "Lớp số"</p>
           </div>
         </div>
 
@@ -157,24 +157,19 @@ const ListGrades = () => {
         <thead>
           <tr>
             <th style={{ width: "10%" }}>Id</th>
-            <th style={{ width: "30%" }}>Tên khối lớp</th>
-            <th style={{ width: "20%" }}>Mô tả</th>
+            <th style={{ width: "30%" }}>Tên loại bài</th>
             <th style={{ width: "20%" }}>Trạng thái</th>
             <th>Hành động</th>
           </tr>
         </thead>
         <tbody>
-          {grades.map((grade) => (
-            <tr key={grade.gradeId}>
-              <td>{grade.gradeId}</td>
-              <td>{grade.gradeName}</td>
-              <td>{grade.gradeDescription}</td>
-              <td>{grade.gradeIsVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
+          {testCategory.map((t) => (
+            <tr key={t.testCategoryId}>
+              <td>{t.testCategoryId}</td>
+              <td>{t.categoryName}</td>
+              <td>{t.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
-                <button>
-                  <Link to={`/admin/grade/${grade.gradeId}`}>Xem chương trình</Link>
-                </button>
-                <button onClick={() => handleEdit(grade)}>Chỉnh sửa</button>
+                <button onClick={() => handleEdit(t)}>Chỉnh sửa</button>
               </td>
             </tr>
           ))}
@@ -184,35 +179,25 @@ const ListGrades = () => {
       {isEditing && (
         <div className="modal">
           <div className="modal-content">
-            <h3>Chỉnh sửa lớp</h3>
+            <h3>Chỉnh sửa loại bài</h3>
             <label>
-              Tên khối:
+              Tên:
               <input
                 type="text"
-                value={selectedGrade?.gradeName}
+                value={selectedTestCategory?.categoryName}
                 onChange={(e) =>
-                  setSelectedGrade({ ...selectedGrade, gradeName: e.target.value })
-                }
-              />
-            </label>
-            <label>
-              Mô tả:
-              <input
-                type="text"
-                value={selectedGrade?.gradeDescription}
-                onChange={(e) =>
-                  setSelectedGrade({ ...selectedGrade, gradeDescription: e.target.value })
+                  setSelectedTestCategory({ ...selectedTestCategory, categoryName: e.target.value })
                 }
               />
             </label>
             <label>
               Trạng thái:
               <select
-                value={selectedGrade?.gradeIsVisible}
+                value={selectedTestCategory?.isVisible}
                 onChange={(e) =>
-                  setSelectedGrade({
-                    ...selectedGrade,
-                    gradeIsVisible: e.target.value === "true"
+                    setSelectedTestCategory({
+                    ...selectedTestCategory,
+                    isVisible: e.target.value === "true"
                   })
                 }
               >
@@ -260,4 +245,4 @@ const ListGrades = () => {
   );
 };
 
-export default ListGrades;
+export default TestCategory;

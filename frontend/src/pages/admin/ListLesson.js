@@ -126,7 +126,7 @@ const ListLesson = () => {
     <div className="lesson-container">
       <h2>Danh sách bài học</h2>
       <div className="group-header">
-        <div> <Link className="backlink" to='/admin'>Home</Link>/<Link className="backlink" to='/admin/chapter'>Chapter</Link>/ Lesson </div>
+        <div> <Link className="backlink" to='/admin'>Trang chủ</Link>/<Link className="backlink" to='/admin/grade'>Khối</Link>/<Link className="backlink" to='/admin/grade/chapter'>Chương</Link>/ Bài </div>
         <button className="add-chapter" onClick={() => setShowAddLesson(true)}>Thêm Bài Mới</button>
       </div>
       {showAddLesson && (

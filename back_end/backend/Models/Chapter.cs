@@ -14,11 +14,14 @@ namespace backend.Models
         public int? UserId { get; set; }
         public int GradeId { get; set; }
 
+        public int Semester { get;set; }
+
         [ForeignKey("UserId")]
         public virtual User? User { get; set; }
 
         [ForeignKey("GradeId")]
         public virtual Grades Grade { get; set; }
         public virtual ICollection<Lesson> Lessons { get; set; }
+        public virtual ICollection<Prerequisite> Prerequisites { get; set; }
     }
 }
