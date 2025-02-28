@@ -17,13 +17,13 @@ namespace backend.Controllers
             _testService = testService;
         }
 
-        [HttpGet]
+        [HttpGet("get-all-test")]
         public async Task<ActionResult<List<TestDto>>> GetAllTests()
         {
             return await _testService.GetAllTests();
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("get-test-by-id/{id}")]
         public async Task<ActionResult<TestDto>> GetTestById(int id)
         {
             var test = await _testService.GetTestById(id);
@@ -33,7 +33,7 @@ namespace backend.Controllers
             return test;
         }
 
-        [HttpPost]
+        [HttpPost("add-new-test")]
         public async Task<ActionResult> AddTest([FromBody] TestDto testDto)
         {
             if (testDto == null)
@@ -43,7 +43,7 @@ namespace backend.Controllers
             return Ok("Thêm bài kiểm tra thành công!");
         }
 
-        [HttpPut("{id}")]
+        [HttpPut("edit-test/{id}")]
         public async Task<ActionResult> UpdateTest(int id, [FromBody] TestDto testDto)
         {
             if (testDto == null || id != testDto.TestId)

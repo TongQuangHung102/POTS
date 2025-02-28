@@ -23,6 +23,7 @@ import UserList from '../pages/admin/UserList';
 import ListGrades from '../pages/admin/ListGrades';
 import ChooseGrade from '../pages/student/ChooseGrade';
 import TestCategory from '../pages/admin/TestCategory';
+import ListTest from '../pages/admin/ListTest';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
@@ -46,9 +47,9 @@ const AppRoutes = () => {
             <Route path='/admin' element={<AdminLayout />}>
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
-                <Route path="/admin/grade" element={<ListGrades />} />
-                <Route path="/admin/grade/:gradeId" element={<ListChapter />} />
-                <Route path="/admin/grade/chapter/:chapterId" element={<ListLesson />} />
+                <Route path="/admin/grades" element={<ListGrades />} />
+                <Route path="/admin/:gradeId/chapters" element={<ListChapter />} />
+                <Route path="/admin/:gradeId/:chapterId/lessons" element={<ListLesson />} />
                 <Route path='/admin/package' element={<ListPackage />} />
                 <Route
                     path='/admin/package/:planId'
@@ -58,6 +59,7 @@ const AppRoutes = () => {
                 <Route path='/admin/question' element={<QuestionManage />}></Route> 
                 <Route path='/admin/users' element={<UserList />}></Route> 
                 <Route path='/admin/test_category' element={<TestCategory />}></Route> 
+                <Route path='/admin/:gradeId/list_tests' element={<ListTest />}></Route> 
             </Route>
 
             <Route path='/student' element={<StudentLayout />}> 

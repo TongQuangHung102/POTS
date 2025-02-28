@@ -58,7 +58,8 @@ namespace backend.Services
                     MaxScore = testDto.MaxScore,
                     IsVisible = testDto.IsVisible,
                     Order = testDto.Order,
-                    CreatedAt = testDto.CreatedAt
+                    CreatedAt = testDto.CreatedAt,
+                    GradeId = testDto.GradeId
                 };
 
                 await _testRepository.AddAsync(test);
@@ -89,6 +90,7 @@ namespace backend.Services
             existingTest.MaxScore = testDto.MaxScore;
             existingTest.IsVisible = testDto.IsVisible;
             existingTest.Order = testDto.Order;
+            existingTest.GradeId = testDto.GradeId;
 
             await _testRepository.UpdateAsync(existingTest);
             return new OkObjectResult(new { Message = "Cập nhật thành công!" });
