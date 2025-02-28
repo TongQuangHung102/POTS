@@ -1,72 +1,145 @@
-import { useState, useEffect } from "react";
-import { Container, Form, Button } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Form, Button, Card, Alert } from 'react-bootstrap';
+import axios from 'axios';
 
-export default function ProfilePage() {
-    const [user, setUser] = useState(null);
-    const [formData, setFormData] = useState({ name: "", email: "", role: "" });
-    const userId = 1; // Thay bằng userId thực tế
+const Profile = () => {
+    const [userInfo, setUserInfo] = useState({
+        userName: '',
+        email: '',
+        phone: '',
+        password: '',
+        confirmPassword: '',
+    });
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+    // Lấy userId từ sessionStorage
+    const userId = sessionStorage.getItem('userId');
 
     useEffect(() => {
-        fetch(`https://localhost:7259/api/User/${userId}`)
-            .then((res) => res.json())
-            .then((data) => {
-                setUser(data);
-                setFormData({ name: data.name, email: data.email, role: data.role });
-            })
-            .catch((error) => console.error("Error fetching user data:", error));
-    }, [userId]);
+        if (!userId) {
+            setError('Không có ID người dùng trong session');
+            setLoading(false);
+            return;
+        }
+
+        // Lấy dữ liệu người dùng từ API
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get(`https://localhost:7259/api/User/get-user-by/${userId}`);
+                setUserInfo(response.data); // Dữ liệu người dùng trả về từ API
+                setLoading(false);
+            } catch (error) {
+                setError('Không thể tải dữ liệu người dùng');
+                setLoading(false);
+            }
+        };
+
+        fetchUserData();
+    }, [userId]);  // useEffect chỉ chạy khi userId thay đổi
 
     const handleChange = (e) => {
-        setFormData({ ...formData, [e.target.name]: e.target.value });
+        setUserInfo({
+            ...userInfo,
+            [e.target.name]: e.target.value,
+        });
     };
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        fetch(`https://localhost:7259/api/User/${userId}`, {
-            method: "PUT",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-        })
-            .then((res) => res.json())
-            .then((data) => {
-                alert("Profile updated successfully!");
-                setUser(data);
-            })
-            .catch((error) => console.error("Error updating profile:", error));
+        // Gửi dữ liệu đã chỉnh sửa lên API
+        try {
+            await axios.put(`https://localhost:7259/api/User/edit-user/${userId}`, {
+                userName: userInfo.userName,
+                email: userInfo.email,
+                password: userInfo.password,
+            });
+            alert('Cập nhật thông tin thành công');
+        } catch (error) {
+            setError('Cập nhật thông tin thất bại');
+        }
     };
+
+    if (loading) {
+        return <div>Đang tải dữ liệu...</div>;
+    }
 
     return (
-        <Container className="p-4" style={{ backgroundColor: "#1A2D42", color: "#D4D8DD", borderRadius: "8px" }}>
-            <h2 className="mb-4" style={{ color: "#AAB7B7" }}>User Profile</h2>
-            {user ? (
-                <Form onSubmit={handleSubmit}>
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{ color: "#C0C8CA" }}>Name:</Form.Label>
-                        <Form.Control
-                            type="text"
-                            name="name"
-                            value={formData.name}
-                            onChange={handleChange}
-                            style={{ backgroundColor: "#2E4156", color: "#D4D8DD" }}
-                        />
-                    </Form.Group>
-                    <Form.Group className="mb-3">
-                        <Form.Label style={{ color: "#C0C8CA" }}>Email:</Form.Label>
-                        <Form.Control
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            style={{ backgroundColor: "#2E4156", color: "#D4D8DD" }}
-                        />
-                    </Form.Group>
-                    <Button type="submit" style={{ backgroundColor: "#AAB7B7", color: "#1A2D42", border: "none" }}>
-                        Update Profile
-                    </Button>
-                </Form>
-            ) : (
-                <p>Loading user data...</p>
-            )}
+        <Container>
+            <Row className="justify-content-center">
+                <Col md={8}>
+                    <Card>
+                        <Card.Header>
+                            <h3>Thông tin cá nhân</h3>
+                        </Card.Header>
+                        <Card.Body>
+                            {error && <Alert variant="danger">{error}</Alert>}
+                            <Form onSubmit={handleSubmit}>
+                                <Form.Group controlId="formUsername">
+                                    <Form.Label>Tên người dùng</Form.Label>
+                                    <Form.Control
+                                        type="text"
+                                        placeholder="Nhập tên người dùng"
+                                        name="userName"
+                                        value={userInfo.userName}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+
+                                <Form.Group controlId="formEmail">
+                                    <Form.Label>Email</Form.Label>
+                                    <Form.Control
+                                        type="email"
+                                        placeholder="Nhập email"
+                                        name="email"
+                                        value={userInfo.email}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+
+                                <Form.Group controlId="formPhone">
+                                    <Form.Label>Số điện thoại</Form.Label>
+                                    <Form.Control
+                                        type="tel"
+                                        placeholder="Nhập số điện thoại"
+                                        name="phone"
+                                        value={userInfo.phone}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+
+                                <Form.Group controlId="formPassword">
+                                    <Form.Label>Mật khẩu</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        placeholder="Nhập mật khẩu mới"
+                                        name="password"
+                                        value={userInfo.password}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+
+                                <Form.Group controlId="formConfirmPassword">
+                                    <Form.Label>Xác nhận mật khẩu</Form.Label>
+                                    <Form.Control
+                                        type="password"
+                                        placeholder="Xác nhận mật khẩu"
+                                        name="confirmPassword"
+                                        value={userInfo.confirmPassword}
+                                        onChange={handleChange}
+                                    />
+                                </Form.Group>
+
+                                <Button variant="primary" type="submit">
+                                    Cập nhật thông tin
+                                </Button>
+                            </Form>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            </Row>
         </Container>
     );
-}
+};
+
+export default Profile;
