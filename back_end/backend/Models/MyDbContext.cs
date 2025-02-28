@@ -95,9 +95,9 @@ namespace backend.Models
                 .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<Test>()
-               .HasOne(c => c.Grade)
+               .HasOne(t => t.Grade)
                .WithMany(g => g.Tests)
-               .HasForeignKey(c => c.GradeId)
+               .HasForeignKey(t => t.GradeId)
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()

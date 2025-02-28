@@ -201,7 +201,7 @@ const ListChapter = () => {
               <td>{chapter.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
-                  <Link to={`/admin/grade/chapter/${chapter.chapterId}`}>Xem bài học</Link>
+                  <Link to={`/admin/${gradeId}/${chapter.chapterId}`}>Xem bài học</Link>
                 </button>
                 <button onClick={() => handleEdit(chapter)}>Chỉnh sửa</button>
               </td>
@@ -277,34 +277,8 @@ const ListChapter = () => {
             {errorMessage && <p className="error-message">{errorMessage}</p>}
           </div>
         </div>
+        
       )}
-      <style>
-        {`
-          .modal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex; justify-content: center; align-items: center;
-          }
-          .modal-content {
-            width:50%;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-          }
-          input, select {
-            display: block;
-            width: 100%;
-            margin: 10px 0;
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid gray;
-          }
-            
-        `}
-      </style>
 
     </div>
   );

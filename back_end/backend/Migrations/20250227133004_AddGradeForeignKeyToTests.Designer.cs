@@ -12,8 +12,8 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    [Migration("20250227093635_AddGradeForeignKeyToTest")]
-    partial class AddGradeForeignKeyToTest
+    [Migration("20250227133004_AddGradeForeignKeyToTests")]
+    partial class AddGradeForeignKeyToTests
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
