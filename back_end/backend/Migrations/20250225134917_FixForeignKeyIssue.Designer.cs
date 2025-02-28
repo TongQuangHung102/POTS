@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
@@ -11,9 +12,10 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250225134917_FixForeignKeyIssue")]
+    partial class FixForeignKeyIssue
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -112,9 +114,6 @@ namespace backend.Migrations
                         .HasColumnType("bit");
 
                     b.Property<int>("Order")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Semester")
                         .HasColumnType("int");
 
                     b.Property<int?>("UserId")
@@ -358,7 +357,7 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Prerequisite", b =>
                 {
-                    b.Property<int>("ChapterId")
+                    b.Property<int>("LessonId")
                         .HasColumnType("int")
                         .HasColumnOrder(0);
 
@@ -366,7 +365,7 @@ namespace backend.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(1);
 
-                    b.HasKey("ChapterId", "TestId");
+                    b.HasKey("LessonId", "TestId");
 
                     b.HasIndex("TestId");
 
@@ -648,19 +647,13 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("DurationInMinutes")
-                        .HasColumnType("int");
-
-                    b.Property<int>("GradeId")
-                        .HasColumnType("int");
+                    b.Property<TimeSpan>("Duration")
+                        .HasColumnType("time");
 
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
                     b.Property<int>("MaxScore")
-                        .HasColumnType("int");
-
-                    b.Property<int>("Order")
                         .HasColumnType("int");
 
                     b.Property<string>("TestName")
@@ -669,29 +662,7 @@ namespace backend.Migrations
 
                     b.HasKey("TestId");
 
-                    b.HasIndex("GradeId");
-
-                    b.ToTable("Tests");
-                });
-
-            modelBuilder.Entity("backend.Models.TestCategory", b =>
-                {
-                    b.Property<int>("TestCategoryId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TestCategoryId"), 1L, 1);
-
-                    b.Property<string>("CategoryName")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<bool>("IsVisible")
-                        .HasColumnType("bit");
-
-                    b.HasKey("TestCategoryId");
-
-                    b.ToTable("TestCategories");
+                    b.ToTable("Test");
                 });
 
             modelBuilder.Entity("backend.Models.TestQuestion", b =>
@@ -995,9 +966,9 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Prerequisite", b =>
                 {
-                    b.HasOne("backend.Models.Chapter", "Chapter")
+                    b.HasOne("backend.Models.Lesson", "Lesson")
                         .WithMany("Prerequisites")
-                        .HasForeignKey("ChapterId")
+                        .HasForeignKey("LessonId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -1007,7 +978,7 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Chapter");
+                    b.Navigation("Lesson");
 
                     b.Navigation("Test");
                 });
@@ -1142,17 +1113,6 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("backend.Models.Test", b =>
-                {
-                    b.HasOne("backend.Models.Grades", "Grade")
-                        .WithMany("Tests")
-                        .HasForeignKey("GradeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Grade");
-                });
-
             modelBuilder.Entity("backend.Models.TestQuestion", b =>
                 {
                     b.HasOne("backend.Models.Question", "Question")
@@ -1196,7 +1156,7 @@ namespace backend.Migrations
                     b.HasOne("backend.Models.Grades", "Grade")
                         .WithMany("Users")
                         .HasForeignKey("GradeId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.SetNull);
 
                     b.HasOne("backend.Models.Role", "RoleNavigation")
                         .WithMany("Users")
@@ -1248,8 +1208,6 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Chapter", b =>
                 {
                     b.Navigation("Lessons");
-
-                    b.Navigation("Prerequisites");
                 });
 
             modelBuilder.Entity("backend.Models.Contest", b =>
@@ -1263,14 +1221,14 @@ namespace backend.Migrations
                 {
                     b.Navigation("Chapters");
 
-                    b.Navigation("Tests");
-
                     b.Navigation("Users");
                 });
 
             modelBuilder.Entity("backend.Models.Lesson", b =>
                 {
                     b.Navigation("AIQuestions");
+
+                    b.Navigation("Prerequisites");
 
                     b.Navigation("Questions");
 

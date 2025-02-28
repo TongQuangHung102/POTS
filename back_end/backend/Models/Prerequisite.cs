@@ -6,9 +6,9 @@ namespace backend.Models
     public class Prerequisite
     {
         [Key, Column(Order = 0)]
-        [ForeignKey("Lesson")]
-        public int LessonId { get; set; }
-        public virtual Lesson Lesson { get; set; }
+        [ForeignKey("Chapter")]
+        public int ChapterId { get; set; }
+        public virtual Chapter Chapter { get; set; }
         [Key, Column(Order = 1)]
         [ForeignKey("Test")]
         public int TestId { get; set; }

@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
@@ -11,9 +12,10 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250227071919_AddDurationInMinutesToTest")]
+    partial class AddDurationInMinutesToTest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -651,9 +653,6 @@ namespace backend.Migrations
                     b.Property<int>("DurationInMinutes")
                         .HasColumnType("int");
 
-                    b.Property<int>("GradeId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
@@ -668,8 +667,6 @@ namespace backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TestId");
-
-                    b.HasIndex("GradeId");
 
                     b.ToTable("Tests");
                 });
@@ -1142,17 +1139,6 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("backend.Models.Test", b =>
-                {
-                    b.HasOne("backend.Models.Grades", "Grade")
-                        .WithMany("Tests")
-                        .HasForeignKey("GradeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Grade");
-                });
-
             modelBuilder.Entity("backend.Models.TestQuestion", b =>
                 {
                     b.HasOne("backend.Models.Question", "Question")
@@ -1262,8 +1248,6 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Grades", b =>
                 {
                     b.Navigation("Chapters");
-
-                    b.Navigation("Tests");
 
                     b.Navigation("Users");
                 });

@@ -18,12 +18,12 @@ namespace backend.Controllers
             _lessonService = lessonService;
         }
      
-        [HttpGet("get-all-chapter")]
-        public async Task<ActionResult<List<ChapterDto>>> GetAllChapter()
+        [HttpGet("get-chapter-by-grade")]
+        public async Task<ActionResult<List<ChapterDto>>> GetAllChapter(int gradeId)
         {
             try
             {
-                var chapters = await _chapterService.GetAllChaptersAsync();
+                var chapters = await _chapterService.GetAllChaptersAsync(gradeId);
 
                 if (chapters == null || !chapters.Any())
                 {
@@ -59,11 +59,11 @@ namespace backend.Controllers
         }
 
         [HttpPost("add-chapters")]
-        public async Task<IActionResult> AddChapters([FromBody] string input)
+        public async Task<IActionResult> AddChapters([FromBody] AddChaptersRequest chaptersRequest)
         {
             try
             {
-                await _chapterService.AddChaptersAsync(input);
+                await _chapterService.AddChaptersAsync(chaptersRequest.GradeId,chaptersRequest.Semester, chaptersRequest.Input);
                 return Ok("Chương được thêm thành công!");
             }
             catch (ArgumentException ex)
