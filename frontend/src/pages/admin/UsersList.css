@@ -1,13 +1,16 @@
 /* Tổng quát */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Arial', sans-serif;
     margin: 20px;
     background-color: #f8f9fa;
+    line-height: 1.6;
 }
 
 h2 {
     text-align: center;
     color: #333;
+    font-size: 24px;
+    margin-bottom: 20px;
 }
 
 /* Bảng danh sách user */
@@ -15,14 +18,14 @@ table {
     width: 100%;
     border-collapse: collapse;
     margin-top: 20px;
-    background: white;
+    background: #ffffff;
     border-radius: 10px;
     overflow: hidden;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 th, td {
-    padding: 12px;
+    padding: 14px;
     text-align: center;
     border-bottom: 1px solid #ddd;
 }
@@ -31,80 +34,171 @@ th {
     background-color: #007bff;
     color: white;
     text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 tr:nth-child(even) {
-    background-color: #f2f2f2;
+    background-color: #f9f9f9;
 }
 
 tr:hover {
-    background-color: #ddd;
-    transition: 0.3s;
+    background-color: #f1f1f1;
+    transition: background-color 0.3s ease;
 }
 
 /* Nút bấm */
 button {
-    padding: 8px 12px;
+    padding: 10px 15px;
     border: none;
     cursor: pointer;
     border-radius: 5px;
     font-size: 14px;
-    transition: 0.3s;
+    transition: 0.3s ease;
 }
 
 button:hover {
-    opacity: 0.8;
+    opacity: 0.85;
 }
 
+/* Nút thêm người dùng */
 .add-button {
     background-color: #28a745;
     color: white;
-    margin-bottom: 10px;
-    display: block;
-    width: fit-content;
-    padding: 10px 15px;
+    margin-bottom: 15px;
+    display: inline-block;
+    padding: 12px 18px;
+    font-size: 16px;
+    border-radius: 5px;
+    text-decoration: none;
+}
+
+.add-button:hover {
+    background-color: #218838;
+}
+
+/* Nút chỉnh sửa và xóa */
+.edit-btn, .delete-btn {
+    padding: 8px 12px;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: 0.3s ease;
 }
 
 .edit-btn {
     background-color: #ffc107;
-    color: white;
 }
 
 .delete-btn {
     background-color: #dc3545;
-    color: white;
-    margin-left: 5px;
+    margin-left: 10px;
+}
+
+.edit-btn:hover {
+    background-color: #e0a800;
+}
+
+.delete-btn:hover {
+    background-color: #c82333;
 }
 
 /* Form chỉnh sửa & thêm user */
 form {
     width: 50%;
-    margin: auto;
-    padding: 20px;
-    background: white;
+    margin: 20px auto;
+    padding: 30px;
+    background: #ffffff;
     border-radius: 10px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 form div {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 form label {
     font-weight: bold;
     display: block;
+    color: #333;
+    margin-bottom: 5px;
 }
 
 form input {
     width: 100%;
-    padding: 8px;
+    padding: 12px;
     border: 1px solid #ddd;
     border-radius: 5px;
+    font-size: 14px;
+    color: #333;
+    margin-top: 5px;
+}
+
+form input:focus {
+    outline: none;
+    border-color: #007bff;
+    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
 }
 
 .submit-btn {
     background-color: #007bff;
     color: white;
     width: 100%;
-    padding: 10px;
+    padding: 12px;
+    border-radius: 5px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+}
+
+.submit-btn:hover {
+    background-color: #0056b3;
+}
+
+/* Thêm khoảng cách cho các nút phân trang */
+.pagination {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.pagination button {
+    padding: 10px 15px;
+    margin: 0 5px;
+    font-size: 16px;
+    color: white;
+    background-color: #007bff;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s ease;
+}
+
+.pagination button:hover {
+    background-color: #0056b3;
+}
+
+.pagination button:disabled {
+    background-color: #cccccc;
+    cursor: not-allowed;
+}
+
+.search-filter {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.search-filter input, .search-filter select {
+    padding: 8px 12px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.search-filter input {
+    width: 60%;
+}
+
+.search-filter select {
+    width: 35%;
 }
