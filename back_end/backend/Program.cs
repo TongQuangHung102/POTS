@@ -40,6 +40,9 @@ builder.Services.AddScoped<PasswordEncryption>();
 builder.Services.AddScoped<GradeService>();
 builder.Services.AddScoped<IGradeRepository, GradeRepository>();
 builder.Services.AddScoped<GradeDAO>();
+builder.Services.AddScoped<QuestionService>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<QuestionDAO>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
