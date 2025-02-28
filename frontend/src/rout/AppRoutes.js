@@ -10,13 +10,13 @@ import { useAuth } from '../hooks/useAuth';
 import ListPackage from '../pages/admin/ListPackage';
 import PackageDetail from '../pages/admin/PackageDetail';
 import AddPackage from '../pages/admin/AddPackage';
-import UserForm from '../pages/admin/UserForm';
+
 import ChooseRole from '../pages/ChooseRole';
 import PricingPage from '../pages/PricingPage';
 import StudentDashboard from '../pages/StudentDashboard';
 import StudentLayout from '../pages/StudentLayout';
 import Profile from '../pages/ProfilePage';
-
+import AddUser from '../pages/admin/AddUser';
 import Course from '../pages/student/Course'
 import ForgotPasswordForm from '../pages/ForgotPasswordForm';
 import Quiz from '../pages/student/Quiz';
@@ -37,7 +37,7 @@ const AppRoutes = () => {
         <Routes>
             {/* Route cho login */}
             <Route path="/profile" element={<Profile />} />
-
+            <Route path="/add-user" element={<AddUser />} />
             <Route path="/pricing" element={<PricingPage />} />
             <Route path='/login' element={<Login />} />
             <Route path='/register' element={<Register />} />
@@ -60,7 +60,7 @@ const AppRoutes = () => {
                     element={<PackageDetail />}
                 />
                 <Route path='/admin/package/add' element={<AddPackage />} />
-
+                <Route path='/admin/add-user' element={<AddUser />} />
                 <Route path='/admin/question' element={<QuestionManage />}></Route>
                 <Route path='/admin/users' element={<UserList />}></Route>
                 <Route path='/admin/test_category' element={<TestCategory />}></Route>
