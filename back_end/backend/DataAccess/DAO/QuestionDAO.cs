@@ -12,7 +12,7 @@ namespace backend.DataAccess.DAO
             _context = context;
         }
 
-        public async Task<List<Question>> GetAllQuestionsAsync(int? levelId, bool? isVisible, int page, int pageSize)
+        public async Task<List<Question>> GetAllQuestionsAsync(int? lessonId, int? levelId, bool? isVisible, int page, int pageSize)
         {
             if (page < 1) page = 1;
 
@@ -32,6 +32,11 @@ namespace backend.DataAccess.DAO
                 query = query.Where(q => q.LevelId == levelId.Value);
             }
 
+            if (lessonId.HasValue)
+            {
+                query = query.Where(q => q.LessonId == lessonId.Value);
+            }
+
             if (isVisible.HasValue)
             {
                 query = query.Where(q => q.IsVisible == isVisible.Value);
@@ -44,13 +49,18 @@ namespace backend.DataAccess.DAO
                 .ToListAsync();
         }
 
-        public async Task<int> GetTotalQuestionsAsync(int? levelId, bool? isVisible)
+        public async Task<int> GetTotalQuestionsAsync(int? lessonId,int? levelId, bool? isVisible)
         {
             var query = _context.Questions.AsQueryable();
 
             if (levelId.HasValue)
             {
                 query = query.Where(q => q.LevelId == levelId.Value);
+            }
+
+            if (lessonId.HasValue)
+            {
+                query = query.Where(q => q.LessonId == lessonId.Value);
             }
 
             if (isVisible.HasValue)

@@ -62,10 +62,9 @@ const AppRoutes = () => {
                 />
                 <Route path='/admin/package/add' element={<AddPackage />} />
                 <Route path='/admin/add-user' element={<AddUser />} />
-                <Route path='/admin/question' element={<QuestionManage />}></Route>
                 <Route path='/admin/users' element={<UserList />}></Route>
                 <Route path='/admin/test_category' element={<TestCategory />}></Route>
-                <Route path='/admin/question' element={<QuestionManage />}></Route> 
+                <Route path='/admin/question/:lessonId' element={<QuestionManage />}></Route> 
                 <Route path='/admin/test_category' element={<TestCategory />}></Route> 
                 <Route path='/admin/:gradeId/list_tests' element={<ListTest />}></Route> 
             </Route>

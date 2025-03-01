@@ -154,7 +154,7 @@ const ListTest = () => {
 
     return (
         <div className="chapter-list-container">
-            <h2>Danh Sách Loại Bài Kiểm Tra</h2>
+            <h2>Danh Sách Bài Kiểm Tra</h2>
             <div className="group-header">
                 <div>
                     <Link className="backlink" to='/admin'>Trang chủ</Link>/ Loại bài
@@ -168,7 +168,6 @@ const ListTest = () => {
                         <label>
                             Tên bài kiểm tra:
                             <select name="testName" value={test.categoryName} onChange={handleSelectChange} required>
-                                <option value="">-- Chọn bài kiểm tra --</option>
                                 {testCategory.map((item) => (
                                     <option key={item.testCategoryId} value={item.categoryName}>
                                         {item.categoryName}

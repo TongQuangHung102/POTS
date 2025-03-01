@@ -9,7 +9,7 @@ const UsersList = () => {
     const [roles, setRoles] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSizee] = useState(10);
     const [role, setRole] = useState('');
     const [email, setEmail] = useState('');
     const navigate = useNavigate();
