@@ -1,173 +1,122 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './QuestionManage.module.css';
 
 const QuestionManage = () => {
-    // Dữ liệu mẫu với 4 đáp án cho mỗi câu hỏi
-    const [questions, setQuestions] = useState([
-        {
-            id: 1,
-            question: 'Thủ đô của Việt Nam là gì?',
-            options: [
-                { id: 'a', text: 'Hà Nội' },
-                { id: 'b', text: 'Hồ Chí Minh' },
-                { id: 'c', text: 'Đà Nẵng' },
-                { id: 'd', text: 'Huế' }
-            ],
-            correctAnswer: 'a',
-            isExpanded: false
-        },
-        {
-            id: 2,
-            question: '1 + 1 = ?',
-            options: [
-                { id: 'a', text: '1' },
-                { id: 'b', text: '2' },
-                { id: 'c', text: '3' },
-                { id: 'd', text: '4' }
-            ],
-            correctAnswer: 'b',
-            isExpanded: false
-        },
-        {
-            id: 3,
-            question: 'HTML là viết tắt của gì?',
-            options: [
-                { id: 'a', text: 'HyperText Markup Language' },
-                { id: 'b', text: 'High Tech Modern Language' },
-                { id: 'c', text: 'Home Tool Markup Language' },
-                { id: 'd', text: 'Hyperlinks and Text Markup Language' }
-            ],
-            correctAnswer: 'a',
-            isExpanded: false
-        },
-        {
-            id: 4,
-            question: 'CSS dùng để làm gì?',
-            options: [
-                { id: 'a', text: 'Tạo cấu trúc trang web' },
-                { id: 'b', text: 'Định dạng và trang trí trang web' },
-                { id: 'c', text: 'Tạo chức năng tương tác trang web' },
-                { id: 'd', text: 'Tạo cơ sở dữ liệu cho trang web' }
-            ],
-            correctAnswer: 'b',
-            isExpanded: false
-        },
-        {
-            id: 5,
-            question: 'JavaScript là ngôn ngữ lập trình phía máy chủ hay phía máy khách?',
-            options: [
-                { id: 'a', text: 'Chỉ phía máy chủ' },
-                { id: 'b', text: 'Chỉ phía máy khách' },
-                { id: 'c', text: 'Cả hai, nhưng chủ yếu là phía máy khách' },
-                { id: 'd', text: 'Không phải là ngôn ngữ lập trình' }
-            ],
-            correctAnswer: 'c',
-            isExpanded: false
-        },
-    ]);
+    // State chứa danh sách câu hỏi từ API
+    const { lessonId } = useParams();
+    const [questions, setQuestions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [levelId, setLevelId] = useState('');
+    const [isVisible, setIsVisible] = useState(''); 
 
     // State cho phân trang
     const [currentPage, setCurrentPage] = useState(1);
     const questionsPerPage = 3;
-
-    // State cho bộ lọc
     const [searchTerm, setSearchTerm] = useState('');
 
-    // Xử lý thêm câu hỏi mới
-    const handleAddQuestion = () => {
-        const newQuestion = {
-            id: questions.length + 1,
-            question: 'Câu hỏi mới',
-            options: [
-                { id: 'a', text: 'Đáp án A' },
-                { id: 'b', text: 'Đáp án B' },
-                { id: 'c', text: 'Đáp án C' },
-                { id: 'd', text: 'Đáp án D' }
-            ],
-            correctAnswer: 'a',
-            isExpanded: false
+    // Gọi API để lấy dữ liệu câu hỏi
+    useEffect(() => {
+        const fetchQuestions = async () => {
+
+            setLoading(true);
+            setError(null);
+
+            try {
+                let apiUrl = `https://localhost:7259/api/Question/get-all-question?lessonId=${lessonId}&page=${currentPage}&pageSize=${questionsPerPage}`;
+
+                const queryParams = [];
+
+                if (levelId) queryParams.push(`levelId=${levelId}`);
+                if (isVisible) queryParams.push(`isVisible=${isVisible}`);
+                if (queryParams.length > 0) apiUrl += `?${queryParams.join('&')}`;
+
+                const response = await fetch(apiUrl);
+
+                if (!response.ok) throw new Error('Lỗi khi lấy dữ liệu');
+                const data = await response.json();
+                console.log("Questions state:", data);
+                // Định dạng dữ liệu cho React
+                const formattedQuestions = data.date.map(q => ({
+                    id: q.id,
+                    question: q.questionText,
+                    options: q.answerQuestions.map(a => ({
+                        id: a.number.toString(),
+                        text: a.answerText
+                    })),
+                    correctAnswer: q.correctAnswer.toString(),
+                    isExpanded: false
+                }));
+
+                setQuestions(formattedQuestions);
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
         };
-        setQuestions([...questions, newQuestion]);
-    };
 
-    // Xử lý mở rộng/thu gọn câu hỏi
-    const toggleQuestion = (id) => {
-        setQuestions(
-            questions.map(q =>
-                q.id === id ? { ...q, isExpanded: !q.isExpanded } : q
-            )
-        );
-    };
+        fetchQuestions();
+    },  [lessonId, levelId, isVisible, currentPage]);
 
-    // Xử lý lọc câu hỏi
+    // Lọc câu hỏi theo từ khóa tìm kiếm
     const filteredQuestions = questions.filter(q =>
         q.question.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
-    // Xử lý phân trang
-    const indexOfLastQuestion = currentPage * questionsPerPage;
-    const indexOfFirstQuestion = indexOfLastQuestion - questionsPerPage;
-    const currentQuestions = filteredQuestions.slice(indexOfFirstQuestion, indexOfLastQuestion);
-    const totalPages = Math.ceil(filteredQuestions.length / questionsPerPage);
-
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
 
     return (
         <div className={styles.questionManager}>
             <h1>Quản Lý Câu Hỏi</h1>
 
-            {/* Thanh công cụ trên đầu */}
             <div className={styles.toolbar}>
-                <button className={styles.addButton} onClick={handleAddQuestion}>
-                    + Thêm Câu Hỏi
-                </button>
-                <div className={styles.filter}>
-                <select id="id_name" className={styles.dropFilter}>
-                        <option value="1">Active </option>
-                        <option value="2">NotActive </option>
-                    </select>
+                <select value={levelId} onChange={(e) => setLevelId(e.target.value)}>
+                    <option value="">Chọn Level</option>
+                    <option value="1">Level 1</option>
+                    <option value="2">Level 2</option>
+                    <option value="3">Level 3</option>
+                </select>
 
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm câu hỏi..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
+                <select value={isVisible} onChange={(e) => setIsVisible(e.target.value)}>
+                    <option value="">Chọn Trạng Thái</option>
+                    <option value="true">Hiển Thị</option>
+                    <option value="false">Ẩn</option>
+                </select>
+
+                <input
+                    type="text"
+                    placeholder="Tìm kiếm câu hỏi..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
             </div>
+
+            {/* Hiển thị trạng thái tải dữ liệu */}
+            {loading && <p>Đang tải câu hỏi...</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
 
             {/* Danh sách câu hỏi */}
             <div className={styles.questionList}>
-                {currentQuestions.map(q => (
+                {filteredQuestions.map(q => (
                     <div key={q.id} className={styles.questionItem}>
-                        <div className={styles.questionHeader} onClick={() => toggleQuestion(q.id)}>
-                            <span className={styles.questionText}>{q.question}</span>
-                            <div className={styles.questionActions}>
-                                <span className={`${styles.isActive} ${styles.active}`}>Active</span>
-                                <button className={styles.editButton}>Chỉnh sửa</button>
-                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`}>▼</span>
-                            </div>
+                        <div className={styles.questionHeader} onClick={() => {
+                            setQuestions(prev =>
+                                prev.map(question =>
+                                    question.id === q.id ? { ...question, isExpanded: !question.isExpanded } : question
+                                )
+                            );
+                        }}>
+                            <span>{q.question}</span>
+                            <span className={styles.expandIcon}>{q.isExpanded ? '▲' : '▼'}</span>
                         </div>
-
                         {q.isExpanded && (
                             <div className={styles.questionDetails}>
-                                <div className={styles.optionsSection}>
-                                    <p className={styles.optionsTitle}><strong>Các đáp án:</strong></p>
-                                    <div className={styles.optionsList}>
-                                        {q.options.map(option => (
-                                            <div
-                                                key={option.id}
-                                                className={`${styles.optionItem} ${option.id === q.correctAnswer ? styles.correctAnswer : ''}`}
-                                            >
-                                                <span className={styles.optionLabel}>{option.id.toUpperCase()}.</span>
-                                                <span className={styles.optionText}>{option.text}</span>
-                                                {option.id === q.correctAnswer && (
-                                                    <span className={styles.correctIndicator}>✓</span>
-                                                )}
-                                            </div>
-                                        ))}
+                                {q.options.map(opt => (
+                                    <div key={opt.id} className={opt.id === q.correctAnswer ? styles.correctAnswer : ''}>
+                                        {opt.id.toUpperCase()}. {opt.text}
                                     </div>
-                                </div>
+                                ))}
                             </div>
                         )}
                     </div>
@@ -175,33 +124,15 @@ const QuestionManage = () => {
             </div>
 
             {/* Phân trang */}
-            {totalPages > 1 && (
-                <div className={styles.pagination}>
-                    <button
-                        onClick={() => paginate(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        &laquo;
-                    </button>
-
-                    {Array.from({ length: totalPages }, (_, i) => (
-                        <button
-                            key={i + 1}
-                            onClick={() => paginate(i + 1)}
-                            className={currentPage === i + 1 ? styles.active : ''}
-                        >
-                            {i + 1}
-                        </button>
-                    ))}
-
-                    <button
-                        onClick={() => paginate(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                    >
-                        &raquo;
-                    </button>
-                </div>
-            )}
+            <div className={styles.pagination}>
+                <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                    &laquo;
+                </button>
+                <span>Trang {currentPage}</span>
+                <button onClick={() => setCurrentPage(prev => prev + 1)}>
+                    &raquo;
+                </button>
+            </div>
         </div>
     );
 };
