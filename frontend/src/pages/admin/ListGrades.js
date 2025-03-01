@@ -157,10 +157,10 @@ const ListGrades = () => {
         <thead>
           <tr>
             <th style={{ width: "10%" }}>Id</th>
-            <th style={{ width: "30%" }}>Tên khối lớp</th>
+            <th style={{ width: "20%" }}>Tên khối lớp</th>
             <th style={{ width: "20%" }}>Mô tả</th>
             <th style={{ width: "20%" }}>Trạng thái</th>
-            <th>Hành động</th>
+            <th style={{ width: "30%" }}>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -172,10 +172,10 @@ const ListGrades = () => {
               <td>{grade.gradeIsVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
-                  <Link to={`/admin/${grade.gradeId}`}>Chương trình</Link>
+                  <Link to={`/admin/${grade.gradeId}/chapters`}>Chương trình</Link>
                 </button>
                 <button>
-                  <Link to={`/admin/grade/${grade.gradeId}`}>Chương trình</Link>
+                  <Link to={`/admin/${grade.gradeId}/list_tests`}>Bài kiểm tra</Link>
                 </button>
                 <button onClick={() => handleEdit(grade)}>Chỉnh sửa</button>
               </td>
