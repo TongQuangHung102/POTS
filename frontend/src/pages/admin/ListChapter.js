@@ -185,11 +185,11 @@ const ListChapter = () => {
       <table className="chapter-table">
         <thead>
           <tr>
-            <th style={{ width: "10%" }}>Chương</th>
+            <th style={{ width: "5%" }}>Chương</th>
             <th style={{ width: "40%" }}>Tên Chương</th>
             <th style={{ width: "15%" }}>Học kỳ</th>
             <th style={{ width: "15%" }}>Trạng thái</th>
-            <th>Hành động</th>
+            <th style={{ width: "25%" }}>Hành động</th>
           </tr>
         </thead>
         <tbody>

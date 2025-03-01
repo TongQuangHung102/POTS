@@ -18,12 +18,13 @@ namespace backend.Controllers
 
         [HttpGet("get-all-question")]
         public async Task<IActionResult> GetAllQuestions(
+            [FromQuery] int? lessonId,
             [FromQuery] int? levelId,
             [FromQuery] bool? isVisible,
             [FromQuery] int page = 1,
             [FromQuery] int pageSize = 10)
         {
-            return await _questionService.GetAllQuestionsAsync(levelId, isVisible, page, pageSize);
+            return await _questionService.GetAllQuestionsAsync(lessonId, levelId, isVisible, page, pageSize);
         }
 
         [HttpGet("get-question-by/{questionId}")]

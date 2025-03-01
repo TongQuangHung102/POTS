@@ -14,12 +14,12 @@ namespace backend.Services
             _questionRepository = questionRepository;
         }
 
-        public async Task<IActionResult> GetAllQuestionsAsync(int? levelId, bool? isVisible, int page, int pageSize)
+        public async Task<IActionResult> GetAllQuestionsAsync(int? lessonId, int? levelId, bool? isVisible, int page, int pageSize)
         {
             try
             {
-                var totalQuestions = await _questionRepository.GetTotalQuestionsAsync(levelId, isVisible);
-                var questions = await _questionRepository.GetAllQuestionsAsync(levelId, isVisible, page, pageSize);
+                var totalQuestions = await _questionRepository.GetTotalQuestionsAsync(lessonId, levelId, isVisible);
+                var questions = await _questionRepository.GetAllQuestionsAsync(lessonId, levelId, isVisible, page, pageSize);
 
                 var response = new
                 {
@@ -42,7 +42,12 @@ namespace backend.Services
                         Lesson = new
                         {
                             q.Lesson.LessonName
-                        }
+                        },
+                        AnswerQuestions = q.AnswerQuestions.Select(a => new
+                        {
+                            a.AnswerText,
+                            a.Number
+                        }).ToList()
                     })
                 };
 
