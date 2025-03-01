@@ -78,33 +78,22 @@ namespace backend.Services
 
         }
 
-        public async Task<IActionResult> UpdateTest(int id, TestDto testDto)
+        public async Task<IActionResult> UpdateTest(TestDto testDto)
         {
-            try
-            {
-                var existingTest = await _testRepository.GetByIdAsync(id);
-                if (existingTest == null)
-                    throw new ArgumentNullException("Không tìm thấy bài kiểm tra.");
+            var existingTest = await _testRepository.GetByIdAsync(testDto.TestId);
+            if (existingTest == null)
+                throw new ArgumentNullException("Không tìm thấy bài kiểm tra.");
 
-                existingTest.TestName = testDto.TestName;
-                existingTest.Description = testDto.Description;
-                existingTest.DurationInMinutes = testDto.DurationInMinutes;
-                existingTest.MaxScore = testDto.MaxScore;
-                existingTest.IsVisible = testDto.IsVisible;
-                existingTest.Order = testDto.Order;
-                existingTest.GradeId = testDto.GradeId;
+            existingTest.TestName = testDto.TestName;
+            existingTest.Description = testDto.Description;
+            existingTest.DurationInMinutes = testDto.DurationInMinutes;
+            existingTest.MaxScore = testDto.MaxScore;
+            existingTest.IsVisible = testDto.IsVisible;
+            existingTest.Order = testDto.Order;
+            existingTest.GradeId = testDto.GradeId;
 
-                await _testRepository.UpdateAsync(existingTest);
-                return new OkObjectResult(new { Message = "Cập nhật thành công!" });
-            }
-            catch (Exception ex)
-            {
-                return new ObjectResult(new { Message = "Lỗi khi thêm mới.", Error = ex.Message })
-                {
-                    StatusCode = 500
-                };
-            }
-
+            await _testRepository.UpdateAsync(existingTest);
+            return new OkObjectResult(new { Message = "Cập nhật thành công!" });
         }
     }
 }
