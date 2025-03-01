@@ -95,7 +95,7 @@ const StudentDashboard = () => {
     <div className="dashboard-container bg-light">
       <div className="main-content">
         <div class="row">
-          <Header />
+          <Header/>
         </div>
         <div className="row">
           {/* Stats Row */}
