@@ -79,17 +79,21 @@ const LoginForm = () => {
 
       if (!response.ok) {
         setError(data.message || "Đăng nhập thất bại");
-        setLoading(false);
         return;
       }
 
       handleLoginSuccess(data);
-      return;
+
 
     } catch (error) {
       console.error("Lỗi khi đăng nhập:", error);
       setError("Có lỗi xảy ra, vui lòng thử lại!");
     }
+    finally {
+      setLoading(false);
+  }
+
+    console.log('Đăng nhập với:', formData);
   };
 
   const handleLoginSuccess = (data) => {
@@ -111,7 +115,7 @@ const LoginForm = () => {
   };
 
   if (loading) {
-    return <div className="loading-spinner">Đang đăng nhập...</div>;
+    return <div className="loading-spinner">Đang tải dữ liệu...</div>;
 }
 
 

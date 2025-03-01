@@ -13,6 +13,7 @@ namespace backend.Models
         public bool IsVisible { get; set; }
         public int? UserId { get; set; }
         public int GradeId { get; set; }
+
         public int Semester { get;set; }
 
         [ForeignKey("UserId")]
