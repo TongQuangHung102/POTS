@@ -201,7 +201,7 @@ const ListChapter = () => {
               <td>{chapter.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
-                  <Link to={`/admin/${gradeId}/${chapter.chapterId}`}>Xem bài học</Link>
+                  <Link to={`/admin/${gradeId}/${chapter.chapterId}/lessons`}>Xem bài học</Link>
                 </button>
                 <button onClick={() => handleEdit(chapter)}>Chỉnh sửa</button>
               </td>
