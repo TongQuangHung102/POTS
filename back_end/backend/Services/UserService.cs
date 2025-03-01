@@ -236,6 +236,38 @@ namespace backend.Services
                 };
             }
         }
+        public async Task<IActionResult> GetUsersByRoleAsync(int roleId)
+        {
+            try
+            {
+                var users = await _userRepository.GetUsersByRoleAsync(roleId);
+                if (users == null || users.Count == 0)
+                {
+                    return new NotFoundObjectResult(new { Message = "Không tìm thấy người dùng nào với vai trò này." });
+                }
+
+                var response = users.Select(u => new
+                {
+                    u.UserId,
+                    u.UserName,
+                    u.Email,
+                    u.CreateAt,
+                    u.LastLogin,
+                    u.IsActive,
+                    RoleId = u.Role,
+                    RoleName = u.RoleNavigation?.RoleName
+                });
+
+                return new OkObjectResult(response);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = "Có lỗi xảy ra khi lấy danh sách người dùng.", error = ex.Message })
+                {
+                    StatusCode = 500
+                };
+            }
+        }
 
     }
 }
