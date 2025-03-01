@@ -122,5 +122,27 @@ namespace backend.Services
                 throw new InvalidOperationException($"Chương đã tồn tại : {duplicatesInfo}");
             }
         }
+        public async Task AssignContentManagersAsync(List<ChapterAssignment> assignments)
+        {
+            var chapterIds = assignments.Select(a => a.ChapterId).ToList();
+            var chapters = await _curriculumRepository.GetChaptersByIdsAsync(chapterIds);
+
+            if (chapters.Count != assignments.Count)
+            {
+                throw new KeyNotFoundException("Một hoặc nhiều chương không tồn tại.");
+            }
+
+            foreach (var assignment in assignments)
+            {
+                var chapter = chapters.FirstOrDefault(c => c.ChapterId == assignment.ChapterId);
+                if (chapter != null)
+                {
+                    chapter.UserId = assignment.UserId;
+                }
+            }
+
+            await _curriculumRepository.UpdateChaptersAsync(chapters);
+        }
+
     }
 }

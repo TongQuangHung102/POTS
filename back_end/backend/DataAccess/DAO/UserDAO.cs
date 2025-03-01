@@ -74,5 +74,12 @@ namespace backend.DataAccess.DAO
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
         }
+        public async Task<List<User>> GetUsersByRoleAsync(int roleId)
+        {
+            return await _context.Users
+                .Include(u => u.RoleNavigation)
+                .Where(u => u.Role == roleId)
+                .ToListAsync();
+        }
     }
 }

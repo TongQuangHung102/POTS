@@ -142,6 +142,27 @@ namespace backend.Controllers
                 return StatusCode(500, "Lỗi máy chủ nội bộ");
             }
         }
+        [HttpPut("assign-content-managers")]
+        public async Task<IActionResult> AssignContentManagers([FromBody] AssignContentManagerRequest request)
+        {
+            try
+            {
+                await _chapterService.AssignContentManagersAsync(request.Assignments);
+                return Ok("Gán Chapter cho Content Manager quản lý thành công!");
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(ex.Message);
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, "Lỗi máy chủ nội bộ");
+            }
+        }
 
     }
 }
