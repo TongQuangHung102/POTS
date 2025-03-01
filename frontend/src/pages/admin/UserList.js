@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-import './UsersList.css';
+
 
 const UsersList = () => {
     const [users, setUsers] = useState([]);
