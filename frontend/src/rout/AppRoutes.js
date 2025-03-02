@@ -24,6 +24,7 @@ import ListGrades from '../pages/admin/ListGrades';
 import ChooseGrade from '../pages/student/ChooseGrade';
 import TestCategory from '../pages/admin/TestCategory';
 import ListTest from '../pages/admin/ListTest';
+import AddQuestionForm from '../pages/content_manager/AddQuestionForm';
 import AssignChapter from '../pages/admin/AssignChapter';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
@@ -57,14 +58,10 @@ const AppRoutes = () => {
                     element={<PackageDetail />}
                 />
                 <Route path='/admin/package/add' element={<AddPackage />} />
-
                 <Route path='/admin/test_category' element={<TestCategory />}></Route>
-                <Route path='/admin/question/:lessonId' element={<QuestionManage />}></Route> 
-
-                <Route path='/admin/question' element={<QuestionManage />}></Route> 
                 <Route path='/admin/users' element={<UserList />}></Route> 
+                <Route path='/admin/:gradeId/list_tests' element={<ListTest />}></Route> 
 
-                <Route path='/admin/:gradeId/list_tests' element={<ListTest />}></Route>
                 <Route path='/admin/assignchapter' element={<AssignChapter />}></Route>  
             </Route>
 
@@ -72,6 +69,13 @@ const AppRoutes = () => {
                 <Route index element={<Navigate to="/student/dashboard" replace />} />  
                 <Route path="/student/dashboard" element={<StudentDashboard />} />  
                 <Route path="/student/course" element={<Course />} />  
+            </Route>
+
+            <Route path='/content_manage' element={<ContentManageLayout />}> 
+                <Route index element={<Navigate to="/content_manage/dashboard" replace />} />  
+                <Route path="/content_manage/dashboard" element={<StudentDashboard />} />  
+                <Route path='/content_manage/question/:lessonId' element={<QuestionManage />}></Route> 
+                <Route path='/content_manage/add-question' element={<AddQuestionForm />}></Route> 
             </Route>
 
 

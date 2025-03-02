@@ -1,0 +1,67 @@
+.form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 70vw;
+    margin: auto;
+    padding: 20px;
+    margin-left: var(--sidebar-width);
+}
+
+.form h2 {
+    text-align: center;
+}
+
+label {
+    font-weight: bold;
+}
+
+textarea {
+    width: 100%;
+    height: 60px;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+select, input[type="text"] {
+    width: 100%;
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.answer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.addButton, .removeButton, .button {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.addButton {
+    width: 30%;
+    background-color: rgb(189, 255, 189);
+    color: rgb(0, 0, 0);
+}
+
+.removeButton {
+    background-color: rgb(255, 255, 255);
+    color: rgb(0, 0, 0);
+}
+
+.button {
+    background-color: rgb(172, 172, 255);
+    color: rgb(0, 0, 0);
+    font-size: 16px;
+}
+
+.button:hover {
+    background-color: rgb(149, 149, 255);
+}

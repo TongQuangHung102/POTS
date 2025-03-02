@@ -21,10 +21,12 @@ namespace backend.Controllers
             [FromQuery] int? lessonId,
             [FromQuery] int? levelId,
             [FromQuery] bool? isVisible,
+            [FromQuery] string? searchTerm,
             [FromQuery] int page = 1,
-            [FromQuery] int pageSize = 10)
+            [FromQuery] int pageSize = 10
+            )
         {
-            return await _questionService.GetAllQuestionsAsync(lessonId, levelId, isVisible, page, pageSize);
+            return await _questionService.GetAllQuestionsAsync(lessonId, levelId, searchTerm, isVisible, page, pageSize);
         }
 
         [HttpGet("get-question-by/{questionId}")]

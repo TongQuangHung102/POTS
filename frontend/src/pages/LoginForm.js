@@ -79,21 +79,15 @@ const LoginForm = () => {
 
       if (!response.ok) {
         setError(data.message || "Đăng nhập thất bại");
+        setLoading(false);
         return;
       }
-
       handleLoginSuccess(data);
-
-
     } catch (error) {
       console.error("Lỗi khi đăng nhập:", error);
       setError("Có lỗi xảy ra, vui lòng thử lại!");
     }
-    finally {
-      setLoading(false);
-  }
 
-    console.log('Đăng nhập với:', formData);
   };
 
   const handleLoginSuccess = (data) => {
@@ -109,6 +103,7 @@ const LoginForm = () => {
       } 
       else if (data.role === 2) window.location.href = "/parent";
       else if (data.role === 3) window.location.href = "/admin";
+      else if (data.role === 4) window.location.href = "/content_manage";
       else if (data.role === 1 && data.gradeId === null) window.location.href = "/choose-grade"
       else window.location.href = "/choose-role";
     }
