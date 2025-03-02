@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
-import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare } from "react-icons/bi";
+import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare, BiNotepad } from "react-icons/bi";
 import { useAuth } from "../hooks/useAuth"; 
 
 
@@ -26,6 +26,7 @@ const Sidebar = () => {
       { path: "/admin/users", icon: <BiSolidUserDetail />, label: "Người dùng" },
       { path: "/admin/package", icon: <BiPackage />, label: "Gói" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
+      { path: "/admin/assignchapter", icon: <BiNotepad />, label: "Phân công nội dung" }
     ],
     Parent: [
       { path: "/", icon: <BiSolidDashboard />, label: "Dashboard" },

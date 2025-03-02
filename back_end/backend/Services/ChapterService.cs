@@ -143,6 +143,44 @@ namespace backend.Services
 
             await _curriculumRepository.UpdateChaptersAsync(chapters);
         }
+        public async Task<List<ChapterAssignDto>> GetAllChaptersAsync()
+        {
+            var chapters = await _curriculumRepository.GetAllChaptersAsync();
+
+            return chapters.Select(chapter => new ChapterAssignDto
+            {
+                ChapterId = chapter.ChapterId,
+                ChapterName = chapter.ChapterName,
+                IsVisible = chapter.IsVisible,
+                Order = chapter.Order,
+                Semester = chapter.Semester,
+                UserId = chapter.UserId,
+                UserName = chapter.User?.UserName,
+                GradeName = chapter.Grade?.GradeName
+            }).ToList();
+        }
+
+        public async Task<ChapterAssignDto> GetChapterIdAsync(int chapterId)
+        {
+            var chapter = await _curriculumRepository.GetChapterIdAsync(chapterId);
+            if (chapter == null)
+            {
+                return null;
+            }
+
+            return new ChapterAssignDto
+            {
+                ChapterId = chapter.ChapterId,
+                ChapterName = chapter.ChapterName,
+                IsVisible = chapter.IsVisible,
+                Order = chapter.Order,
+                Semester = chapter.Semester,
+                UserId = chapter.UserId,
+                UserName = chapter.User?.UserName,
+                GradeName = chapter.Grade?.GradeName
+            };
+        }
+
 
     }
 }
