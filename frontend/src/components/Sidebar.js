@@ -41,7 +41,7 @@ const Sidebar = () => {
     ],
     content_manager: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
-      { path: "/student/course", icon: <BiAlignRight />, label: "Khóa học" },
+      { path: "/content_manage/question/:lessonId", icon: <BiAlignRight />, label: "Câu hỏi" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],

@@ -1,4 +1,5 @@
 ﻿using backend.Models;
+using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.DataAccess.DAO
@@ -12,7 +13,7 @@ namespace backend.DataAccess.DAO
             _context = context;
         }
 
-        public async Task<List<Question>> GetAllQuestionsAsync(int? lessonId, int? levelId, bool? isVisible, int page, int pageSize)
+        public async Task<List<Question>> GetAllQuestionsAsync(int? lessonId, int? levelId, string searchTerm, bool? isVisible, int page, int pageSize)
         {
             if (page < 1) page = 1;
 
@@ -42,6 +43,11 @@ namespace backend.DataAccess.DAO
                 query = query.Where(q => q.IsVisible == isVisible.Value);
             }
 
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(q => q.QuestionText.ToLower().Contains(searchTerm.ToLower()));
+
+            }
             return await query
                 .OrderBy(q => q.QuestionId)
                 .Skip(skip)
@@ -49,7 +55,7 @@ namespace backend.DataAccess.DAO
                 .ToListAsync();
         }
 
-        public async Task<int> GetTotalQuestionsAsync(int? lessonId,int? levelId, bool? isVisible)
+        public async Task<int> GetTotalQuestionsAsync(int? lessonId,int? levelId, string searchTerm, bool? isVisible)
         {
             var query = _context.Questions.AsQueryable();
 
@@ -66,6 +72,11 @@ namespace backend.DataAccess.DAO
             if (isVisible.HasValue)
             {
                 query = query.Where(q => q.IsVisible == isVisible.Value);
+            }
+            if (!string.IsNullOrWhiteSpace(searchTerm))
+            {
+                query = query.Where(q => q.QuestionText.ToLower().Contains(searchTerm.ToLower()));
+
             }
 
             return await query.CountAsync();
