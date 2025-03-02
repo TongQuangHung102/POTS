@@ -24,6 +24,7 @@ import ListGrades from '../pages/admin/ListGrades';
 import ChooseGrade from '../pages/student/ChooseGrade';
 import TestCategory from '../pages/admin/TestCategory';
 import ListTest from '../pages/admin/ListTest';
+import AssignChapter from '../pages/admin/AssignChapter';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
@@ -63,7 +64,8 @@ const AppRoutes = () => {
                 <Route path='/admin/question' element={<QuestionManage />}></Route> 
                 <Route path='/admin/users' element={<UserList />}></Route> 
 
-                <Route path='/admin/:gradeId/list_tests' element={<ListTest />}></Route> 
+                <Route path='/admin/:gradeId/list_tests' element={<ListTest />}></Route>
+                <Route path='/admin/assignchapter' element={<AssignChapter />}></Route>  
             </Route>
 
             <Route path='/student' element={<StudentLayout />}> 
