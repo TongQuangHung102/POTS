@@ -14,11 +14,15 @@ namespace backend.DataAccess.DAO
 
         public async Task<List<Grades>> GetAllGradesAsync()
         {
-            return await _context.Grades.ToListAsync();
+            return await _context.Grades.Include(u => u.User).ToListAsync();
         }
         public async Task<Grades?> GetGradeByIdAsync(int id)
         {
             return await _context.Grades.FirstOrDefaultAsync(g => g.GradeId == id);
+        }
+        public async Task<List<Grades>> GetGradeByUserIdAsync(int id)
+        {
+            return await _context.Grades.Where(u => u.UserId == id).ToListAsync();
         }
         public async Task UpdateGradeAsync(Grades grade)
         {

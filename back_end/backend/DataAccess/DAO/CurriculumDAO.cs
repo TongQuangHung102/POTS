@@ -68,22 +68,6 @@ namespace backend.DataAccess.DAO
             _context.Chapters.UpdateRange(chapters);
             await _context.SaveChangesAsync();
         }
-        public async Task<List<Chapter>> GetAllChaptersAsync()
-        {
-            return await _context.Chapters
-                         .Include(ch => ch.User)  
-                         .Include(ch => ch.Grade) 
-                         .ToListAsync();
-        }
-        public async Task<Chapter> GetChapterIdAsync(int chapterId)
-        {
-            return await _context.Chapters
-                .Include(ch => ch.User)
-                .Include(ch => ch.Grade)
-                .FirstOrDefaultAsync(ch => ch.ChapterId == chapterId);
-        }
-
-
 
     }
 }

@@ -6,7 +6,9 @@
 .lesson-table {
   margin-top: 20px;
   width: 100%;
-  border-collapse: collapse;
+  border-collapse: separate; 
+  border-spacing: 5px 10px;
+  text-align: center;
 }
 
 .lesson-table th,
@@ -16,10 +18,23 @@
 }
 
 .lesson-table th {
+  border: none;
   background-color: #f4f4f4;
   text-align: left;
   color: black;
+  border-radius: 20px;
+  text-align: center;
 }
+
+.lesson-table tr, td{
+  border: none !important;
+  border-radius: 20px;
+}
+
+.lesson-table tr{
+  background-color: #fafafa;
+  
+  }
 
 .lesson-table button {
   margin-left: 10px;

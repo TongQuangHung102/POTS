@@ -12,14 +12,14 @@ namespace backend.Repositories
             _questionDAO = questionDAO;
         }
 
-        public async Task<List<Question>> GetAllQuestionsAsync(int? lessonId, int? levelId, string searchTerm, bool? isVisible, int page, int pageSize)
+        public async Task<List<Question>> GetAllQuestionsAsync(int? chapterId, int? lessonId, int? levelId, string searchTerm, bool? isVisible, int page, int pageSize)
         {
-            return await _questionDAO.GetAllQuestionsAsync(lessonId, levelId, searchTerm, isVisible, page, pageSize);
+            return await _questionDAO.GetAllQuestionsAsync(chapterId, lessonId, levelId, searchTerm, isVisible, page, pageSize);
         }
 
-        public async Task<int> GetTotalQuestionsAsync(int? lessonId, int? levelId, string searchTerm, bool? isVisible)
+        public async Task<int> GetTotalQuestionsAsync(int? chapterId, int? lessonId, int? levelId, string searchTerm, bool? isVisible)
         {
-            return await _questionDAO.GetTotalQuestionsAsync(lessonId, levelId, searchTerm, isVisible);
+            return await _questionDAO.GetTotalQuestionsAsync(chapterId, lessonId, levelId, searchTerm, isVisible);
         }
         public async Task<Question?> GetQuestionByIdAsync(int questionId)
         {

@@ -15,15 +15,9 @@ namespace backend.Services
         }
         public async Task<List<Chapter>> GetAllChaptersAsync(int gradeId)
         {
-            var chapters = await _curriculumRepository.GetAllChapterAsync(gradeId);   
-          /*  return chapters.Select(chapter => new ChapterDto
-            {
-                ChapterId = chapter.ChapterId,
-                ChapterName = chapter.ChapterName,
-                IsVisible = chapter.IsVisible,
-                Order = chapter.Order
-            }).ToList();*/
-          return chapters;
+            var chapters = await _curriculumRepository.GetAllChapterAsync(gradeId);
+
+            return chapters;
         }
 
         public async Task AddChaptersAsync(int gradeId,int semester, string input)
@@ -122,65 +116,7 @@ namespace backend.Services
                 throw new InvalidOperationException($"Chương đã tồn tại : {duplicatesInfo}");
             }
         }
-        public async Task AssignContentManagersAsync(List<ChapterAssignment> assignments)
-        {
-            var chapterIds = assignments.Select(a => a.ChapterId).ToList();
-            var chapters = await _curriculumRepository.GetChaptersByIdsAsync(chapterIds);
-
-            if (chapters.Count != assignments.Count)
-            {
-                throw new KeyNotFoundException("Một hoặc nhiều chương không tồn tại.");
-            }
-
-            foreach (var assignment in assignments)
-            {
-                var chapter = chapters.FirstOrDefault(c => c.ChapterId == assignment.ChapterId);
-                if (chapter != null)
-                {
-                    chapter.UserId = assignment.UserId;
-                }
-            }
-
-            await _curriculumRepository.UpdateChaptersAsync(chapters);
-        }
-        public async Task<List<ChapterAssignDto>> GetAllChaptersAsync()
-        {
-            var chapters = await _curriculumRepository.GetAllChaptersAsync();
-
-            return chapters.Select(chapter => new ChapterAssignDto
-            {
-                ChapterId = chapter.ChapterId,
-                ChapterName = chapter.ChapterName,
-                IsVisible = chapter.IsVisible,
-                Order = chapter.Order,
-                Semester = chapter.Semester,
-                UserId = chapter.UserId,
-                UserName = chapter.User?.UserName,
-                GradeName = chapter.Grade?.GradeName
-            }).ToList();
-        }
-
-        public async Task<ChapterAssignDto> GetChapterIdAsync(int chapterId)
-        {
-            var chapter = await _curriculumRepository.GetChapterIdAsync(chapterId);
-            if (chapter == null)
-            {
-                return null;
-            }
-
-            return new ChapterAssignDto
-            {
-                ChapterId = chapter.ChapterId,
-                ChapterName = chapter.ChapterName,
-                IsVisible = chapter.IsVisible,
-                Order = chapter.Order,
-                Semester = chapter.Semester,
-                UserId = chapter.UserId,
-                UserName = chapter.User?.UserName,
-                GradeName = chapter.Grade?.GradeName
-            };
-        }
-
-
+        
+       
     }
 }

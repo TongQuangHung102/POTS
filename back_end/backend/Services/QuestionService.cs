@@ -14,12 +14,12 @@ namespace backend.Services
             _questionRepository = questionRepository;
         }
 
-        public async Task<IActionResult> GetAllQuestionsAsync(int? lessonId, int? levelId,string searchTerm, bool? isVisible, int page, int pageSize)
+        public async Task<IActionResult> GetAllQuestionsAsync(int? chapterId, int? lessonId, int? levelId,string searchTerm, bool? isVisible, int page, int pageSize)
         {
             try
             {
-                var totalQuestions = await _questionRepository.GetTotalQuestionsAsync(lessonId, levelId, searchTerm, isVisible);
-                var questions = await _questionRepository.GetAllQuestionsAsync(lessonId, levelId, searchTerm, isVisible, page, pageSize);
+                var totalQuestions = await _questionRepository.GetTotalQuestionsAsync(chapterId, lessonId, levelId, searchTerm, isVisible);
+                var questions = await _questionRepository.GetAllQuestionsAsync(chapterId, lessonId, levelId, searchTerm, isVisible, page, pageSize);
 
                 var response = new
                 {
