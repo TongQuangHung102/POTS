@@ -66,7 +66,9 @@ const AppRoutes = () => {
                 <Route path='/admin/question' element={<QuestionManage />}></Route>
                 <Route path='/admin/users' element={<UserList />}></Route>
                 <Route path='/admin/test_category' element={<TestCategory />}></Route>
+
                 <Route path='/admin/:gradeId/list_tests' element={<ListTest />}></Route>
+
 
             </Route>
 
