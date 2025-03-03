@@ -1,12 +1,12 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
 import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare } from "react-icons/bi";
-import { useAuth } from "../hooks/useAuth"; 
+import { useAuth } from "../hooks/useAuth";
 
 
 const Sidebar = () => {
-  const { user } = useAuth(); 
-  const roleId = user?.roleId; 
+  const { user } = useAuth();
+  const roleId = user?.roleId;
 
   const roleMap = {
     1: "student",
@@ -15,7 +15,7 @@ const Sidebar = () => {
     4: "content_manager"
   };
 
-  const role = roleMap[roleId] || "guest"; 
+  const role = roleMap[roleId] || "guest";
 
   // Danh sách menu theo từng role
   const menuConfig = {
@@ -35,6 +35,7 @@ const Sidebar = () => {
     ],
     student: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/student/package", icon: <BiPackage />, label: "Gói" },
       { path: "/student/course", icon: <BiAlignRight />, label: "Khóa học" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
@@ -48,7 +49,7 @@ const Sidebar = () => {
     guest: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
       { path: "/contentmanage/question", icon: <BiAlignRight />, label: "Câu hỏi" },
-    ], 
+    ],
   };
 
   const menuItems = menuConfig[role];

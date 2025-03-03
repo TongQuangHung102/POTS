@@ -10,5 +10,6 @@
         public DateTime CreatedAt { get; set; }
         public bool IsVisible { get; set; }
         public int Order { get; set; }
+        public int GradeId { get; set; }
     }
 }

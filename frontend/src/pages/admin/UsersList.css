@@ -1,90 +1,84 @@
+
 .users-container {
-    margin: 20px auto;
     padding: 20px;
-    max-width: 90%;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-}
-.adjusted-margin {
-    margin-left: 250px; /* Điều chỉnh giá trị này để phù hợp với giao diện của bạn */
+    margin-left: var(--sidebar-width);
 }
 
-.title {
-    text-align: center;
-    font-size: 24px;
-    margin-bottom: 20px;
-}
+    .title {
+        text-align: center;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
 
-.search-filter {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
+    .search-filter {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 20px;
+    }
 
-.add-button {
-    display: block;
-    margin: 10px 0;
-    padding: 10px;
-    background-color: #007bff;
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
+    .add-button {
+        display: block;
+        margin: 10px 0;
+        padding: 10px;
+        background-color: #007bff;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
-.add-button:hover {
-    background-color: #0056b3;
-}
+    .add-button:hover {
+        background-color: #0056b3;
+    }
 
-.users-table {
-    width: 100%;
-    border-collapse: collapse;
-}
+    .users-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-.users-table th, .users-table td {
-    border: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-}
+    .users-table th, .users-table td {
+        border: 1px solid #ddd;
+        padding: 10px;
+        text-align: center;
+    }
 
-.users-table th {
-    background-color: #f8f9fa;
-}
+    .users-table th {
+        background-color: #f8f9fa;
+    }
 
-.edit-btn, .delete-btn {
-    padding: 5px 10px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-}
+    .edit-btn, .delete-btn {
+        padding: 5px 10px;
+        border: none;
+        border-radius: 3px;
+        cursor: pointer;
+    }
 
-.edit-btn {
-    background-color: #ffc107;
-    color: #000;
-}
+    .edit-btn {
+        background-color: #ffc107;
+        color: #000;
+    }
 
-.delete-btn {
-    background-color: #dc3545;
-    color: #fff;
-}
+    .delete-btn {
+        background-color: #dc3545;
+        color: #fff;
+    }
 
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
+    .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
 
-.pagination button {
-    padding: 8px 12px;
-    margin: 0 5px;
-    border: none;
-    background-color: #007bff;
-    color: white;
-    border-radius: 3px;
-    cursor: pointer;
-}
+    .pagination button {
+        padding: 8px 12px;
+        margin: 0 5px;
+        border: none;
+        background-color: #007bff;
+        color: white;
+        border-radius: 3px;
+        cursor: pointer;
+    }
 
-.pagination button:disabled {
-    background-color: #ccc;
-}
+    .pagination button:disabled {
+        background-color: #ccc;
+    }

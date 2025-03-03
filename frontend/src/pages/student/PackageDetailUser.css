@@ -1,0 +1,124 @@
+
+
+/* Cấu trúc container của trang */
+.package-detail-container {
+    width: 70%;
+    margin: 0 auto;
+    font-family: 'Roboto', sans-serif;
+    background-color: #f4f4f9;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin-left: var(--sidebar-width);
+}
+
+/* Tiêu đề trang */
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: #333;
+}
+
+/* Định dạng cho các thông tin chi tiết */
+.detail-item {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    padding: 10px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Nhãn cho các thông tin */
+.detail-item label {
+    font-weight: bold;
+    width: 200px;
+    color: #444;
+}
+
+/* Giá trị thông tin */
+.detail-item span {
+    color: #555;
+    font-style: italic;
+}
+
+/* Hiệu ứng cho các trường thông tin khi hover */
+.detail-item:hover {
+    background-color: #eef2f7;
+    transition: background-color 0.3s ease;
+}
+
+/* Nút Mua Khóa Học */
+.action-buttons {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.buy-button {
+    background-color: #28a745;
+    color: white;
+    padding: 12px 24px;
+    font-size: 18px;
+    border-radius: 5px;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.3s ease;
+}
+
+.buy-button:hover {
+    background-color: #218838;
+}
+
+/* Nút Mua Khóa Học khi ở trạng thái không hoạt động */
+.buy-button:disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
+/* Định dạng các thông báo lỗi */
+.error-message {
+    color: red;
+    text-align: center;
+    font-size: 16px;
+    margin-bottom: 20px;
+}
+
+/* Tạo kiểu cho các trường ngày tháng */
+input[disabled] {
+    background-color: #f1f1f1;
+    border: none;
+    color: #777;
+}
+
+input[disabled]:hover {
+    background-color: #f1f1f1;
+}
+
+/* Đảm bảo giao diện của trang thích ứng trên các màn hình nhỏ */
+@media (max-width: 768px) {
+    .package-detail-container {
+        width: 90%;
+    }
+
+    .detail-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .detail-item label {
+        margin-bottom: 5px;
+    }
+
+    .detail-item span {
+        font-size: 14px;
+    }
+
+    .buy-button {
+        width: 100%;
+        padding: 15px;
+        font-size: 20px;
+    }
+}
+

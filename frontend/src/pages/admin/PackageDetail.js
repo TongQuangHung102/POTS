@@ -248,7 +248,7 @@ const PackageDetail = () => {
                 </div>
                 <div className='form-group'>
                     <label>
-                        Trạng thái: 
+                        Trạng thái:
                         <select
                             value={packageDetail.isVisible}
                             onChange={(e) =>
