@@ -22,9 +22,9 @@ namespace backend.Repositories
             await _curriculumDAO.AddLessonsAsync(lessons);
         }
 
-        public async Task<List<Chapter>> GetAllChapterAsync()
+        public async Task<List<Chapter>> GetAllChapterAsync(int grade)
         {
-            return await _curriculumDAO.GetAllChapterAsync();
+            return await _curriculumDAO.GetAllChapterAsync(grade);
         }
 
         public async Task<List<Lesson>> GetAllLessonAsync()
@@ -55,6 +55,15 @@ namespace backend.Repositories
         public async Task UpdateLessonAsync(Lesson lesson)
         {
             await _curriculumDAO.UpdateLessonAsync(lesson);
+        }
+        public async Task<List<Chapter>> GetChaptersByIdsAsync(List<int> chapterIds)
+        {
+            return await _curriculumDAO.GetChaptersByIdsAsync(chapterIds);
+        }
+
+        public async Task UpdateChaptersAsync(List<Chapter> chapters)
+        {
+            await _curriculumDAO.UpdateChaptersAsync(chapters);
         }
     }
 }

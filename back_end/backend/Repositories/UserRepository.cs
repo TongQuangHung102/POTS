@@ -41,7 +41,11 @@ namespace backend.Repositories
         {
             await _userDAO.CreateUserAsync(user);
         }
+        public async Task<List<User>> GetUsersByRoleAsync(int roleId)
+        {
+            return await _userDAO.GetUsersByRoleAsync(roleId);
+        }
 
-        
+
     }
 }

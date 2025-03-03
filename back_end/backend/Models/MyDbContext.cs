@@ -35,7 +35,8 @@ namespace backend.Models
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Level> Levels { get; set; }
         public DbSet<StudentAnswer> StudentAnswers { get; set; }
-
+        public DbSet<TestCategory> TestCategories { get; set; }
+        public DbSet<Test> Tests { get; set; }
         public DbSet<Grades> Grades { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -49,7 +50,7 @@ namespace backend.Models
                 .HasKey(cr => new { cr.UserId, cr.ContestId });
 
             modelBuilder.Entity<Prerequisite>()
-                .HasKey(p => new { p.LessonId, p.TestId });
+                .HasKey(p => new { p.ChapterId, p.TestId });
 
             modelBuilder.Entity<UserParentStudent>()
                 .HasOne(ups => ups.Student)
@@ -92,6 +93,18 @@ namespace backend.Models
                 .WithMany(g => g.Chapters)
                 .HasForeignKey(c => c.GradeId)
                 .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<Test>()
+               .HasOne(t => t.Grade)
+               .WithMany(g => g.Tests)
+               .HasForeignKey(t => t.GradeId)
+               .OnDelete(DeleteBehavior.Cascade);
+
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Grade)
+                .WithMany(g => g.Users) 
+                .HasForeignKey(u => u.GradeId)
+                .OnDelete(DeleteBehavior.Restrict);
 
             base.OnModelCreating(modelBuilder);
         }

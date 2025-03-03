@@ -50,5 +50,16 @@ namespace backend.Controllers
         {
             return await _userService.UpdateRoleUserAsync(userId, roleId);
         }
+
+        [HttpPut("update-grade/{userId}")]
+        public async Task<IActionResult> UpdateGradeUser(int userId, [FromBody] int gradeId)
+        {
+            return await _userService.UpdateGradeUserAsync(userId, gradeId);
+        }
+        [HttpGet("get-user-by-roleId/{roleId}")]
+        public async Task<IActionResult> GetUsersByRole(int roleId)
+        {
+            return await _userService.GetUsersByRoleAsync(roleId);
+        }
     }
 }

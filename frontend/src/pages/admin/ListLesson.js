@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
+import BackLink from "../../components/BackLink";
+import { fetchLessons } from "../../services/LessonService";
 import './ListLesson.css';
 const ListLesson = () => {
   const { chapterId } = useParams();
@@ -11,18 +13,15 @@ const ListLesson = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
 
-  useEffect(() => {
-    const fetchLessons = async () => {
-      try {
-        const response = await fetch(`https://localhost:7259/api/Curriculum/get-lesson-by-chapterId?chapterId=${chapterId}`);
-        const data = await response.json();
-        setLessons(data);
-      } catch (error) {
-        console.error("Có lỗi khi lấy bài học", error);
-      }
-    };
+  const roleId = sessionStorage.getItem('roleId');
 
-    fetchLessons();
+  const loadLessons = async () => {
+    const data = await fetchLessons(chapterId);
+    setLessons(data);
+  };
+
+  useEffect(() => {
+    loadLessons();
   }, [chapterId]);
 
   const handleAddLesson = async () => {
@@ -52,14 +51,7 @@ const ListLesson = () => {
         throw new Error(errorMessage);
       }
 
-      const lessonsResponse = await fetch(`https://localhost:7259/api/Curriculum/get-lesson-by-chapterId?chapterId=${chapterId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const lessons = await lessonsResponse.json();
-      setLessons(lessons);
+     loadLessons();
       setNewLessonTitle('');
       setShowAddLesson(false);
       setErrorMessage('');
@@ -109,14 +101,7 @@ const ListLesson = () => {
       alert("Cập nhật thành công!");
       setIsEditing(false);
       setErrorMessage("");
-      const lessonsResponse = await fetch(`https://localhost:7259/api/Curriculum/get-lesson-by-chapterId?chapterId=${chapterId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const lessonData = await lessonsResponse.json();
-      setLessons(lessonData);
+      loadLessons();
     } catch (error) {
       setErrorMessage(error.message);
     }
@@ -126,7 +111,7 @@ const ListLesson = () => {
     <div className="lesson-container">
       <h2>Danh sách bài học</h2>
       <div className="group-header">
-        <div> <Link className="backlink" to='/admin'>Home</Link>/<Link className="backlink" to='/admin/chapter'>Chapter</Link>/ Lesson </div>
+        <div> <BackLink></BackLink></div>
         <button className="add-chapter" onClick={() => setShowAddLesson(true)}>Thêm Bài Mới</button>
       </div>
       {showAddLesson && (
@@ -171,7 +156,15 @@ const ListLesson = () => {
               <td>{lesson.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
-                  Xem
+                  {roleId === "3" ? (
+                    <Link to={`/admin/question/${lesson.lessonId}`}>
+                      Quản lý câu hỏi
+                    </Link>
+                  ) : (
+                    <Link to={`/content_manage/question/${lesson.lessonId}`}>
+                      Quản lý câu hỏi
+                    </Link>
+                  )}
                 </button>
                 <button onClick={() => handleEdit(lesson)}>Chỉnh sửa</button>
               </td>
@@ -227,33 +220,6 @@ const ListLesson = () => {
           </div>
         </div>
       )}
-      <style>
-        {`
-          .modal {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            display: flex; justify-content: center; align-items: center;
-          }
-          .modal-content {
-            width:50%;
-            background: white;
-            padding: 20px;
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-          }
-          input, select {
-            display: block;
-            width: 100%;
-            margin: 10px 0;
-            padding: 5px;
-            border-radius: 5px;
-            border: 1px solid gray;
-          }
-            
-        `}
-      </style>
     </div>
   );
 };

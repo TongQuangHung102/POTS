@@ -18,9 +18,9 @@ namespace backend.DataAccess.DAO
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Chapter>> GetAllChapterAsync()
+        public async Task<List<Chapter>> GetAllChapterAsync(int grade)
         {
-            return await _context.Chapters.Include(m => m.User).Include(ls => ls.Lessons).ToListAsync();
+            return await _context.Chapters.Include(m => m.User).Include(ls => ls.Lessons).Where(g => g.GradeId == grade).ToListAsync();
         }
         public async Task<Chapter> GetChapterByIdAsync(int id)
         {
@@ -58,5 +58,16 @@ namespace backend.DataAccess.DAO
             _context.Lessons.Update(lesson);
             await _context.SaveChangesAsync();
         }
+        public async Task<List<Chapter>> GetChaptersByIdsAsync(List<int> chapterIds)
+        {
+            return await _context.Chapters.Where(ch => chapterIds.Contains(ch.ChapterId)).ToListAsync();
+        }
+
+        public async Task UpdateChaptersAsync(List<Chapter> chapters)
+        {
+            _context.Chapters.UpdateRange(chapters);
+            await _context.SaveChangesAsync();
+        }
+
     }
 }

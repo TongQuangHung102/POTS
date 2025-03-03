@@ -64,7 +64,7 @@ const CourseSection = ({ title, order, lessons, initialExpanded = false }) => {
 const CourseProgress = () => {
     // Dữ liệu các phần học
     const [sections, setSections] = useState([]);
-    const API_URL = "https://localhost:7259/api/Curriculum/get-all-chapter";
+    const API_URL = `https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=1`;
 
     useEffect(() => {
         const fetchData = async () => {

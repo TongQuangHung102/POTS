@@ -13,29 +13,23 @@ namespace backend.Services
         {
             _curriculumRepository = curriculumRepository;
         }
-        public async Task<List<Chapter>> GetAllChaptersAsync()
+        public async Task<List<Chapter>> GetAllChaptersAsync(int gradeId)
         {
-            var chapters = await _curriculumRepository.GetAllChapterAsync();   
-          /*  return chapters.Select(chapter => new ChapterDto
-            {
-                ChapterId = chapter.ChapterId,
-                ChapterName = chapter.ChapterName,
-                IsVisible = chapter.IsVisible,
-                Order = chapter.Order
-            }).ToList();*/
-          return chapters;
+            var chapters = await _curriculumRepository.GetAllChapterAsync(gradeId);
+
+            return chapters;
         }
 
-        public async Task AddChaptersAsync(string input)
+        public async Task AddChaptersAsync(int gradeId,int semester, string input)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
                 throw new ArgumentException("Không được bỏ trống");
             }
 
-            var chapters = ParseChapters(input);
+            var chapters = ParseChapters(input, semester);
 
-            await ValidateDuplicateChaptersAsync(chapters);
+            await ValidateDuplicateChaptersAsync(gradeId, chapters);
 
             await _curriculumRepository.AddChaptersAsync(chapters);
         }
@@ -48,7 +42,7 @@ namespace backend.Services
                 throw new KeyNotFoundException();
             }
 
-            var duplicateChapter = await _curriculumRepository.GetAllChapterAsync();
+            var duplicateChapter = await _curriculumRepository.GetAllChapterAsync(existingChapter.GradeId);
             if (duplicateChapter.Any(ch => (ch.Order == chapterDto.Order && ch.ChapterName == chapterDto.ChapterName) && ch.ChapterId != id))
             {
                 throw new InvalidOperationException("Một chương có cùng thứ tự hoặc tên đã tồn tại.");
@@ -57,11 +51,12 @@ namespace backend.Services
             existingChapter.Order = chapterDto.Order;
             existingChapter.ChapterName = chapterDto.ChapterName;
             existingChapter.IsVisible = chapterDto.IsVisible;
+            existingChapter.Semester = chapterDto.Semester;
 
             await _curriculumRepository.UpdateChapterAsync(existingChapter);
         }
 
-        private static List<Chapter> ParseChapters(string input)
+        private static List<Chapter> ParseChapters(string input, int semester)
         {
             var chapters = new List<Chapter>();
             var regex = new Regex(@"Chương\s(\d+):?\s(.+?)(?=\s*Chương\s|\s*$)", RegexOptions.Singleline);
@@ -97,7 +92,8 @@ namespace backend.Services
                     Order = chapterNumber,
                     ChapterName = title,
                     IsVisible = true,
-                    UserId = null
+                    UserId = null,
+                    Semester = semester
                 });
                 chapterNumbers.Add(chapterNumber);
             }
@@ -106,9 +102,9 @@ namespace backend.Services
         }
 
 
-        private async Task ValidateDuplicateChaptersAsync(List<Chapter> chapters)
+        private async Task ValidateDuplicateChaptersAsync(int gradeId, List<Chapter> chapters)
         {
-            var existingChapters = await _curriculumRepository.GetAllChapterAsync();
+            var existingChapters = await _curriculumRepository.GetAllChapterAsync(gradeId);
 
             var duplicateChapters = chapters.Where(ch =>
                 existingChapters.Any(ec => ec.Order == ch.Order && ec.ChapterName == ch.ChapterName)
@@ -120,5 +116,7 @@ namespace backend.Services
                 throw new InvalidOperationException($"Chương đã tồn tại : {duplicatesInfo}");
             }
         }
+        
+       
     }
 }

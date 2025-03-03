@@ -1,4 +1,4 @@
-﻿using backend.DataAccess.DAO;
+using backend.DataAccess.DAO;
 using backend.Models;
 using backend.Repositories;
 using backend.Services;
@@ -37,6 +37,22 @@ builder.Services.AddScoped<IRoleRepository, RoleRepository>();
 builder.Services.AddScoped<RoleService>();
 builder.Services.AddScoped<LessonService>();
 builder.Services.AddScoped<PasswordEncryption>();
+builder.Services.AddScoped<GradeService>();
+builder.Services.AddScoped<IGradeRepository, GradeRepository>();
+builder.Services.AddScoped<GradeDAO>();
+builder.Services.AddScoped<QuestionService>();
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<QuestionDAO>();
+builder.Services.AddScoped<TestCategoryDAO>();
+builder.Services.AddScoped<ITestCategoryRepository, TestCategoryRepository>();
+builder.Services.AddScoped<TestCategoryService>();
+builder.Services.AddScoped<TestService>();
+builder.Services.AddScoped<ITestRepository, TestRepository>();
+builder.Services.AddScoped<TestDAO>();
+builder.Services.AddScoped<LevelDAO>();
+builder.Services.AddScoped<ILevelRepository, LevelRepository>();
+builder.Services.AddScoped<LevelService>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",

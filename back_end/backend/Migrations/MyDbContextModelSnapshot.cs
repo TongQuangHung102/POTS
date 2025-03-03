@@ -114,6 +114,9 @@ namespace backend.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
+                    b.Property<int>("Semester")
+                        .HasColumnType("int");
+
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
@@ -255,7 +258,12 @@ namespace backend.Migrations
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("GradeId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Grades");
                 });
@@ -355,7 +363,7 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Prerequisite", b =>
                 {
-                    b.Property<int>("LessonId")
+                    b.Property<int>("ChapterId")
                         .HasColumnType("int")
                         .HasColumnOrder(0);
 
@@ -363,7 +371,7 @@ namespace backend.Migrations
                         .HasColumnType("int")
                         .HasColumnOrder(1);
 
-                    b.HasKey("LessonId", "TestId");
+                    b.HasKey("ChapterId", "TestId");
 
                     b.HasIndex("TestId");
 
@@ -645,13 +653,19 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<TimeSpan>("Duration")
-                        .HasColumnType("time");
+                    b.Property<int>("DurationInMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<int>("GradeId")
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
                     b.Property<int>("MaxScore")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Order")
                         .HasColumnType("int");
 
                     b.Property<string>("TestName")
@@ -660,7 +674,29 @@ namespace backend.Migrations
 
                     b.HasKey("TestId");
 
-                    b.ToTable("Test");
+                    b.HasIndex("GradeId");
+
+                    b.ToTable("Tests");
+                });
+
+            modelBuilder.Entity("backend.Models.TestCategory", b =>
+                {
+                    b.Property<int>("TestCategoryId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("TestCategoryId"), 1L, 1);
+
+                    b.Property<string>("CategoryName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.HasKey("TestCategoryId");
+
+                    b.ToTable("TestCategories");
                 });
 
             modelBuilder.Entity("backend.Models.TestQuestion", b =>
@@ -733,6 +769,9 @@ namespace backend.Migrations
                     b.Property<string>("GoogleId")
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int?>("GradeId")
+                        .HasColumnType("int");
+
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
@@ -753,6 +792,8 @@ namespace backend.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("UserId");
+
+                    b.HasIndex("GradeId");
 
                     b.HasIndex("Role");
 
@@ -931,6 +972,15 @@ namespace backend.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("backend.Models.Grades", b =>
+                {
+                    b.HasOne("backend.Models.User", "User")
+                        .WithMany("Grades")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("backend.Models.Lesson", b =>
                 {
                     b.HasOne("backend.Models.Chapter", "Chapter")
@@ -959,9 +1009,9 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Prerequisite", b =>
                 {
-                    b.HasOne("backend.Models.Lesson", "Lesson")
+                    b.HasOne("backend.Models.Chapter", "Chapter")
                         .WithMany("Prerequisites")
-                        .HasForeignKey("LessonId")
+                        .HasForeignKey("ChapterId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
@@ -971,7 +1021,7 @@ namespace backend.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("Lesson");
+                    b.Navigation("Chapter");
 
                     b.Navigation("Test");
                 });
@@ -1106,6 +1156,17 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("backend.Models.Test", b =>
+                {
+                    b.HasOne("backend.Models.Grades", "Grade")
+                        .WithMany("Tests")
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Grade");
+                });
+
             modelBuilder.Entity("backend.Models.TestQuestion", b =>
                 {
                     b.HasOne("backend.Models.Question", "Question")
@@ -1146,9 +1207,16 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.User", b =>
                 {
+                    b.HasOne("backend.Models.Grades", "Grade")
+                        .WithMany("Users")
+                        .HasForeignKey("GradeId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("backend.Models.Role", "RoleNavigation")
                         .WithMany("Users")
                         .HasForeignKey("Role");
+
+                    b.Navigation("Grade");
 
                     b.Navigation("RoleNavigation");
                 });
@@ -1194,6 +1262,8 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Chapter", b =>
                 {
                     b.Navigation("Lessons");
+
+                    b.Navigation("Prerequisites");
                 });
 
             modelBuilder.Entity("backend.Models.Contest", b =>
@@ -1206,13 +1276,15 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.Grades", b =>
                 {
                     b.Navigation("Chapters");
+
+                    b.Navigation("Tests");
+
+                    b.Navigation("Users");
                 });
 
             modelBuilder.Entity("backend.Models.Lesson", b =>
                 {
                     b.Navigation("AIQuestions");
-
-                    b.Navigation("Prerequisites");
 
                     b.Navigation("Questions");
 
@@ -1285,6 +1357,8 @@ namespace backend.Migrations
                     b.Navigation("CompetitionResults");
 
                     b.Navigation("ContestParticipants");
+
+                    b.Navigation("Grades");
 
                     b.Navigation("Payments");
 

@@ -37,6 +37,11 @@ const ChooseRole = () => {
 
       setUser((prevUser) => ({ ...prevUser, roleId }));
       sessionStorage.setItem("roleId", roleId);
+    if(roleId === 1){
+      const gradeId = sessionStorage.getItem('gradeId');
+      if(gradeId == null) window.location.href = "/choose-grade"
+      navigate(roleRedirects[roleId] || "/dashboard");
+    }
       navigate(roleRedirects[roleId] || "/dashboard");
     } catch (error) {
       console.error("Lỗi:", error);
