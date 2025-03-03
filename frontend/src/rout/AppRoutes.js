@@ -10,11 +10,15 @@ import { useAuth } from '../hooks/useAuth';
 import ListPackage from '../pages/admin/ListPackage';
 import PackageDetail from '../pages/admin/PackageDetail';
 import AddPackage from '../pages/admin/AddPackage';
+import PackageDetailUser from '../pages/student/PackageDetailUser';
 import ChooseRole from '../pages/ChooseRole';
 import PricingPage from '../pages/PricingPage';
 import StudentDashboard from '../pages/StudentDashboard';
 import StudentLayout from '../pages/StudentLayout';
-import Course from '../pages/student/Course'
+import Profile from '../pages/ProfilePage';
+import AddUser from '../pages/admin/AddUser';
+import Course from '../pages/student/Course';
+import ListPackageStudent from '../pages/student/ListPackageStudent';
 import ForgotPasswordForm from '../pages/ForgotPasswordForm';
 import Quiz from '../pages/student/Quiz';
 import QuestionManage from '../pages/content_manager/QuestionManage';
@@ -63,7 +67,18 @@ const AppRoutes = () => {
                 <Route path='/admin/users' element={<UserList />}></Route> 
                 <Route path='/admin/grades/:gradeId/list_tests' element={<ListTest />}></Route> 
                 <Route path='/admin/question/:lessonId' element={<QuestionManage />}></Route> 
+            </Route>
 
+            <Route path='/student' element={<StudentLayout />}>
+                <Route path="/student/dashboard" element={<StudentDashboard />} />
+                <Route
+                    path='/student/package/:planId'
+                    element={<PackageDetailUser />}
+                />
+                <Route index element={<Navigate to="/student/dashboard" replace />} />
+                <Route path="/student/package" element={<ListPackageStudent />} />
+                <Route path="/student/dashboard" element={<StudentDashboard />} />
+                <Route path="/student/course" element={<Course />} />
             </Route>
 
             <Route path='/student' element={<StudentLayout />}> 
@@ -83,11 +98,6 @@ const AppRoutes = () => {
                 <Route path='/content_manage/grades/:gradeId/list_tests' element={<ListTest />}></Route> 
                 <Route path='/content_manage/mananage_test' element={<ManageQuestionTest />}></Route> 
             </Route>
-
-
-            
-      
-
             {/* Nếu chưa đăng nhập, điều hướng đến login */}
             {!user && (
                 <Route path='/' element={<Navigate to='/login' replace />} />
