@@ -14,12 +14,12 @@ namespace backend.Services
             _questionRepository = questionRepository;
         }
 
-        public async Task<IActionResult> GetAllQuestionsAsync(int? levelId, bool? isVisible, int page, int pageSize)
+        public async Task<IActionResult> GetAllQuestionsAsync(int? chapterId, int? lessonId, int? levelId,string searchTerm, bool? isVisible, int page, int pageSize)
         {
             try
             {
-                var totalQuestions = await _questionRepository.GetTotalQuestionsAsync(levelId, isVisible);
-                var questions = await _questionRepository.GetAllQuestionsAsync(levelId, isVisible, page, pageSize);
+                var totalQuestions = await _questionRepository.GetTotalQuestionsAsync(chapterId, lessonId, levelId, searchTerm, isVisible);
+                var questions = await _questionRepository.GetAllQuestionsAsync(chapterId, lessonId, levelId, searchTerm, isVisible, page, pageSize);
 
                 var response = new
                 {
@@ -37,12 +37,19 @@ namespace backend.Services
                         q.CreateByAI,
                         Level = new
                         {
-                            q.Level.LevelName
+                            q.Level.LevelName,
+                            q.Level.LevelId
                         },
                         Lesson = new
                         {
                             q.Lesson.LessonName
-                        }
+                        },
+                        AnswerQuestions = q.AnswerQuestions.Select(a => new
+                        {
+                            a.AnswerQuestionId,
+                            a.AnswerText,
+                            a.Number
+                        }).ToList()
                     })
                 };
 
@@ -111,14 +118,10 @@ namespace backend.Services
 
  
                 existingQuestion.QuestionText = questionDto.QuestionText;
-                existingQuestion.CreateAt = questionDto.CreateAt;
                 existingQuestion.LevelId = questionDto.LevelId;
                 existingQuestion.CorrectAnswer = questionDto.CorrectAnswer;
                 existingQuestion.IsVisible = questionDto.IsVisible;
-                existingQuestion.CreateByAI = questionDto.CreateByAI;
-                existingQuestion.LessonId = questionDto.LessonId;
 
-   
                 foreach (var answerDto in questionDto.AnswerQuestions)
                 {
                     var existingAnswer = existingQuestion.AnswerQuestions

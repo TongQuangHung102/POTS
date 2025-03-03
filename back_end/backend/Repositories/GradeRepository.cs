@@ -29,6 +29,9 @@ namespace backend.Repositories
             await _gradeDAO.AddGradeAsync(grade);
         }
 
-
+        public async Task<List<Grades>> GetGradeByUserIdAsync(int id)
+        {
+            return await _gradeDAO.GetGradeByUserIdAsync(id);
+        }
     }
 }

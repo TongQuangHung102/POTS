@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
+import BackLink from "../../components/BackLink";
+import { fetchChapters } from "../../services/ChapterService";
 import './ListChapter.css';
 
 
@@ -14,20 +16,17 @@ const ListChapter = () => {
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [selectedSemester, setSelectedSemester] = useState(1);
 
+  const navigate = useNavigate();
+  const roleId = sessionStorage.getItem('roleId');
   //get du lieu
+  const loadChapters = async () => {
+    const data = await fetchChapters(gradeId);
+    setChapters(data);
+  };
+  
   useEffect(() => {
-    const fetchChapters = async () => {
-      try {
-        const response = await fetch(`https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`);
-        const data = await response.json();
-        setChapters(data);
-      } catch (error) {
-        console.error("Có lỗi khi lấy dữ liệu chương", error);
-      }
-    };
-
-    fetchChapters();
-  }, []);
+    loadChapters();
+  }, [gradeId]);
 
   //add new chapter
   const handleAddChapter = async () => {
@@ -55,14 +54,7 @@ const ListChapter = () => {
         throw new Error(errorMessage);
       }
 
-      const chaptersResponse = await fetch(`https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const chaptersData = await chaptersResponse.json();
-      setChapters(chaptersData);
+      loadChapters();
       setNewChapterTitle('');
       setShowAddChapter(false);
       setErrorMessage('');
@@ -114,20 +106,15 @@ const ListChapter = () => {
       alert("Cập nhật thành công!");
       setIsEditing(false);
       setErrorMessage("");
-      const chaptersResponse = await fetch(`https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`, {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-      const chaptersData = await chaptersResponse.json();
-      setChapters(chaptersData);
+      loadChapters();
     } catch (error) {
       setErrorMessage(error.message);
     }
   };
 
-
+  const handelToAssign = (gradeId) => {
+    navigate(`/admin/${gradeId}/assignchapter`)
+  };
 
 
   return (
@@ -135,9 +122,12 @@ const ListChapter = () => {
       <h2>Danh Sách Chương</h2>
       <div className="group-header">
         <div>
-          <Link className="backlink" to='/admin'>Trang chủ</Link>/<Link className="backlink" to='/admin/grade'>Khối</Link>/ Chương
+          <BackLink />
         </div>
-        <button className="add-chapter" onClick={() => setShowAddChapter(true)}>Thêm Chương Mới</button>
+        <div>
+          <button className="add-chapter" onClick={() => setShowAddChapter(true)}>Thêm Chương Mới</button>
+        </div>
+
       </div>
       {showAddChapter && (
         <div>
@@ -185,11 +175,11 @@ const ListChapter = () => {
       <table className="chapter-table">
         <thead>
           <tr>
-            <th style={{ width: "10%" }}>Chương</th>
+            <th style={{ width: "5%" }}>Chương</th>
             <th style={{ width: "40%" }}>Tên Chương</th>
             <th style={{ width: "15%" }}>Học kỳ</th>
             <th style={{ width: "15%" }}>Trạng thái</th>
-            <th>Hành động</th>
+            <th style={{ width: "25%" }}>Hành động</th>
           </tr>
         </thead>
         <tbody>
@@ -201,7 +191,15 @@ const ListChapter = () => {
               <td>{chapter.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
-                  <Link to={`/admin/${gradeId}/${chapter.chapterId}`}>Xem bài học</Link>
+                  {roleId === "3" ? (
+                    <Link to={`/admin/grades/${gradeId}/chapters/${chapter.chapterId}`}>
+                      Xem bài học
+                    </Link>
+                  ) : (
+                    <Link to={`/content_manage/grades/${gradeId}/chapters/${chapter.chapterId}`}>
+                      Xem bài học 
+                    </Link>
+                  )}
                 </button>
                 <button onClick={() => handleEdit(chapter)}>Chỉnh sửa</button>
               </td>
@@ -277,7 +275,7 @@ const ListChapter = () => {
             {errorMessage && <p className="error-message">{errorMessage}</p>}
           </div>
         </div>
-        
+
       )}
 
     </div>

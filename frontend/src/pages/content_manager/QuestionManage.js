@@ -1,96 +1,102 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
 import styles from './QuestionManage.module.css';
 
 const QuestionManage = () => {
-    // Dữ liệu mẫu với 4 đáp án cho mỗi câu hỏi
-    const [questions, setQuestions] = useState([
-        {
-            id: 1,
-            question: 'Thủ đô của Việt Nam là gì?',
-            options: [
-                { id: 'a', text: 'Hà Nội' },
-                { id: 'b', text: 'Hồ Chí Minh' },
-                { id: 'c', text: 'Đà Nẵng' },
-                { id: 'd', text: 'Huế' }
-            ],
-            correctAnswer: 'a',
-            isExpanded: false
-        },
-        {
-            id: 2,
-            question: '1 + 1 = ?',
-            options: [
-                { id: 'a', text: '1' },
-                { id: 'b', text: '2' },
-                { id: 'c', text: '3' },
-                { id: 'd', text: '4' }
-            ],
-            correctAnswer: 'b',
-            isExpanded: false
-        },
-        {
-            id: 3,
-            question: 'HTML là viết tắt của gì?',
-            options: [
-                { id: 'a', text: 'HyperText Markup Language' },
-                { id: 'b', text: 'High Tech Modern Language' },
-                { id: 'c', text: 'Home Tool Markup Language' },
-                { id: 'd', text: 'Hyperlinks and Text Markup Language' }
-            ],
-            correctAnswer: 'a',
-            isExpanded: false
-        },
-        {
-            id: 4,
-            question: 'CSS dùng để làm gì?',
-            options: [
-                { id: 'a', text: 'Tạo cấu trúc trang web' },
-                { id: 'b', text: 'Định dạng và trang trí trang web' },
-                { id: 'c', text: 'Tạo chức năng tương tác trang web' },
-                { id: 'd', text: 'Tạo cơ sở dữ liệu cho trang web' }
-            ],
-            correctAnswer: 'b',
-            isExpanded: false
-        },
-        {
-            id: 5,
-            question: 'JavaScript là ngôn ngữ lập trình phía máy chủ hay phía máy khách?',
-            options: [
-                { id: 'a', text: 'Chỉ phía máy chủ' },
-                { id: 'b', text: 'Chỉ phía máy khách' },
-                { id: 'c', text: 'Cả hai, nhưng chủ yếu là phía máy khách' },
-                { id: 'd', text: 'Không phải là ngôn ngữ lập trình' }
-            ],
-            correctAnswer: 'c',
-            isExpanded: false
-        },
-    ]);
+    // State chứa danh sách câu hỏi từ API
+    const { lessonId } = useParams();
+    const [questions, setQuestions] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [levelId, setLevelId] = useState('');
+    const [levels, setLevels] = useState([]);
+    const [isVisible, setIsVisible] = useState('');
+    const [totalQuestions, setTotalQuestions] = useState(0);
+    const [isEditing, setIsEditing] = useState(false);
+    const [editingQuestion, setEditingQuestion] = useState(null);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [successMessage, setSuccessMessage] = useState('');
 
     // State cho phân trang
     const [currentPage, setCurrentPage] = useState(1);
-    const questionsPerPage = 3;
-
-    // State cho bộ lọc
+    const questionsPerPage = 1;
     const [searchTerm, setSearchTerm] = useState('');
+    const totalPages = Math.ceil(totalQuestions / questionsPerPage);
 
-    // Xử lý thêm câu hỏi mới
-    const handleAddQuestion = () => {
-        const newQuestion = {
-            id: questions.length + 1,
-            question: 'Câu hỏi mới',
-            options: [
-                { id: 'a', text: 'Đáp án A' },
-                { id: 'b', text: 'Đáp án B' },
-                { id: 'c', text: 'Đáp án C' },
-                { id: 'd', text: 'Đáp án D' }
-            ],
-            correctAnswer: 'a',
-            isExpanded: false
+    const navigate = useNavigate();
+
+    // Gọi API để lấy level
+    useEffect(() => {
+        const fetchLevels = async () => {
+            try {
+                const response = await fetch('https://localhost:7259/api/Level/get-all-level'); // Gọi API
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+                const data = await response.json();
+                setLevels(data);
+            } catch (error) {
+                setError(error.message);
+            } finally {
+                setLoading(false);
+            }
         };
-        setQuestions([...questions, newQuestion]);
+
+        fetchLevels();
+    }, []);
+
+    // Gọi API để lấy dữ liệu câu hỏi
+
+    const fetchQuestions = async () => {
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            let apiUrl = `https://localhost:7259/api/Question/get-all-question?lessonId=${lessonId}&page=${currentPage}&pageSize=${questionsPerPage}`;
+
+            const queryParams = [];
+
+            if (levelId) queryParams.push(`levelId=${levelId}`);
+            if (isVisible) queryParams.push(`isVisible=${isVisible}`);
+            if (searchTerm.trim() !== "") queryParams.push(`searchTerm=${encodeURIComponent(searchTerm)}`);
+            if (queryParams.length > 0) apiUrl += `&${queryParams.join("&")}`;
+
+            const response = await fetch(apiUrl);
+
+            if (!response.ok) throw new Error('Lỗi khi lấy dữ liệu');
+            const data = await response.json();
+            setTotalQuestions(data.totalQuestions);
+            const formattedQuestions = data.data.map(q => ({
+                id: q.questionId,
+                question: q.questionText,
+                levelId: q.level.levelId,
+                isVisible: q.isVisible,
+                options: q.answerQuestions.map(a => ({
+                    qId: a.answerQuestionId,
+                    id: a.number,
+                    text: a.answerText
+                })),
+                correctAnswer: q.correctAnswer,
+                isExpanded: false
+            }));
+
+            setQuestions(formattedQuestions);
+        } catch (error) {
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
-    // Xử lý mở rộng/thu gọn câu hỏi
+    useEffect(() => {
+        const delayDebounce = setTimeout(() => {
+            fetchQuestions();
+        }, 500);
+
+        return () => clearTimeout(delayDebounce);
+    }, [levelId, isVisible, searchTerm, currentPage]);
+
     const toggleQuestion = (id) => {
         setQuestions(
             questions.map(q =>
@@ -99,53 +105,104 @@ const QuestionManage = () => {
         );
     };
 
-    // Xử lý lọc câu hỏi
-    const filteredQuestions = questions.filter(q =>
-        q.question.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    const handleEdit = (question) => {
+        setEditingQuestion(question);
+        setIsEditing(true);
+    };
 
-    // Xử lý phân trang
-    const indexOfLastQuestion = currentPage * questionsPerPage;
-    const indexOfFirstQuestion = indexOfLastQuestion - questionsPerPage;
-    const currentQuestions = filteredQuestions.slice(indexOfFirstQuestion, indexOfLastQuestion);
-    const totalPages = Math.ceil(filteredQuestions.length / questionsPerPage);
+    const handleSave = async () => {
+        try {
+            const requestBody = {
+                questionText: editingQuestion.question,
+                createAt: editingQuestion.createAt,
+                levelId: editingQuestion.levelId,
+                correctAnswer: editingQuestion.correctAnswer,
+                isVisible: editingQuestion.isVisible,
+                createByAI: editingQuestion.createByAI,
+                lessonId: editingQuestion.lessonId,
+                answerQuestions: editingQuestion.options.map(a => ({
+                    answerQuestionId: a.qId,
+                    answerText: a.text,
+                    number: a.id
+                }))
+            };
+            const response = await fetch(`https://localhost:7259/api/Question/edit-question/${editingQuestion.id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(requestBody)
+            });
 
-    const paginate = (pageNumber) => setCurrentPage(pageNumber);
+            const result = await response.json();
+            console.log(result);
+            if (!response.ok) {
+                throw new Error(result.message);
+            }
 
+            setSuccessMessage(result.message);
+            alert("Cập nhật thành công!");
+            fetchQuestions();
+
+            setIsEditing(false);
+        } catch (error) {
+            setErrorMessage(error.message)
+        }
+    };
+
+    const handleClose = () => {
+        setIsEditing(false);
+        setEditingQuestion(null);
+    };
+    const handleAddQuestion = () => {
+        navigate('/content_manage/add-question');
+    };
     return (
         <div className={styles.questionManager}>
             <h1>Quản Lý Câu Hỏi</h1>
-
-            {/* Thanh công cụ trên đầu */}
-            <div className={styles.toolbar}>
-                <button className={styles.addButton} onClick={handleAddQuestion}>
-                    + Thêm Câu Hỏi
-                </button>
-                <div className={styles.filter}>
-                <select id="id_name" className={styles.dropFilter}>
-                        <option value="1">Active </option>
-                        <option value="2">NotActive </option>
-                    </select>
-
-                    <input
-                        type="text"
-                        placeholder="Tìm kiếm câu hỏi..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                </div>
+            <div className={styles.groupbtn}>
+                <button onClick={handleAddQuestion}>Thêm câu hỏi</button>
+                <button>Tạo câu hỏi bằng AI</button>
             </div>
+            <div className={styles.toolbar}>
+                
+                <select className={styles.commonInput} value={levelId} onChange={(e) => setLevelId(e.target.value)}>
+                    <option value="">Chọn mức độ</option>
+                    {levels?.map((l) => (
+                        <option key={l.levelId} value={l.levelId}>
+                            {l.levelName}
+                        </option>
+                    ))}
+                </select>
+
+                <select className={styles.commonInput} value={isVisible} onChange={(e) => setIsVisible(e.target.value)}>
+                    <option value="">Chọn Trạng Thái</option>
+                    <option value="true">Hiển Thị</option>
+                    <option value="false">Ẩn</option>
+                </select>
+
+                <input className={styles.commonInput}
+                    type="text"
+                    placeholder="Tìm kiếm câu hỏi..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                />
+            </div>
+
+            {/* Hiển thị trạng thái tải dữ liệu */}
+            {loading && <p>Đang tải câu hỏi...</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
 
             {/* Danh sách câu hỏi */}
             <div className={styles.questionList}>
-                {currentQuestions.map(q => (
+                {questions.map(q => (
                     <div key={q.id} className={styles.questionItem}>
-                        <div className={styles.questionHeader} onClick={() => toggleQuestion(q.id)}>
+                        <div className={styles.questionHeader}>
                             <span className={styles.questionText}>{q.question}</span>
                             <div className={styles.questionActions}>
-                                <span className={`${styles.isActive} ${styles.active}`}>Active</span>
-                                <button className={styles.editButton}>Chỉnh sửa</button>
-                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`}>▼</span>
+                                <span className={`${q.isVisible ? styles.isVisible : styles.inactive}`}> {q.isVisible ? "Hiển Thị" : "Ẩn"}</span>
+                                <button className={styles.editButton} onClick={() => handleEdit(q)}>Chỉnh sửa</button>
+                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`} onClick={() => toggleQuestion(q.id)}>▼</span>
                             </div>
                         </div>
 
@@ -175,31 +232,108 @@ const QuestionManage = () => {
             </div>
 
             {/* Phân trang */}
-            {totalPages > 1 && (
-                <div className={styles.pagination}>
-                    <button
-                        onClick={() => paginate(currentPage - 1)}
-                        disabled={currentPage === 1}
-                    >
-                        &laquo;
-                    </button>
+            <div className={styles.pagination}>
+                <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                    &laquo;
+                </button>
 
-                    {Array.from({ length: totalPages }, (_, i) => (
+                {[...Array(totalPages)].map((_, index) => {
+                    const pageNum = index + 1;
+                    return (
                         <button
-                            key={i + 1}
-                            onClick={() => paginate(i + 1)}
-                            className={currentPage === i + 1 ? styles.active : ''}
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={currentPage === pageNum ? styles.active : ""}
                         >
-                            {i + 1}
+                            {pageNum}
                         </button>
-                    ))}
+                    );
+                })}
 
-                    <button
-                        onClick={() => paginate(currentPage + 1)}
-                        disabled={currentPage === totalPages}
-                    >
-                        &raquo;
-                    </button>
+                <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+                    &raquo;
+                </button>
+            </div>
+
+            {/* Form chỉnh sửa */}
+            {isEditing && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h3>Chỉnh sửa câu hỏi</h3>
+                        <label>
+                            Câu hỏi:
+                            <input
+                                type="text"
+                                value={editingQuestion.question}
+                                required
+                                onChange={(e) =>
+                                    setEditingQuestion({ ...editingQuestion, question: e.target.value })
+                                }
+
+                            />
+                        </label>
+                        <label>Trạng thái hiển thị:
+                            <select
+                                value={editingQuestion.isVisible}
+                                onChange={(e) =>
+                                    setEditingQuestion({ ...editingQuestion, isVisible: e.target.value })
+                                }
+                            >
+                                <option value="true">Hiển thị</option>
+                                <option value="false">Ẩn</option>
+                            </select>
+                        </label>
+                        <label>Mức độ:
+                            <select
+                                value={editingQuestion.levelId}
+                                onChange={(e) =>
+                                    setEditingQuestion({ ...editingQuestion, levelId: e.target.value })
+                                }
+                            >
+                                {levels?.map((l) => (
+                                    <option key={l.levelId} value={l.levelId}>
+                                        {l.levelName}
+                                    </option>
+                                ))}
+                            </select>
+                        </label>
+
+
+                        <label>Các câu trả lời:
+                            {editingQuestion.options.map((option, index) => (
+                                <div key={option.id} className={styles.answer} >
+                                    <input
+                                        className={`${styles.answerItem} ${option.id === editingQuestion.correctAnswer ? styles.correctAnswer : ""
+                                            }`}
+                                        type="text"
+                                        value={option.text}
+                                        required
+                                        onChange={(e) => {
+                                            const updatedOptions = [...editingQuestion.options];
+                                            updatedOptions[index].text = e.target.value;
+                                            setEditingQuestion({ ...editingQuestion, options: updatedOptions });
+                                        }}
+
+                                    />
+                                    <input className={styles.radioInput}
+                                        type="radio"
+                                        name="correctAnswer"
+                                        value={option.id}
+                                        checked={editingQuestion.correctAnswer === option.id}
+                                        onChange={(e) =>
+                                            setEditingQuestion({ ...editingQuestion, correctAnswer: Number(e.target.value) })
+                                        }
+                                    /> Đáp án đúng
+                                </div>
+                            ))}
+                        </label>
+
+                        <div className="button-group">
+                            <button onClick={handleSave}>Lưu</button>
+                            <button onClick={handleClose}>Đóng</button>
+                        </div>
+                        {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    </div>
                 </div>
             )}
         </div>

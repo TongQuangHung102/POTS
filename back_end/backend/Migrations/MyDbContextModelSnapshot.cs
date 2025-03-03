@@ -258,7 +258,12 @@ namespace backend.Migrations
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("UserId")
+                        .HasColumnType("int");
+
                     b.HasKey("GradeId");
+
+                    b.HasIndex("UserId");
 
                     b.ToTable("Grades");
                 });
@@ -967,6 +972,15 @@ namespace backend.Migrations
                     b.Navigation("Question");
                 });
 
+            modelBuilder.Entity("backend.Models.Grades", b =>
+                {
+                    b.HasOne("backend.Models.User", "User")
+                        .WithMany("Grades")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("backend.Models.Lesson", b =>
                 {
                     b.HasOne("backend.Models.Chapter", "Chapter")
@@ -1343,6 +1357,8 @@ namespace backend.Migrations
                     b.Navigation("CompetitionResults");
 
                     b.Navigation("ContestParticipants");
+
+                    b.Navigation("Grades");
 
                     b.Navigation("Payments");
 

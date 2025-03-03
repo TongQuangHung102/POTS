@@ -2,14 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-import './UsersList.css';
+
 
 const UsersList = () => {
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSize] = useState(10);
+    const [pageSize, setPageSizee] = useState(10);
     const [role, setRole] = useState('');
     const [email, setEmail] = useState('');
     const navigate = useNavigate();

@@ -15,15 +15,9 @@ namespace backend.Services
         }
         public async Task<List<Chapter>> GetAllChaptersAsync(int gradeId)
         {
-            var chapters = await _curriculumRepository.GetAllChapterAsync(gradeId);   
-          /*  return chapters.Select(chapter => new ChapterDto
-            {
-                ChapterId = chapter.ChapterId,
-                ChapterName = chapter.ChapterName,
-                IsVisible = chapter.IsVisible,
-                Order = chapter.Order
-            }).ToList();*/
-          return chapters;
+            var chapters = await _curriculumRepository.GetAllChapterAsync(gradeId);
+
+            return chapters;
         }
 
         public async Task AddChaptersAsync(int gradeId,int semester, string input)
@@ -122,5 +116,7 @@ namespace backend.Services
                 throw new InvalidOperationException($"Chương đã tồn tại : {duplicatesInfo}");
             }
         }
+        
+       
     }
 }

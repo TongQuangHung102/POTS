@@ -44,13 +44,9 @@ namespace backend.Controllers
         }
 
         [HttpPut("edit-test/{id}")]
-        public async Task<ActionResult> UpdateTest(int id, [FromBody] TestDto testDto)
+        public async Task<IActionResult> UpdateTest(int id, [FromBody] TestDto testDto)
         {
-            if (testDto == null || id != testDto.TestId)
-                return BadRequest("Dữ liệu không hợp lệ.");
-
-            await _testService.UpdateTest(testDto);
-            return NoContent();
+           return await _testService.UpdateTest(id, testDto);
         }
     }
 }

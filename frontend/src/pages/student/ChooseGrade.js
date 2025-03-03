@@ -6,21 +6,14 @@ const ChooseGrade = () => {
   const [grades, setGrades] = useState([]);
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const userId = sessionStorage.getItem('userId');
-
+  const userId = sessionStorage.getItem('userId')
   useEffect(() => {
     const fetchRoles = async () => {
       try {
         setLoading(true);
-        const response = await fetch('https://localhost:7259/api/Grade/get-all-grade');
+        const response = await fetch('https://localhost:7259/api/Grade/get-all-grade'); 
         const data = await response.json();
-
-        // Kiểm tra xem data có phải là mảng không
-        if (Array.isArray(data)) {
-          setGrades(data);
-        } else {
-          console.error("Dữ liệu trả về không phải là mảng", data);
-        }
+        setGrades(data); 
       } catch (error) {
         console.error("Lỗi khi lấy danh sách lớp:", error);
       } finally {
@@ -30,18 +23,18 @@ const ChooseGrade = () => {
 
     fetchRoles();
   }, []);
-
+  
   const handleGradeSelect = async (gradeId) => {
-    setLoading(true);
+    setLoading(true); 
     try {
       const response = await fetch(`https://localhost:7259/api/User/update-grade/${userId}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify(gradeId),
+        body: JSON.stringify(gradeId), 
       });
-
+      
       const data = await response.json();
       if (!response.ok) {
         throw new Error(data?.message || "Cập nhật lớp thất bại");
@@ -52,7 +45,7 @@ const ChooseGrade = () => {
       console.error("Lỗi:", error);
       alert(error.message);
     } finally {
-      setLoading(false);
+      setLoading(false); 
     }
   };
 
@@ -64,7 +57,7 @@ const ChooseGrade = () => {
           <p>Đang tải...</p>
         ) : (
           <div className="choose-role-btn">
-            {grades && Array.isArray(grades) && grades.map((grade) => (
+            {grades.map((grade) => (
               <button
                 key={grade.gradeId}
                 onClick={() => handleGradeSelect(grade.gradeId)}
