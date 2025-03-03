@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
+import BackLink from "../../components/BackLink";
 import './ListChapter.css';
 
 
@@ -159,7 +160,7 @@ return (
         <h2>Danh Sách Bài Kiểm Tra</h2>
         <div className="group-header">
             <div>
-                <Link className="backlink" to='/admin'>Trang chủ</Link>/ Loại bài
+                <BackLink/>
             </div>
             <button className="add-chapter" onClick={() => setShowAdd(true)}>Thêm mới</button>
         </div>
@@ -207,8 +208,8 @@ return (
             <thead>
                 <tr>
                     <th style={{ width: "10%" }}>Id</th>
-                    <th style={{ width: "30%" }}>Tên</th>
-                    <th style={{ width: "20%" }}>Thời gian làm bài</th>
+                    <th style={{ width: "20%" }}>Tên</th>
+                    <th style={{ width: "15%" }}>Thời gian làm bài</th>
                     <th style={{ width: "15%" }}>Điểm tối đa</th>
                     <th style={{ width: "15%" }}>Trạng thái</th>
                     <th>Hành động</th>
@@ -224,6 +225,7 @@ return (
                         <td>{t.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
                         <td>
                             <button onClick={() => handleEdit(t)}>Chỉnh sửa</button>
+                            <button>Quản lý câu hỏi</button>
                         </td>
                     </tr>
                 ))}

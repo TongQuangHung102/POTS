@@ -9,6 +9,6 @@ namespace backend.Repositories
         Task UpdateGradeAsync(Grades grade);
         Task AddGradeAsync(Grades grade);
 
-
+        Task<List<Grades>> GetGradeByUserIdAsync(int id);
     }
 }

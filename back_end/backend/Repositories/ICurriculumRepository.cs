@@ -16,9 +16,6 @@ namespace backend.Repositories
         Task UpdateLessonAsync(Lesson lesson);
         Task<List<Chapter>> GetChaptersByIdsAsync(List<int> chapterIds);
         Task UpdateChaptersAsync(List<Chapter> chapters);
-        Task<List<Chapter>> GetAllChaptersAsync();
-        Task<Chapter> GetChapterIdAsync(int chapterId);
-
 
     }
 }

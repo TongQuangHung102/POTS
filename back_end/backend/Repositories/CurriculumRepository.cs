@@ -65,15 +65,5 @@ namespace backend.Repositories
         {
             await _curriculumDAO.UpdateChaptersAsync(chapters);
         }
-        public async Task<List<Chapter>> GetAllChaptersAsync()
-        {
-            return await _curriculumDAO.GetAllChaptersAsync();
-        }
-        public async Task<Chapter> GetChapterIdAsync(int chapterId)
-        {
-            return await _curriculumDAO.GetChapterIdAsync(chapterId);
-        }
-
-
     }
 }

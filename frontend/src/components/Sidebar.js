@@ -26,7 +26,6 @@ const Sidebar = () => {
       { path: "/admin/users", icon: <BiSolidUserDetail />, label: "Người dùng" },
       { path: "/admin/package", icon: <BiPackage />, label: "Gói" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
-      { path: "/admin/assignchapter", icon: <BiNotepad />, label: "Phân công nội dung" }
     ],
     Parent: [
       { path: "/", icon: <BiSolidDashboard />, label: "Dashboard" },
@@ -42,7 +41,7 @@ const Sidebar = () => {
     ],
     content_manager: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
-      { path: "/content_manage/question/:lessonId", icon: <BiAlignRight />, label: "Câu hỏi" },
+      { path: "/content_manage/grades", icon: <BiAlignRight />, label: "Quản lý nội dung"},
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
@@ -64,7 +63,7 @@ const Sidebar = () => {
       </div>
       <nav className="nav flex-column">
         {menuItems.map((item, index) => (
-          <NavLink key={index} to={item.path} className="nav-link">
+          <NavLink key={index} to={item.path} className="nav-link" end={false}>
             {item.icon} {item.label}
           </NavLink>
         ))}
