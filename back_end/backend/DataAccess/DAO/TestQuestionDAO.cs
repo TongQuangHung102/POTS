@@ -13,33 +13,23 @@ namespace backend.DataAccess.DAO
             _context = context;
         }
 
-        public async Task<List<TestQuestion>> GetQuestionsByTestIdAsync(int testId)
-        {
-            return await _context.TestQuestions
-                .Where(tq => tq.TestId == testId)
-                .Include(tq => tq.Test) 
-                .Include(tq => tq.Question) 
-                .ThenInclude(q => q.AnswerQuestions)  
-                .ToListAsync();
-        }
-
 
         public async Task AddTestQuestions(List<TestQuestion> testQuestions)
         {
             _context.TestQuestions.AddRange(testQuestions);
             await _context.SaveChangesAsync();
         }
-        public async Task<List<Question>> GetQuestionsByTestIdAsync(int testId)
+        public async Task<List<TestQuestion>> GetQuestionsByTestIdAsync(int testId)
         {
             return await _context.TestQuestions
             .Where(tq => tq.TestId == testId)
+              .Include(tq => tq.Test)
             .Include(tq => tq.Question)
                 .ThenInclude(q => q.Level)
             .Include(tq => tq.Question)
                 .ThenInclude(q => q.Lesson)
             .Include(tq => tq.Question)
                 .ThenInclude(q => q.AnswerQuestions)
-            .Select(tq => tq.Question)
             .ToListAsync();
         }
 

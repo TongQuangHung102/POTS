@@ -3,7 +3,6 @@ using System.ComponentModel.DataAnnotations;
 
 namespace backend.Models
 {
-    [Table("TestQuestion")]
     public class TestQuestion
     {
         [Key]
