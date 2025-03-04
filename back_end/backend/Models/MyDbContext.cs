@@ -36,6 +36,8 @@ namespace backend.Models
         public DbSet<Level> Levels { get; set; }
         public DbSet<StudentAnswer> StudentAnswers { get; set; }
         public DbSet<TestCategory> TestCategories { get; set; }
+        public DbSet<TestQuestion> TestQuestions { get; set; }
+        public DbSet<TestSubmission> TestSubmissions { get; set; }
         public DbSet<Test> Tests { get; set; }
         public DbSet<Grades> Grades { get; set; }
         public DbSet<TestQuestion> TestQuestions { get; set; }

@@ -13,7 +13,7 @@ namespace backend.DataAccess.DAO
             _context = context;
         }
 
-        public async Task<List<Question>> GetAllQuestionsAsync(int? lessonId, int? levelId, string searchTerm, bool? isVisible, int page, int pageSize)
+        public async Task<List<Question>> GetAllQuestionsAsync(int? chapterId, int? lessonId, int? levelId, string searchTerm, bool? isVisible, int page, int pageSize)
         {
             if (page < 1) page = 1;
 
@@ -22,11 +22,17 @@ namespace backend.DataAccess.DAO
             var query = _context.Questions
                 .Include(q => q.Level)
                 .Include(q => q.Lesson)
+                    .ThenInclude(l => l.Chapter)
                 .Include(q => q.AnswerQuestions)
                 .Include(q => q.ContestQuestions)
                 .Include(q => q.TestQuestions)
                 .Include(q => q.StudentAnswers)
                 .AsQueryable();
+
+            if (chapterId.HasValue)
+            {
+                query = query.Where(q => q.Lesson.ChapterId == chapterId.Value);
+            }
 
             if (levelId.HasValue)
             {
@@ -55,9 +61,14 @@ namespace backend.DataAccess.DAO
                 .ToListAsync();
         }
 
-        public async Task<int> GetTotalQuestionsAsync(int? lessonId,int? levelId, string searchTerm, bool? isVisible)
+        public async Task<int> GetTotalQuestionsAsync(int? chapterId, int? lessonId,int? levelId, string searchTerm, bool? isVisible)
         {
             var query = _context.Questions.AsQueryable();
+
+            if (chapterId.HasValue)
+            {
+                query = query.Where(q => q.Lesson.ChapterId == chapterId.Value);
+            }
 
             if (levelId.HasValue)
             {

@@ -10,11 +10,13 @@ import { useAuth } from '../hooks/useAuth';
 import ListPackage from '../pages/admin/ListPackage';
 import PackageDetail from '../pages/admin/PackageDetail';
 import AddPackage from '../pages/admin/AddPackage';
+import PackageDetailUser from '../pages/student/PackageDetailUser';
 import ChooseRole from '../pages/ChooseRole';
 import PricingPage from '../pages/PricingPage';
 import StudentDashboard from '../pages/StudentDashboard';
 import StudentLayout from '../pages/StudentLayout';
-import Course from '../pages/student/Course'
+import Course from '../pages/student/Course';
+import ListPackageStudent from '../pages/student/ListPackageStudent';
 import ForgotPasswordForm from '../pages/ForgotPasswordForm';
 import Quiz from '../pages/student/Quiz';
 import QuestionManage from '../pages/content_manager/QuestionManage';
@@ -25,9 +27,9 @@ import ChooseGrade from '../pages/student/ChooseGrade';
 import TestCategory from '../pages/admin/TestCategory';
 import ListTest from '../pages/admin/ListTest';
 import AddQuestionForm from '../pages/content_manager/AddQuestionForm';
-import AssignChapter from '../pages/admin/AssignChapter';
 import Test from '../pages/student/Test';
-
+import ListGradesAssign from '../pages/content_manager/ListGradesAssign';
+import ManageQuestionTest from '../pages/content_manager/ManageQuestionTest';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
@@ -52,8 +54,8 @@ const AppRoutes = () => {
                 <Route index element={<Navigate to="/admin/dashboard" replace />} />
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/grades" element={<ListGrades />} />
-                <Route path="/admin/:gradeId/chapters" element={<ListChapter />} />
-                <Route path="/admin/:gradeId/:chapterId/lessons" element={<ListLesson />} />
+                <Route path="/admin/grades/:gradeId" element={<ListChapter />} />
+                <Route path="/admin/grades/:gradeId/chapters/:chapterId" element={<ListLesson />} />
                 <Route path='/admin/package' element={<ListPackage />} />
                 <Route
                     path='/admin/package/:planId'
@@ -62,9 +64,20 @@ const AppRoutes = () => {
                 <Route path='/admin/package/add' element={<AddPackage />} />
                 <Route path='/admin/test_category' element={<TestCategory />}></Route>
                 <Route path='/admin/users' element={<UserList />}></Route> 
-                <Route path='/admin/:gradeId/list_tests' element={<ListTest />}></Route> 
+                <Route path='/admin/grades/:gradeId/list_tests' element={<ListTest />}></Route> 
+                <Route path='/admin/question/:lessonId' element={<QuestionManage />}></Route> 
+            </Route>
 
-                <Route path='/admin/assignchapter' element={<AssignChapter />}></Route>  
+            <Route path='/student' element={<StudentLayout />}>
+                <Route path="/student/dashboard" element={<StudentDashboard />} />
+                <Route
+                    path='/student/package/:planId'
+                    element={<PackageDetailUser />}
+                />
+                <Route index element={<Navigate to="/student/dashboard" replace />} />
+                <Route path="/student/package" element={<ListPackageStudent />} />
+                <Route path="/student/dashboard" element={<StudentDashboard />} />
+                <Route path="/student/course" element={<Course />} />
             </Route>
 
             <Route path='/student' element={<StudentLayout />}> 
@@ -78,14 +91,14 @@ const AppRoutes = () => {
             <Route path='/content_manage' element={<ContentManageLayout />}> 
                 <Route index element={<Navigate to="/content_manage/dashboard" replace />} />  
                 <Route path="/content_manage/dashboard" element={<StudentDashboard />} />  
-                <Route path='/content_manage/question/:lessonId' element={<QuestionManage />}></Route> 
+                <Route path="/content_manage/grades" element={<ListGradesAssign />} />  
+                <Route path='/content_manage/grades/:gradeId/chapters/:chapterId/lessons/:lessonId/questions' element={<QuestionManage />}></Route> 
                 <Route path='/content_manage/add-question' element={<AddQuestionForm />}></Route> 
+                <Route path="/content_manage/grades/:gradeId" element={<ListChapter />} />
+                <Route path="/content_manage/grades/:gradeId/chapters/:chapterId" element={<ListLesson />} />
+                <Route path='/content_manage/grades/:gradeId/list_tests' element={<ListTest />}></Route> 
+                <Route path='/content_manage/grades/:gradeId/list_tests/:testId/questions' element={<ManageQuestionTest />}></Route> 
             </Route>
-
-
-            
-      
-
             {/* Nếu chưa đăng nhập, điều hướng đến login */}
             {!user && (
                 <Route path='/' element={<Navigate to='/login' replace />} />

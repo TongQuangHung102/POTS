@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import BackLink from "../../components/BackLink";
 import './ListChapter.css';
 
 
@@ -130,7 +131,7 @@ const TestCategory = () => {
       <h2>Danh Sách Loại Bài Kiểm Tra</h2>
       <div className="group-header">
         <div>
-           <Link className="backlink" to='/admin'>Trang chủ</Link>/ Loại bài 
+           <BackLink/>
         </div>
         <button className="add-chapter" onClick={() => setShowAdd(true)}>Thêm mới</button>
       </div>

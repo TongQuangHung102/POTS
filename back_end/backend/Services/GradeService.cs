@@ -29,7 +29,9 @@ namespace backend.Services
                     gradeId = g.GradeId,
                     gradeName = g.GradeName,
                     gradeDescription = g.Description,
-                    gradeIsVisible = g.IsVisible
+                    gradeIsVisible = g.IsVisible,
+                    userName = g.User?.UserName ?? "Chưa có",
+                    userId = g.User?.UserId ?? 0
                 }));
             }
             catch (Exception ex)
@@ -66,6 +68,26 @@ namespace backend.Services
                 };
             }
         }
+        public async Task<IActionResult> GetGradeByUserIdAsync(int id)
+        {
+            try
+            {
+                var grade = await _gradeRepository.GetGradeByUserIdAsync(id);
+                if (grade == null)
+                {
+                    return new NotFoundObjectResult(new { Message = "Chưa có lớp nào" });
+                }
+
+                return new OkObjectResult(grade);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { Message = "Lỗi khi lấy grade.", Error = ex.Message })
+                {
+                    StatusCode = 500
+                };
+            }
+        }
         public async Task<IActionResult> UpdateGradeAsync(int gradeId, GradeDto gradeDto)
         {
             try
@@ -79,6 +101,12 @@ namespace backend.Services
                 existingGrade.GradeName = gradeDto.GradeName;
                 existingGrade.Description = gradeDto.Description;
                 existingGrade.IsVisible = gradeDto.IsVisible;
+
+                if(gradeDto.UserId != 0)
+                {
+                    existingGrade.UserId = gradeDto.UserId;
+                }
+                
 
       
                 await _gradeRepository.UpdateGradeAsync(existingGrade);
@@ -118,6 +146,20 @@ namespace backend.Services
                     StatusCode = 500
                 };
             }
+        }
+
+        public async Task AssignContentManagersAsync(GradeAssignment assignments)
+        {
+            var grade = await _gradeRepository.GetGradeByIdAsync(assignments.GradeId);
+
+            if (grade == null)
+            {
+                throw new KeyNotFoundException("Khối lớp không tồn tại.");
+            }
+
+            grade.UserId = assignments.UserId;
+
+            await _gradeRepository.UpdateGradeAsync(grade);
         }
 
 

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import BackLink from "../../components/BackLink";
 import './ListChapter.css';
 
 
@@ -11,21 +12,42 @@ const ListGrades = () => {
   const [successMessage, setSuccessMessage] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [selectedGrade, setSelectedGrade] = useState(null);
+  const [contentManagers, setContentManagers] = useState([]);
 
+  const navigate = useNavigate();
   //get du lieu
-  useEffect(() => {
-    const fetchGrades = async () => {
-      try {
-        const response = await fetch('https://localhost:7259/api/Grade/get-all-grade');
-        const data = await response.json();
-        setGrades(data);
-      } catch (error) {
-        console.error("Có lỗi khi lấy dữ liệu lớp", error);
-      }
-    };
 
-    fetchGrades();
+  const fetchGrades = async () => {
+    try {
+      const response = await fetch('https://localhost:7259/api/Grade/get-all-grade');
+      const data = await response.json();
+      setGrades(data);
+    } catch (error) {
+      console.error("Có lỗi khi lấy dữ liệu lớp", error);
+    }
+  };
+
+
+  const fetchContentManagers = async () => {
+    try {
+      const response = await fetch("https://localhost:7259/api/User/get-user-by-roleId/4");
+      if (!response.ok) {
+        throw new Error("Không thể tải danh sách người quản lý nội dung.");
+      }
+      const data = await response.json();
+      setContentManagers(data);
+    } catch (error) {
+      console.error("Lỗi khi lấy danh sách người quản lý nội dung:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchContentManagers()
   }, []);
+
+  useEffect(() => {
+    fetchGrades()
+  }, [selectedGrade]);
 
   //add new grade
   const handleAddGrade = async () => {
@@ -83,6 +105,10 @@ const ListGrades = () => {
     setSelectedGrade(null);
   };
 
+  const handleToCategoryTest = () =>{
+    navigate('/admin/test_category')
+  }
+
   const handleSave = async () => {
     try {
       const response = await fetch(`https://localhost:7259/api/Grade/update-grade/${selectedGrade.gradeId}`, {
@@ -94,6 +120,7 @@ const ListGrades = () => {
           gradeName: selectedGrade.gradeName,
           description: selectedGrade.gradeDescription,
           isVisible: selectedGrade.gradeIsVisible,
+          userId: selectedGrade.userId
         }),
       });
       const message = await response.json();
@@ -119,17 +146,18 @@ const ListGrades = () => {
     }
   };
 
-
-
-
   return (
     <div className="chapter-list-container">
       <h2>Danh Sách Khối Lớp</h2>
       <div className="group-header">
         <div>
-           <Link className="backlink" to='/admin'>Trang chủ</Link>/ Khối lớp 
+        <BackLink />
         </div>
-        <button className="add-chapter" onClick={() => setShowAddGrade(true)}>Thêm lớp mới</button>
+        <div>
+          <button className="add-chapter" onClick={() => setShowAddGrade(true)}>Thêm lớp mới</button>
+          <button className="add-chapter" onClick={() => handleToCategoryTest()}>Quản lý bài kiểm tra</button>
+        </div>
+
       </div>
       {showAddGrade && (
         <div>
@@ -156,10 +184,11 @@ const ListGrades = () => {
       <table className="chapter-table">
         <thead>
           <tr>
-            <th style={{ width: "10%" }}>Id</th>
-            <th style={{ width: "20%" }}>Tên khối lớp</th>
+            <th style={{ width: "5%" }}>Id</th>
+            <th style={{ width: "15%" }}>Tên khối lớp</th>
             <th style={{ width: "20%" }}>Mô tả</th>
-            <th style={{ width: "20%" }}>Trạng thái</th>
+            <th style={{ width: "15%" }}>Người quản lý</th>
+            <th style={{ width: "15%" }}>Trạng thái</th>
             <th style={{ width: "30%" }}>Hành động</th>
           </tr>
         </thead>
@@ -169,14 +198,13 @@ const ListGrades = () => {
               <td>{grade.gradeId}</td>
               <td>{grade.gradeName}</td>
               <td>{grade.gradeDescription}</td>
+              <td>{grade.userName}</td>
               <td>{grade.gradeIsVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
-                  <Link to={`/admin/${grade.gradeId}/chapters`}>Chương trình</Link>
+                  <Link to={`/admin/grades/${grade.gradeId}`}>Chương trình</Link>
                 </button>
-                <button>
-                  <Link to={`/admin/${grade.gradeId}/list_tests`}>Bài kiểm tra</Link>
-                </button>
+
                 <button onClick={() => handleEdit(grade)}>Chỉnh sửa</button>
               </td>
             </tr>
@@ -221,6 +249,24 @@ const ListGrades = () => {
               >
                 <option value="true">Hoạt động</option>
                 <option value="false">Không hoạt động</option>
+              </select>
+            </label>
+            <label>
+              Người quản lý
+              <select
+                value={selectedGrade?.userId || "Chưa có"}
+                onChange={(e) =>
+                  setSelectedGrade({
+                    ...selectedGrade,
+                    userId: parseInt(e.target.value, 10)
+                  })
+                }
+              >
+                {contentManagers.map((user) => (
+                  <option key={user.userId} value={user.userId}>
+                    {user.userName}
+                  </option>
+                ))}
               </select>
             </label>
             <div className="button-group">
