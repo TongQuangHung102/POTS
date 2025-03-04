@@ -15,8 +15,6 @@ import ChooseRole from '../pages/ChooseRole';
 import PricingPage from '../pages/PricingPage';
 import StudentDashboard from '../pages/StudentDashboard';
 import StudentLayout from '../pages/StudentLayout';
-import Profile from '../pages/ProfilePage';
-import AddUser from '../pages/admin/AddUser';
 import Course from '../pages/student/Course';
 import ListPackageStudent from '../pages/student/ListPackageStudent';
 import ForgotPasswordForm from '../pages/ForgotPasswordForm';
@@ -91,12 +89,12 @@ const AppRoutes = () => {
                 <Route index element={<Navigate to="/content_manage/dashboard" replace />} />  
                 <Route path="/content_manage/dashboard" element={<StudentDashboard />} />  
                 <Route path="/content_manage/grades" element={<ListGradesAssign />} />  
-                <Route path='/content_manage/question/:lessonId' element={<QuestionManage />}></Route> 
+                <Route path='/content_manage/grades/:gradeId/chapters/:chapterId/lessons/:lessonId/questions' element={<QuestionManage />}></Route> 
                 <Route path='/content_manage/add-question' element={<AddQuestionForm />}></Route> 
                 <Route path="/content_manage/grades/:gradeId" element={<ListChapter />} />
                 <Route path="/content_manage/grades/:gradeId/chapters/:chapterId" element={<ListLesson />} />
                 <Route path='/content_manage/grades/:gradeId/list_tests' element={<ListTest />}></Route> 
-                <Route path='/content_manage/mananage_test' element={<ManageQuestionTest />}></Route> 
+                <Route path='/content_manage/grades/:gradeId/list_tests/:testId/questions' element={<ManageQuestionTest />}></Route> 
             </Route>
             {/* Nếu chưa đăng nhập, điều hướng đến login */}
             {!user && (

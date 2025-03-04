@@ -35,10 +35,10 @@ const ListGradesAssign = () => {
             <table className="chapter-table">
                 <thead>
                     <tr>
-                        <th style={{ width: "5%" }}>Id</th>
-                        <th style={{ width: "15%" }}>Tên khối lớp</th>
+                        <th style={{ width: "15%" }}>Id</th>
+                        <th style={{ width: "20%" }}>Tên khối lớp</th>
                         <th style={{ width: "20%" }}>Mô tả</th>
-                        <th style={{ width: "30%" }}>Hành động</th>
+                        <th style={{ width: "20%" }}>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>

@@ -1,10 +1,15 @@
 import React, { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import styles from './ManageQuestionTest.module.css';
 import { fetchChapters } from '../../services/ChapterService';
 import { fetchLessons } from '../../services/LessonService';
 import { fetchLevels } from '../../services/LevelService';
+import BackLink from '../../components/BackLink';
 
 const ManageQuestionTest = () => {
+
+    const { testId, gradeId } = useParams();
+
     const [testQuestions, setTestQuestions] = useState([]);
     const [questionBank, setQuestionBank] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -24,7 +29,7 @@ const ManageQuestionTest = () => {
 
     // State cho phân trang
     const [currentPage, setCurrentPage] = useState(1);
-    const questionsPerPage = 10;
+    const questionsPerPage = 5;
     const [searchTerm, setSearchTerm] = useState('');
     const totalPages = Math.ceil(totalQuestions / questionsPerPage);
 
@@ -56,12 +61,32 @@ const ManageQuestionTest = () => {
         const delayDebounce = setTimeout(() => {
             fetchData();
         }, 300);
-        return () => clearTimeout(delayDebounce);  
-    }, [chapterId, lessonId, levelId, searchTerm]);
+        return () => clearTimeout(delayDebounce);
+    }, [chapterId, lessonId, levelId, searchTerm,currentPage]);
+
+    useEffect(() => {
+        const fetchQuestions = async () => {
+            try {
+                const response = await fetch(`https://localhost:7259/api/TestQuestion/get-test-questions?testId=${testId}`);
+                if (!response.ok) throw new Error("Lỗi khi lấy dữ liệu");
+
+                const data = await response.json();
+                if (data.length === 0) return;
+                setTestQuestions(data);
+                setIsEditing('true');
+            } catch (err) {
+                setError(err.message);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        fetchQuestions();
+    }, []);
 
     useEffect(() => {
         const loadChapters = async () => {
-            const data = await fetchChapters("1");
+            const data = await fetchChapters(gradeId);
             setChapters(data);
         };
         const loadLevels = async () => {
@@ -91,12 +116,73 @@ const ManageQuestionTest = () => {
         setTestQuestions(testQuestions.filter(question => question.questionId !== questionId));
     };
 
+    const addQuestionsToTest = async () => {
+        if (testQuestions.length === 0) {
+            alert("Chưa có câu hỏi nào được chọn!");
+            return;
+        }
+
+        const payload = {
+            testId: 1, 
+            questionIds: testQuestions.map(q => q.questionId)
+        };
+
+        try {
+            const response = await fetch("https://localhost:7259/api/TestQuestion/add-questions", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(payload)
+            });
+
+            if (!response.ok) {
+                throw new Error("Có lỗi xảy ra khi thêm câu hỏi vào bài kiểm tra!");
+            }
+
+            const result = await response.json();
+            alert("Thêm câu hỏi thành công!");
+            console.log("Server Response:", result);
+
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Lỗi: " + error.message);
+        }
+    };
+
+    const updateTestQuestions = async () => {
+        const payload = {
+            testId: testId,
+            questionIds: testQuestions.map(q => q.questionId)
+        };
+        try {
+            const response = await fetch("https://localhost:7259/api/TestQuestion/update-questions", {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(payload),
+            });
+    
+            const data = await response.json();
+    
+            if (!response.ok) {
+                throw new Error(data.message || "Cập nhật thất bại");
+            }
+    
+            alert("Cập nhật câu hỏi thành công!");
+        } catch (error) {
+            console.error("Lỗi:", error.message);
+            alert(error.message);
+        }
+    };
+
 
     return (
         <div className={styles.container}>
             <h2 className={styles.title}>Quản Lý Câu Hỏi Bài Kiểm Tra</h2>
+            <BackLink></BackLink>
             <div className={styles.content}>
-                {/* Phần bên trái - Câu hỏi bài kiểm tra */}
                 <div className={styles.testQuestions}>
                     <h3>Câu hỏi bài kiểm tra</h3>
                     {testQuestions.length === 0 ? (
@@ -107,12 +193,9 @@ const ManageQuestionTest = () => {
                                 <li key={question.questionId} className={styles.questionItem}>
                                     <div className={styles.questionContent}>
                                         <div className={styles.questionHeader}>
-                                            <div className={styles.questionLevel}>
-                                                <span>
+                                                <span className={styles.questionLevel}>
                                                     {question.level.levelName}
                                                 </span>
-                                            </div>
-
                                             <span className={styles.questionLesson}>
                                                 {question.lesson.lessonName}
                                             </span>
@@ -133,7 +216,7 @@ const ManageQuestionTest = () => {
                                         </ul>
                                         <div className={styles.questionFooter}>
                                             {question.createByAI &&
-                                                <span className={styles.aiGenerated}>AI</span>
+                                                <span className={styles.aiGenerated}>Câu hỏi tạo bằng AI</span>
                                             }
                                         </div>
                                     </div>
@@ -145,6 +228,17 @@ const ManageQuestionTest = () => {
                                     </button>
                                 </li>
                             ))}
+                            <div>
+                                Tổng số câu hỏi : {testQuestions.length}
+                            </div>
+                            {isEditing ? (
+                                <button className={styles.addButton} onClick={updateTestQuestions}>
+                                Lưu
+                            </button>) : (
+                                <button className={styles.addButton} onClick={addQuestionsToTest}>
+                                Thêm vào bài kiểm tra
+                            </button>)}
+
                         </ul>
                     )}
                 </div>
@@ -230,6 +324,29 @@ const ManageQuestionTest = () => {
                             </li>
                         ))}
                     </ul>
+                    {/* Phân trang */}
+            <div className={styles.pagination}>
+                <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                    &laquo;
+                </button>
+
+                {[...Array(totalPages)].map((_, index) => {
+                    const pageNum = index + 1;
+                    return (
+                        <button
+                            key={pageNum}
+                            onClick={() => setCurrentPage(pageNum)}
+                            className={currentPage === pageNum ? styles.active : ""}
+                        >
+                            {pageNum}
+                        </button>
+                    );
+                })}
+
+                <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+                    &raquo;
+                </button>
+            </div>
                 </div>
             </div>
         </div>
