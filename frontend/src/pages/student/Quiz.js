@@ -1,170 +1,144 @@
-import React, { useState, useRef } from 'react';
-import styles from './Quiz.module.css';
+import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
+import styles from "./Quiz.module.css";
 
 const Quiz = () => {
+    const [searchParams] = useSearchParams();
+    const testId = searchParams.get("testId"); // Lấy testId từ URL
+    const [questions, setQuestions] = useState([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [userAnswers, setUserAnswers] = useState([]);
     const [showScore, setShowScore] = useState(false);
     const [score, setScore] = useState(0);
     const questionRefs = useRef([]);
-  
-    const questions = [
-      {
-        questionText: 'Câu 1: Thủ đô của Việt Nam là gì?',
-        answerOptions: [
-          { answerText: 'Hà Nội', isCorrect: true },
-          { answerText: 'Hồ Chí Minh', isCorrect: false },
-          { answerText: 'Đà Nẵng', isCorrect: false },
-          { answerText: 'Huế', isCorrect: false },
-        ],
-      },
-      {
-        questionText: 'Câu 2: 1 + 1 = ?',
-        answerOptions: [
-          { answerText: '1', isCorrect: false },
-          { answerText: '2', isCorrect: true },
-          { answerText: '3', isCorrect: false },
-          { answerText: '4', isCorrect: false },
-        ],
-      },
-      {
-        questionText: 'Câu 3: HTML là viết tắt của?',
-        answerOptions: [
-          { answerText: 'Hyper Text Markup Language', isCorrect: true },
-          { answerText: 'High Text Machine Language', isCorrect: false },
-          { answerText: 'Hyper Text Machine Language', isCorrect: false },
-          { answerText: 'High Text Markup Language', isCorrect: false },
-        ],
-      },
-      {
-        questionText: 'Câu 1: Thủ đô của Việt Nam là gì?',
-        answerOptions: [
-          { answerText: 'Hà Nội', isCorrect: true },
-          { answerText: 'Hồ Chí Minh', isCorrect: false },
-          { answerText: 'Đà Nẵng', isCorrect: false },
-          { answerText: 'Huế', isCorrect: false },
-        ],
-      },
-      {
-        questionText: 'Câu 2: 1 + 1 = ?',
-        answerOptions: [
-          { answerText: '1', isCorrect: false },
-          { answerText: '2', isCorrect: true },
-          { answerText: '3', isCorrect: false },
-          { answerText: '4', isCorrect: false },
-        ],
-      },
-      {
-        questionText: 'Câu 3: HTML là viết tắt của?',
-        answerOptions: [
-          { answerText: 'Hyper Text Markup Language', isCorrect: true },
-          { answerText: 'High Text Machine Language', isCorrect: false },
-          { answerText: 'Hyper Text Machine Language', isCorrect: false },
-          { answerText: 'High Text Markup Language', isCorrect: false },
-        ],
-      },
-    ];
 
-    const [userAnswers, setUserAnswers] = useState(Array(questions.length).fill(null));
+    const [duration, setDuration] = useState(0);
+    const [timeLeft, setTimeLeft] = useState(0);
+    useEffect(() => {
+      if (duration > 0) {
+          setTimeLeft(duration * 60); // Chuyển đổi phút → giây
+      }
+  }, [duration]);
+  useEffect(() => {
+    if (timeLeft <= 0) return;
+
+    const timer = setInterval(() => {
+        setTimeLeft((prevTime) => prevTime - 1);
+    }, 1000);
+
+    return () => clearInterval(timer);
+}, [timeLeft]);
+const formatTime = (seconds) => {
+  const minutes = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${minutes}:${secs < 10 ? "0" : ""}${secs}`;
+};
+    // 🟢 Gọi API lấy danh sách câu hỏi
+    useEffect(() => {
+      if (!testId) return;
+      setIsLoading(true);
   
+      fetch(`https://localhost:7259/api/TestQuestion/get-questions-by-test/${testId}`)
+          .then((res) => res.json())
+          .then((data) => {
+              setQuestions(data);
+              setUserAnswers(Array(data.length).fill(null));
+  
+              // 🟢 Lưu durationInMinutes vào state
+              if (data.length > 0) {
+                  setDuration(data[0].durationInMinutes);
+              }
+  
+              setIsLoading(false);
+          })
+          .catch((err) => {
+              setError("Không thể tải câu hỏi.");
+              setIsLoading(false);
+          });
+  }, [testId]);
+  
+
     const handleAnswerClick = (questionIndex, answerIndex) => {
-      const newUserAnswers = [...userAnswers];
-      newUserAnswers[questionIndex] = answerIndex;
-      setUserAnswers(newUserAnswers);
+        const newUserAnswers = [...userAnswers];
+        newUserAnswers[questionIndex] = answerIndex;
+        setUserAnswers(newUserAnswers);
     };
-  
-    const scrollToQuestion = (index) => {
-      questionRefs.current[index]?.scrollIntoView({ behavior: 'smooth' });
-    };
-  
+
     const calculateScore = () => {
-      let totalScore = 0;
-      userAnswers.forEach((answer, index) => {
-        if (answer !== null && questions[index].answerOptions[answer].isCorrect) {
-          totalScore += 1;
-        }
-      });
-      setScore(totalScore);
-      setShowScore(true);
+        let totalScore = 0;
+        userAnswers.forEach((answer, index) => {
+            if (answer !== null && questions[index].answers[answer].isCorrect) {
+                totalScore += 1;
+            }
+        });
+        setScore(totalScore);
+        setShowScore(true);
     };
-  
-    const restartQuiz = () => {
-      setScore(0);
-      setShowScore(false);
-      setUserAnswers(Array(questions.length).fill(null));
-      window.scrollTo(0, 0);
-    };
-  
+
+    if (isLoading) return <p>Đang tải dữ liệu...</p>;
+    if (error) return <p>{error}</p>;
+
     return (
-      <div className={styles.quizContainer}>
-        {/* Sidebar */}
-        <div className={styles.sidebar}>
-          <div className={styles.sidebarHeader}>
-            <h4>Danh sách câu hỏi</h4>
-          </div>
-          <div className={styles.questionList}>
-            {questions.map((_, index) => (
-              <button
-                key={index}
-                className={`${styles.questionButton} ${
-                  userAnswers[index] !== null ? styles.answered : ''
-                }`}
-                onClick={() => scrollToQuestion(index)}
-              >
-                Câu {index + 1}
-                {userAnswers[index] !== null && ' ✓'}
-              </button>
-            ))}
-          </div>
-          <div className={styles.progressInfo}>
-            Đã trả lời: {userAnswers.filter(answer => answer !== null).length}/{questions.length}
-          </div>
-          <button
-            className={styles.submitButton}
-            onClick={calculateScore}
-            disabled={userAnswers.includes(null)}
-          >
-            Nộp bài
-          </button>
-        </div>
-  
-        {/* Main Content */}
-        <div className={styles.mainContent}>
-          {showScore ? (
-            <div className={styles.scoreCard}>
-              <h2 className={styles.scoreTitle}>Kết quả của bạn</h2>
-              <div className={styles.scoreResult}>
-                Bạn đã trả lời đúng {score} trên {questions.length} câu hỏi
-              </div>
-              <button className={styles.restartButton} onClick={restartQuiz}>
-                Làm lại bài kiểm tra
-              </button>
-            </div>
-          ) : (
-            questions.map((question, questionIndex) => (
-              <div
-                key={questionIndex}
-                ref={el => questionRefs.current[questionIndex] = el}
-                className={styles.questionCard}
-              >
-                <div className={styles.questionText}>{question.questionText}</div>
-                <div className={styles.answerOptions}>
-                  {question.answerOptions.map((answerOption, answerIndex) => (
+        <div className={styles.quizContainer}>
+            <div className={styles.sidebar}>
+            <div className={styles.quizHeader}>
+        <h4>Bài kiểm tra: {questions.length > 0 ? questions[0].testName : "N/A"}</h4>
+        <p>🕒 Thời gian còn lại: {formatTime(timeLeft)}</p>
+    </div>
+                <h4>Danh sách câu hỏi</h4>
+                {questions.map((_, index) => (
                     <button
-                      key={answerIndex}
-                      className={`${styles.answerButton} ${
-                        userAnswers[questionIndex] === answerIndex ? styles.selected : ''
-                      }`}
-                      onClick={() => handleAnswerClick(questionIndex, answerIndex)}
+                        key={index}
+                        className={`${styles.questionButton} ${
+                            userAnswers[index] !== null ? styles.answered : ""
+                        }`}
+                        onClick={() => questionRefs.current[index]?.scrollIntoView({ behavior: "smooth" })}
                     >
-                      {answerOption.answerText}
+                        Câu {index + 1} {userAnswers[index] !== null && "✓"}
                     </button>
-                  ))}
-                </div>
-              </div>
-            ))
-          )}
+                ))}
+                <button
+                    className={styles.submitButton}
+                    onClick={calculateScore}
+                    disabled={userAnswers.includes(null)}
+                >
+                    Nộp bài
+                </button>
+            </div>
+
+            <div className={styles.mainContent}>
+                {showScore ? (
+                    <div className={styles.scoreCard}>
+                        <h2 className={styles.scoreTitle}>Kết quả</h2>
+                        <p>Bạn đã trả lời đúng {score} trên {questions.length} câu hỏi</p>
+                        <button className={styles.restartButton} onClick={() => window.location.reload()}>
+                            Làm lại bài kiểm tra
+                        </button>
+                    </div>
+                ) : (
+                    questions.map((question, questionIndex) => (
+                        <div key={questionIndex} ref={(el) => (questionRefs.current[questionIndex] = el)} className={styles.questionCard}>
+                            <p className={styles.questionText}>{question.questionText}</p>
+                            <div className={styles.answerOptions}>
+                                {question.answers.map((answer, answerIndex) => (
+                                    <button
+                                        key={answerIndex}
+                                        className={`${styles.answerButton} ${
+                                            userAnswers[questionIndex] === answerIndex ? styles.selected : ""
+                                        }`}
+                                        onClick={() => handleAnswerClick(questionIndex, answerIndex)}
+                                    >
+                                        {answer.answerText}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+                    ))
+                )}
+            </div>
         </div>
-      </div>
     );
-  };
+};
 
 export default Quiz;

@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Course.module.css';
 
+import { useNavigate } from 'react-router-dom'; 
+
 // Component cho Badge
 const LessonBadge = () => (
     <img
@@ -64,7 +66,10 @@ const CourseSection = ({ title, order, lessons, initialExpanded = false }) => {
 const CourseProgress = () => {
     // Dữ liệu các phần học
     const [sections, setSections] = useState([]);
-    const API_URL = `https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=1`;
+    const gradeId = sessionStorage.getItem("gradeId");
+    const API_URL = `https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`;
+
+    const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
@@ -93,12 +98,47 @@ const CourseProgress = () => {
         fetchData();
     }, []);
 
+    const handleViewTests = async () => {
+        if (!gradeId) {
+            console.error("Không tìm thấy gradeId trong session!");
+            return;
+        }
+
+        const API_URL = `https://localhost:7259/api/Test/get-test-by-grade/${gradeId}`;
+    
+        try {
+            const response = await fetch(API_URL);
+            if (!response.ok) {
+                throw new Error("Lỗi khi lấy danh sách bài kiểm tra");
+            }
+    
+            const testList = await response.json();
+            const visibleTests = testList.filter(test => test.isVisible);
+ 
+            sessionStorage.setItem("testList", JSON.stringify(visibleTests));
+    
+
+            navigate(`/student/test?gradeId=${gradeId}`);
+        } catch (error) {
+            console.error("Lỗi khi lấy dữ liệu bài kiểm tra:", error);
+        }
+    };
+    
+
     return (
         <div className='main-content'>
             <div className={styles.courseContainer}>
-                <div className={styles.courseHeader}>
-                    <div className={styles.courseTitle}>Tên bài học</div>
-                    <div className={styles.courseTitle}>Tiến độ học</div>
+            <div className={styles.courseHeader}>
+                    <div className={styles.headerLeft}>
+                        <div className={styles.courseTitle}>Tên bài học</div>
+                        <div className={styles.courseTitle}>Tiến độ học</div>
+                    </div>
+                    <div className={styles.headerRight}>
+                        <button className={styles.courseButton}>Chương trình học</button>
+                        <button className={styles.courseButton} onClick={handleViewTests}>
+                            Đề kiểm tra
+                        </button> 
+                    </div>
                 </div>
 
                 {sections.map((section, index) => (

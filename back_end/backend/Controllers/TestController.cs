@@ -48,5 +48,15 @@ namespace backend.Controllers
         {
            return await _testService.UpdateTest(id, testDto);
         }
+        [HttpGet("get-test-by-grade/{gradeId}")]
+        public async Task<ActionResult<List<TestDto>>> GetTestsByGradeId(int gradeId)
+        {
+            var tests = await _testService.GetTestsByGradeId(gradeId);
+            if (tests == null || tests.Count == 0)
+                return NotFound("Không tìm thấy bài kiểm tra cho khối lớp này.");
+
+            return Ok(tests);
+        }
+
     }
 }
