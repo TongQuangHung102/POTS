@@ -34,4 +34,9 @@
         public string AnswerText { get; set; }
         public int Number { get; set; }
     }
+
+    public class QuestionManageDto
+    {
+
+    }
 }

@@ -80,7 +80,7 @@ const QuestionManage = () => {
                 correctAnswer: q.correctAnswer,
                 isExpanded: false
             }));
-
+console.log(formattedQuestions);
             setQuestions(formattedQuestions);
         } catch (error) {
             setError(error.message);
@@ -157,6 +157,7 @@ const QuestionManage = () => {
     const handleAddQuestion = () => {
         navigate('/content_manage/add-question');
     };
+
     return (
         <div className={styles.questionManager}>
             <h1>Quản Lý Câu Hỏi</h1>
@@ -216,7 +217,7 @@ const QuestionManage = () => {
                                                 key={option.id}
                                                 className={`${styles.optionItem} ${option.id === q.correctAnswer ? styles.correctAnswer : ''}`}
                                             >
-                                                <span className={styles.optionLabel}>{option.id.toUpperCase()}.</span>
+                                                <span className={styles.optionLabel}>{option.id}.</span>
                                                 <span className={styles.optionText}>{option.text}</span>
                                                 {option.id === q.correctAnswer && (
                                                     <span className={styles.correctIndicator}>✓</span>
