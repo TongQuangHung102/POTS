@@ -52,7 +52,9 @@ builder.Services.AddScoped<TestDAO>();
 builder.Services.AddScoped<LevelDAO>();
 builder.Services.AddScoped<ILevelRepository, LevelRepository>();
 builder.Services.AddScoped<LevelService>();
-
+builder.Services.AddScoped<TestQuestionDAO>();
+builder.Services.AddScoped<ITestQuestionRepository, TestQuestionRepository>();
+builder.Services.AddScoped<TestQuestionService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",

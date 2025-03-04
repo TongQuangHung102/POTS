@@ -38,6 +38,7 @@ namespace backend.Models
         public DbSet<TestCategory> TestCategories { get; set; }
         public DbSet<Test> Tests { get; set; }
         public DbSet<Grades> Grades { get; set; }
+        public DbSet<TestQuestion> TestQuestions { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<StudentProgress>()

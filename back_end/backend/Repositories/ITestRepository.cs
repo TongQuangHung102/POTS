@@ -8,5 +8,7 @@ namespace backend.Repositories
         Task<Test> GetByIdAsync(int id);
         Task AddAsync(Test test);
         Task UpdateAsync(Test test);
+        Task<List<Test>> GetTestsByGradeIdAsync(int gradeId);
+
     }
 }

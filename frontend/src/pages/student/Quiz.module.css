@@ -183,4 +183,22 @@
     .quizContainer {
         flex-direction: column;
     }
+
+    .quizHeader {
+        text-align: center;
+        margin-bottom: 20px;
+        padding: 10px;
+        background: #eef7ff;
+        border-radius: 8px;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    .quizHeader h2 {
+        font-size: 1.5rem;
+        color: #0073e6;
+    }
+    .quizHeader p {
+        font-size: 1.2rem;
+        color: #333;
+    }
+    
 }
