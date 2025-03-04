@@ -225,7 +225,9 @@ return (
                         <td>{t.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
                         <td>
                             <button onClick={() => handleEdit(t)}>Chỉnh sửa</button>
-                            <button>Quản lý câu hỏi</button>
+                            <button>
+                                <Link to={`/content_manage/grades/${gradeId}/list_tests/${t.testId}/questions`}>Quản lý câu hỏi</Link>
+                            </button>
                         </td>
                     </tr>
                 ))}

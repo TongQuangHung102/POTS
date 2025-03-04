@@ -4,7 +4,7 @@ import BackLink from "../../components/BackLink";
 import { fetchLessons } from "../../services/LessonService";
 import './ListLesson.css';
 const ListLesson = () => {
-  const { chapterId } = useParams();
+  const { gradeId, chapterId } = useParams();
   const [lessons, setLessons] = useState([]);
   const [showAddLesson, setShowAddLesson] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -157,11 +157,11 @@ const ListLesson = () => {
               <td>
                 <button>
                   {roleId === "3" ? (
-                    <Link to={`/admin/question/${lesson.lessonId}`}>
+                    <Link to={`/admin/grades/${gradeId}/chapters/${chapterId}question/${lesson.lessonId}`}>
                       Quản lý câu hỏi
                     </Link>
                   ) : (
-                    <Link to={`/content_manage/question/${lesson.lessonId}`}>
+                    <Link to={`/content_manage/grades/${gradeId}/chapters/${chapterId}/lessons/${lesson.lessonId}/questions`}>
                       Quản lý câu hỏi
                     </Link>
                   )}
