@@ -12,11 +12,6 @@ namespace backend.Repositories
             _testQuestionDAO = testQuestionDAO;
         }
 
-        public async Task<List<TestQuestion>> GetQuestionsByTestIdAsync(int testId)
-        {
-            return await _testQuestionDAO.GetQuestionsByTestIdAsync(testId);
-        }
-
         public async Task AddTestQuestions(List<TestQuestion> testQuestions)
         {
             await _testQuestionDAO.AddTestQuestions(testQuestions);
@@ -27,7 +22,7 @@ namespace backend.Repositories
             return _testQuestionDAO.GetQuestionIdsByTestIdAsync(testId);
         }
 
-        public async Task<List<Question>> GetQuestionsByTestIdAsync(int testId)
+        public async Task<List<TestQuestion>> GetQuestionsByTestIdAsync(int testId)
         {
             return await _testQuestionDAO.GetQuestionsByTestIdAsync(testId);
         }
