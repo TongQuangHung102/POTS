@@ -27,6 +27,7 @@ import ChooseGrade from '../pages/student/ChooseGrade';
 import TestCategory from '../pages/admin/TestCategory';
 import ListTest from '../pages/admin/ListTest';
 import AddQuestionForm from '../pages/content_manager/AddQuestionForm';
+import Test from '../pages/student/Test';
 import ListGradesAssign from '../pages/content_manager/ListGradesAssign';
 import ManageQuestionTest from '../pages/content_manager/ManageQuestionTest';
 const AppRoutes = () => {
@@ -46,7 +47,7 @@ const AppRoutes = () => {
             <Route path='/choose-role' element={<ChooseRole />}></Route>
             <Route path='/choose-grade' element={<ChooseGrade />}></Route>
             <Route path='/forgot-password' element={<ForgotPasswordForm />}></Route>
-            <Route path='/qiuz' element={<Quiz />}></Route>
+            <Route path='/student/quiz' element={<Quiz />}></Route>
             
 
             <Route path='/admin' element={<AdminLayout />}>
@@ -83,6 +84,8 @@ const AppRoutes = () => {
                 <Route index element={<Navigate to="/student/dashboard" replace />} />  
                 <Route path="/student/dashboard" element={<StudentDashboard />} />  
                 <Route path="/student/course" element={<Course />} />  
+                <Route path="/student/test" element={<Test />} />
+        
             </Route>
 
             <Route path='/content_manage' element={<ContentManageLayout />}> 

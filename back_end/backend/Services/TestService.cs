@@ -106,5 +106,21 @@ namespace backend.Services
             }
 
         }
+        public async Task<List<TestDto>> GetTestsByGradeId(int gradeId)
+        {
+            var tests = await _testRepository.GetTestsByGradeIdAsync(gradeId);
+            return tests.Select(test => new TestDto
+            {
+                TestId = test.TestId,
+                TestName = test.TestName,
+                Description = test.Description,
+                DurationInMinutes = test.DurationInMinutes,
+                MaxScore = test.MaxScore,
+                IsVisible = test.IsVisible,
+                Order = test.Order,
+                GradeId = test.GradeId
+            }).ToList();
+        }
+
     }
 }
