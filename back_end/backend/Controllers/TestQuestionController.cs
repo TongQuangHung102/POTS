@@ -16,14 +16,6 @@ namespace backend.Controllers
             _testQuestionService = testQuestionService;
         }
 
-
-        [HttpGet("get-questions-by-test/{testId}")]
-        public async Task<ActionResult<List<TestQuestionDto>>> GetTestQuestions(int testId)
-        {
-            var result = await _testQuestionService.GetTestQuestionsByTestId(testId);
-            return Ok(result);
-        }
-
         [HttpPost("add-questions")]
         public async Task<IActionResult> AddQuestionsToTest([FromBody] AddQuestionsToTestDto dto)
         {
@@ -33,8 +25,8 @@ namespace backend.Controllers
         [HttpGet("get-test-questions")]
         public async Task<IActionResult> GetTestQuestions(int testId)
         {
-             return await _testQuestionService.GetTestQuestionsAsync(testId);
-            
+            return await _testQuestionService.GetTestQuestionsAsync(testId);
+
         }
 
         [HttpPut("update-questions")]
