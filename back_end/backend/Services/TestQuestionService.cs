@@ -1,4 +1,5 @@
-﻿using backend.DataAccess.DAO;
+
+using backend.DataAccess.DAO;
 using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
@@ -53,27 +54,34 @@ namespace backend.Services
             var response = questions.Select(q => new
             {
                 q.QuestionId,
-                q.QuestionText,
-                q.CreateAt,
-                q.CorrectAnswer,
-                CorrectAnswerText = q.AnswerQuestions.FirstOrDefault(a => a.Number == q.CorrectAnswer)?.AnswerText,
-                q.IsVisible,
-                q.CreateByAI,
+                q.Question.QuestionText,
+                q.Question.CreateAt,
+                q.Question.CorrectAnswer,
+                CorrectAnswerText = q.Question.AnswerQuestions.FirstOrDefault(a => a.Number == q.Question.CorrectAnswer)?.AnswerText,
+                q.Question.IsVisible,
+                q.Question.CreateByAI,
                 Level = new
                 {
-                    q.Level.LevelName,
-                    q.Level.LevelId
+                    q.Question.Level.LevelName,
+                    q.Question.Level.LevelId
                 },
                 Lesson = new
                 {
-                    q.Lesson.LessonName
+                    q.Question.Lesson.LessonName
                 },
-                AnswerQuestions = q.AnswerQuestions.Select(a => new
+                AnswerQuestions = q.Question.AnswerQuestions.Select(a => new
                 {
                     a.AnswerQuestionId,
                     a.AnswerText,
                     a.Number
-                }).ToList()
+                }).ToList(),
+
+                Test = new
+                {
+                    q.Test.TestName,
+                    q.Test.DurationInMinutes,
+                    q.Test.IsVisible
+                }
             });
 
             return new OkObjectResult(response);
@@ -113,7 +121,6 @@ namespace backend.Services
                 Message = "Cập nhật thành công"
             });
         }
-
 
     }
 }

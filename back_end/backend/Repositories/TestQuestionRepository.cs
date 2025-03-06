@@ -1,4 +1,4 @@
-﻿using backend.DataAccess.DAO;
+using backend.DataAccess.DAO;
 using backend.Models;
 
 namespace backend.Repositories
@@ -22,7 +22,7 @@ namespace backend.Repositories
             return _testQuestionDAO.GetQuestionIdsByTestIdAsync(testId);
         }
 
-        public async Task<List<Question>> GetQuestionsByTestIdAsync(int testId)
+        public async Task<List<TestQuestion>> GetQuestionsByTestIdAsync(int testId)
         {
             return await _testQuestionDAO.GetQuestionsByTestIdAsync(testId);
         }
