@@ -28,7 +28,7 @@ namespace backend.Models
         public virtual Grades? Grade { get; set; }
         public virtual ICollection<Chapter> Chapters { get; set; }
         public virtual ICollection<Grades> Grades { get; set; }
-        public virtual ICollection<QuizAttempt> QuizAttempts { get; set; }
+        public virtual ICollection<PracticeAttempt> PracticeAttempts { get; set; }
         public virtual ICollection<StudentPerformance> StudentPerformances { get; set; }
         public virtual ICollection<StudentProgress> StudentProgresses { get; set; }
         public virtual ICollection<UserSubscription> UserSubscriptions { get; set; }

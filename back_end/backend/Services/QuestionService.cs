@@ -2,16 +2,25 @@
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Org.BouncyCastle.Asn1.Ocsp;
+using System.Net.Http;
+using System.Text;
+using System.Text.Json;
 
 namespace backend.Services
 {
     public class QuestionService
     {
         private readonly IQuestionRepository _questionRepository;
+        private readonly ICurriculumRepository _curriculumRepository;
+        private readonly HttpClient _httpClient;
 
-        public QuestionService(IQuestionRepository questionRepository)
+        public QuestionService(IQuestionRepository questionRepository, HttpClient httpClient, ICurriculumRepository curriculumRepository)
         {
             _questionRepository = questionRepository;
+            _httpClient = httpClient;
+            _curriculumRepository = curriculumRepository;
         }
 
         public async Task<IActionResult> GetAllQuestionsAsync(int? chapterId, int? lessonId, int? levelId,string searchTerm, bool? isVisible, int page, int pageSize)
@@ -191,6 +200,44 @@ namespace backend.Services
                 };
             }
         }
+
+        public async Task<IActionResult> GenQuestionAIForPractice(QuestionRequest questionRequest)
+        {
+            int lessonId = Convert.ToInt32(questionRequest.Question);
+            var lesson = await _curriculumRepository.GetLessonByIdAsync(lessonId);
+            try
+            {
+                var jsonContent = JsonConvert.SerializeObject(new
+                {
+                    question = lesson.LessonName,
+                    num_questions = questionRequest.NumQuestions
+                });
+
+                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+                HttpResponseMessage response = await _httpClient.PostAsync("http://127.0.0.1:5000/generate-mcq", httpContent);
+                response.EnsureSuccessStatusCode();
+
+                string responseBody = await response.Content.ReadAsStringAsync();
+
+                var options = new JsonSerializerOptions
+                {
+                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
+                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+                };
+
+                var jsonResponse = JsonConvert.DeserializeObject<object>(responseBody);
+                return new JsonResult(jsonResponse);
+            }
+            catch (Exception ex)
+            {
+                return new ObjectResult(new { message = "Đã xảy ra lỗi khi thêm câu hỏi.", error = ex.Message })
+                {
+                    StatusCode = 500
+                };
+            }
+        }
+
 
 
 

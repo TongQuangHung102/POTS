@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Course.module.css';
-
+import TestPage from './Test';
+import BackLink from '../../components/BackLink';
 import { useNavigate } from 'react-router-dom'; 
 
 // Component cho Badge
@@ -13,12 +14,15 @@ const LessonBadge = () => (
 );
 
 // Component cho mỗi bài học
-const LessonItem = ({ number, title }) => {
-    // Xác định màu dựa trên số thứ tự
-  
+const LessonItem = ({ id, number, title }) => {
+    const navigate = useNavigate();
+
+    const handlePractice = (id) =>{
+        navigate(`/student/course/practice/${id}`)
+    }
 
     return (
-        <div className={styles.lessonItem}>
+        <div className={styles.lessonItem} onClick={() => handlePractice(id)}>
             <div className={`${styles.lessonNumber}`}>{number}</div>
             <div className={styles.lessonInfo}>
                 <div className={styles.lessonIcon}>📄</div>
@@ -50,13 +54,15 @@ const CourseSection = ({ title, order, lessons, initialExpanded = false }) => {
             </div>
 
             <div className={styles.lessonContainer}>
-                {lessons.map((lesson, index) => (
+            {lessons.map((lesson, index) => (
                     <LessonItem
                         key={index}
                         number={lesson.number}
                         title={lesson.title}
+                        id= {lesson.id}
                     />
                 ))}
+
             </div>
         </div>
     );
@@ -66,6 +72,8 @@ const CourseSection = ({ title, order, lessons, initialExpanded = false }) => {
 const CourseProgress = () => {
     // Dữ liệu các phần học
     const [sections, setSections] = useState([]);
+    const [tests, setTests] = useState([]);
+    const [viewTests, setViewTests] = useState(false);
     const gradeId = sessionStorage.getItem("gradeId");
     const API_URL = `https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`;
 
@@ -85,7 +93,8 @@ const CourseProgress = () => {
                     lessons: chapter.lessons.filter(lesson => lesson.isVisible)
                     .map(lesson => ({
                         number: String(lesson.order).padStart(2, "0"),
-                        title: lesson.lessonName
+                        title: lesson.lessonName,
+                        id: lesson.lessonId
                     }))
                 }));
 
@@ -98,31 +107,33 @@ const CourseProgress = () => {
         fetchData();
     }, []);
 
-    const handleViewTests = async () => {
-        if (!gradeId) {
-            console.error("Không tìm thấy gradeId trong session!");
-            return;
-        }
-
-        const API_URL = `https://localhost:7259/api/Test/get-test-by-grade/${gradeId}`;
-    
-        try {
-            const response = await fetch(API_URL);
-            if (!response.ok) {
-                throw new Error("Lỗi khi lấy danh sách bài kiểm tra");
+    useEffect(()=> {
+        const fetchTest = async () =>{
+            if (!gradeId) {
+                console.error("Không tìm thấy gradeId trong session!");
+                return;
             }
     
-            const testList = await response.json();
-            const visibleTests = testList.filter(test => test.isVisible);
- 
-            sessionStorage.setItem("testList", JSON.stringify(visibleTests));
-    
-
-            navigate(`/student/test?gradeId=${gradeId}`);
-        } catch (error) {
-            console.error("Lỗi khi lấy dữ liệu bài kiểm tra:", error);
+            const API_URL = `https://localhost:7259/api/Test/get-test-by-grade/${gradeId}`;
+        
+            try {
+                const response = await fetch(API_URL);
+                if (!response.ok) {
+                    throw new Error("Lỗi khi lấy danh sách bài kiểm tra");
+                }
+        
+                const testList = await response.json();
+                const visibleTests = testList.filter(test => test.isVisible);
+                setTests(visibleTests);
+                
+            } catch (error) {
+                console.error("Lỗi khi lấy dữ liệu bài kiểm tra:", error);
+            }
         }
-    };
+        fetchTest();
+    }, []);
+
+   
     
 
     return (
@@ -130,26 +141,36 @@ const CourseProgress = () => {
             <div className={styles.courseContainer}>
             <div className={styles.courseHeader}>
                     <div className={styles.headerLeft}>
-                        <div className={styles.courseTitle}>Tên bài học</div>
-                        <div className={styles.courseTitle}>Tiến độ học</div>
+                        <BackLink/>
                     </div>
                     <div className={styles.headerRight}>
-                        <button className={styles.courseButton}>Chương trình học</button>
-                        <button className={styles.courseButton} onClick={handleViewTests}>
+                    <button 
+                            className={styles.courseButton} 
+                            onClick={() => setViewTests(false)}
+                        >
+                            Chương trình học
+                        </button>
+
+                     <button 
+                            className={styles.courseButton} 
+                            onClick={() => setViewTests(true)}
+                        >
                             Đề kiểm tra
-                        </button> 
+                        </button>
                     </div>
                 </div>
 
-                {sections.map((section, index) => (
-                    <CourseSection
-                        key={index}
-                        order={section.order}
-                        title={section.title}
-                        lessons={section.lessons}
-                        initialExpanded={section.initialExpanded}
-                    />
-                ))}
+                {viewTests ? <TestPage listtests={tests} /> : (
+                    sections.map((section, index) => (
+                        <CourseSection
+                            key={index}
+                            order={section.order}
+                            title={section.title}
+                            lessons={section.lessons}
+                            initialExpanded={section.initialExpanded}
+                        />
+                    ))
+                )}
             </div>
         </div>
     );

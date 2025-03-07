@@ -21,6 +21,7 @@ const ListGrades = () => {
     try {
       const response = await fetch('https://localhost:7259/api/Grade/get-all-grade');
       const data = await response.json();
+      console.log(data);
       setGrades(data);
     } catch (error) {
       console.error("Có lỗi khi lấy dữ liệu lớp", error);

@@ -13,7 +13,7 @@ namespace backend.Models
         public int SelectedAnswer { get; set; }
 
         [ForeignKey("AttemptId")]
-        public virtual QuizAttempt QuizAttempt { get; set; }
+        public virtual PracticeAttempt PracticeAttempts { get; set; }
 
         [ForeignKey("QuestionId")]
         public virtual Question Question { get; set; }
