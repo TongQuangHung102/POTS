@@ -23,7 +23,7 @@ namespace backend.Models
         public DbSet<Question> Questions { get; set; }
         public DbSet<AnswerQuestion> AnswerQuestions { get; set; }
         public DbSet<AIQuestion> AIQuestions { get; set; }
-        public DbSet<QuizAttempt> QuizAttempts { get; set; }
+        public DbSet<PracticeAttempt> PracticeAttempts { get; set; }
         public DbSet<StudentPerformance> StudentPerformances { get; set; }
         public DbSet<StudentProgress> StudentProgresses { get; set; }
         public DbSet<Contest> Contests { get; set; }
@@ -66,9 +66,9 @@ namespace backend.Models
                 .HasForeignKey(ups => ups.ParentId)
                 .OnDelete(DeleteBehavior.Restrict);
 
-            modelBuilder.Entity<QuizAttempt>()
+            modelBuilder.Entity<PracticeAttempt>()
                 .HasOne(qa => qa.User)
-                .WithMany(u => u.QuizAttempts)
+                .WithMany(u => u.PracticeAttempts)
                 .HasForeignKey(qa => qa.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
 
@@ -85,7 +85,7 @@ namespace backend.Models
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<StudentAnswer>()
-                .HasOne(sa => sa.QuizAttempt) 
+                .HasOne(sa => sa.PracticeAttempts) 
                 .WithMany() 
                 .HasForeignKey(sa => sa.AttemptId)
                 .OnDelete(DeleteBehavior.Restrict);

@@ -123,7 +123,7 @@ const ManageQuestionTest = () => {
         }
 
         const payload = {
-            testId: 1, 
+            testId: testId, 
             questionIds: testQuestions.map(q => q.questionId)
         };
 

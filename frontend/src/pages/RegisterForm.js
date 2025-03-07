@@ -92,7 +92,7 @@ const RegisterForm = () => {
   };
 
   if (loading) {
-    return <div className="loading-spinner">Đang tải dữ liệu...</div>;
+    return <div className="loading-spinner">Đang tiến hành đăng ký...</div>;
 }
 
   return (

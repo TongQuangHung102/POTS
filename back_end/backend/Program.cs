@@ -55,6 +55,9 @@ builder.Services.AddScoped<LevelService>();
 builder.Services.AddScoped<TestQuestionDAO>();
 builder.Services.AddScoped<ITestQuestionRepository, TestQuestionRepository>();
 builder.Services.AddScoped<TestQuestionService>();
+builder.Services.AddScoped<PracticeAttemptDAO>();
+builder.Services.AddScoped<IPracticeRepository, PracticeRepository>();
+builder.Services.AddScoped<PracticeAttemptService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
@@ -66,7 +69,7 @@ builder.Services.AddCors(options =>
 
 var key = Encoding.ASCII.GetBytes("UltraSecureKey_ForJWTAuth!987654321@2025$");
 
-
+builder.Services.AddHttpClient();
 builder.Services.AddAuthorization();
 builder.Services.AddControllers().AddNewtonsoftJson(options =>
 {
