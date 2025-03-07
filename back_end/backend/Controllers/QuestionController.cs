@@ -27,7 +27,7 @@ namespace backend.Controllers
             [FromQuery] int pageSize = 10
             )
         {
-            return await _questionService.GetAllQuestionsAsync(chapterId,lessonId, levelId, searchTerm, isVisible, page, pageSize);
+            return await _questionService.GetAllQuestionsAsync(chapterId, lessonId, levelId, searchTerm, isVisible, page, pageSize);
         }
 
         [HttpGet("get-question-by/{questionId}")]
@@ -44,6 +44,12 @@ namespace backend.Controllers
         public async Task<IActionResult> AddQuestion([FromBody] CreateQuestionDto questionDto)
         {
             return await _questionService.AddQuestionAsync(questionDto);
+        }
+
+        [HttpPost("gen-question-practice")]
+        public async Task<IActionResult> GetGeneratedQuestion([FromBody] QuestionRequest request)
+        {
+            return await _questionService.GenQuestionAIForPractice(request);
         }
     }
 }

@@ -1,7 +1,6 @@
 ﻿using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
-using Microsoft.AspNetCore.Mvc;
 
 namespace backend.Services
 {
@@ -14,155 +13,78 @@ namespace backend.Services
             _gradeRepository = gradeRepository;
         }
 
-        public async Task<IActionResult> GetAllGradesAsync()
+        public async Task<IEnumerable<Grades>> GetAllGradesAsync()
         {
-            try
+            var grades = await _gradeRepository.GetAllGradesAsync();
+            if (grades == null || grades.Count == 0)
             {
-                var grades = await _gradeRepository.GetAllGradesAsync();
-                if (grades.Count == 0)
-                {
-                    return new OkObjectResult(new { Message = "Không có grade nào trong hệ thống." });
-                }
-
-                return new OkObjectResult(grades.Select(g => new
-                {
-                    gradeId = g.GradeId,
-                    gradeName = g.GradeName,
-                    gradeDescription = g.Description,
-                    gradeIsVisible = g.IsVisible,
-                    userName = g.User?.UserName ?? "Chưa có",
-                    userId = g.User?.UserId ?? 0
-                }));
+                throw new KeyNotFoundException("Không có grade nào trong hệ thống.");
             }
-            catch (Exception ex)
-            {
-                return new ObjectResult(new { Message = "Đã xảy ra lỗi khi lấy danh sách grade.", Error = ex.Message })
-                {
-                    StatusCode = 500
-                };
-            }
+            return grades;
         }
-        public async Task<IActionResult> GetGradeByIdAsync(int id)
-        {
-            try
-            {
-                var grade = await _gradeRepository.GetGradeByIdAsync(id);
-                if (grade == null)
-                {
-                    return new NotFoundObjectResult(new { Message = "Grade không tồn tại." });
-                }
 
-                return new OkObjectResult(new
-                {
-                    gradeId = grade.GradeId,
-                    gradeName = grade.GradeName,
-                    gradeDescription = grade.Description,
-                    gradeIsVisible = grade.IsVisible
-                });
-            }
-            catch (Exception ex)
+        public async Task<Grades> GetGradeByIdAsync(int id)
+        {
+            var grade = await _gradeRepository.GetGradeByIdAsync(id);
+            if (grade == null)
             {
-                return new ObjectResult(new { Message = "Lỗi khi lấy grade.", Error = ex.Message })
-                {
-                    StatusCode = 500
-                };
+                throw new KeyNotFoundException("Grade không tồn tại.");
             }
+            return grade;
         }
-        public async Task<IActionResult> GetGradeByUserIdAsync(int id)
-        {
-            try
-            {
-                var grade = await _gradeRepository.GetGradeByUserIdAsync(id);
-                if (grade == null)
-                {
-                    return new NotFoundObjectResult(new { Message = "Chưa có lớp nào" });
-                }
 
-                return new OkObjectResult(grade);
-            }
-            catch (Exception ex)
+        public async Task<IEnumerable<Grades>> GetGradeByUserIdAsync(int id)
+        {
+            var grades = await _gradeRepository.GetGradeByUserIdAsync(id);
+            if (grades == null || grades.Count == 0)
             {
-                return new ObjectResult(new { Message = "Lỗi khi lấy grade.", Error = ex.Message })
-                {
-                    StatusCode = 500
-                };
+                throw new KeyNotFoundException("Chưa có lớp nào.");
             }
+            return grades;
         }
-        public async Task<IActionResult> UpdateGradeAsync(int gradeId, GradeDto gradeDto)
+
+        public async Task UpdateGradeAsync(int gradeId, GradeDto gradeDto)
         {
-            try
+            var existingGrade = await _gradeRepository.GetGradeByIdAsync(gradeId);
+            if (existingGrade == null)
             {
-                var existingGrade = await _gradeRepository.GetGradeByIdAsync(gradeId);
-                if (existingGrade == null)
-                {
-                    return new NotFoundObjectResult(new { Message = "Grade không tồn tại." });
-                }
-
-                existingGrade.GradeName = gradeDto.GradeName;
-                existingGrade.Description = gradeDto.Description;
-                existingGrade.IsVisible = gradeDto.IsVisible;
-
-                if(gradeDto.UserId != 0)
-                {
-                    existingGrade.UserId = gradeDto.UserId;
-                }
-                
-
-      
-                await _gradeRepository.UpdateGradeAsync(existingGrade);
-
-                return new OkObjectResult(new { Message = "Cập nhật grade thành công!" });
+                throw new KeyNotFoundException("Grade không tồn tại.");
             }
-            catch (Exception ex)
+
+            existingGrade.GradeName = gradeDto.GradeName;
+            existingGrade.Description = gradeDto.Description;
+            existingGrade.IsVisible = gradeDto.IsVisible;
+
+            if (gradeDto.UserId != 0)
             {
-                return new ObjectResult(new { Message = "Lỗi khi cập nhật grade.", Error = ex.Message })
-                {
-                    StatusCode = 500
-                };
+                existingGrade.UserId = gradeDto.UserId;
             }
+
+            await _gradeRepository.UpdateGradeAsync(existingGrade);
         }
-        public async Task<IActionResult> AddGradeAsync(GradeDto gradeDto)
+
+        public async Task AddGradeAsync(GradeDto gradeDto)
         {
-            try
+            var newGrade = new Grades
             {
-                var newGrade = new Grades
-                {
-                    GradeName = gradeDto.GradeName,
-                    Description = gradeDto.Description,
-                    IsVisible = gradeDto.IsVisible
-                };
+                GradeName = gradeDto.GradeName,
+                Description = gradeDto.Description,
+                IsVisible = gradeDto.IsVisible
+            };
 
-                await _gradeRepository.AddGradeAsync(newGrade); 
-
-                return new OkObjectResult(new
-                {
-                    Message = "Thêm grade thành công!"
-                });
-            }
-            catch (Exception ex)
-            {
-                return new ObjectResult(new { Message = "Lỗi khi thêm grade.", Error = ex.Message })
-                {
-                    StatusCode = 500
-                };
-            }
+            await _gradeRepository.AddGradeAsync(newGrade);
         }
 
         public async Task AssignContentManagersAsync(GradeAssignment assignments)
         {
             var grade = await _gradeRepository.GetGradeByIdAsync(assignments.GradeId);
-
             if (grade == null)
             {
                 throw new KeyNotFoundException("Khối lớp không tồn tại.");
             }
 
             grade.UserId = assignments.UserId;
-
             await _gradeRepository.UpdateGradeAsync(grade);
         }
-
-
-
     }
 }
