@@ -17,7 +17,7 @@ namespace backend.Models
         public virtual Chapter Chapter { get; set; }
         public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<AIQuestion> AIQuestions { get; set; }
-        public virtual ICollection<QuizAttempt> QuizAttempts { get; set; }
+        public virtual ICollection<PracticeAttempt> PracticeAttempts { get; set; }
         public virtual ICollection<StudentPerformance> StudentPerformances { get; set; }
         public virtual ICollection<StudentProgress> StudentProgresses { get; set; }
     }

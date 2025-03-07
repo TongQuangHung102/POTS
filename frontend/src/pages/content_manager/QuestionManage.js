@@ -4,7 +4,7 @@ import styles from './QuestionManage.module.css';
 
 const QuestionManage = () => {
     // State chứa danh sách câu hỏi từ API
-    const { lessonId } = useParams();
+    const { lessonId, gradeId, chapterId } = useParams();
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -80,7 +80,7 @@ const QuestionManage = () => {
                 correctAnswer: q.correctAnswer,
                 isExpanded: false
             }));
-console.log(formattedQuestions);
+            console.log(formattedQuestions);
             setQuestions(formattedQuestions);
         } catch (error) {
             setError(error.message);
@@ -155,7 +155,7 @@ console.log(formattedQuestions);
         setEditingQuestion(null);
     };
     const handleAddQuestion = () => {
-        navigate('/content_manage/add-question');
+        navigate(`/content_manage/grades/${gradeId}/chapters/${chapterId}/lessons/${lessonId}/add-question`);
     };
 
     return (
@@ -166,7 +166,7 @@ console.log(formattedQuestions);
                 <button>Tạo câu hỏi bằng AI</button>
             </div>
             <div className={styles.toolbar}>
-                
+
                 <select className={styles.commonInput} value={levelId} onChange={(e) => setLevelId(e.target.value)}>
                     <option value="">Chọn mức độ</option>
                     {levels?.map((l) => (

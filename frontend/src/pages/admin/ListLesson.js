@@ -157,7 +157,7 @@ const ListLesson = () => {
               <td>
                 <button>
                   {roleId === "3" ? (
-                    <Link to={`/admin/grades/${gradeId}/chapters/${chapterId}question/${lesson.lessonId}`}>
+                    <Link to={`/admin/grades/${gradeId}/chapters/${chapterId}/lessons/${lesson.lessonId}/questions`}>
                       Quản lý câu hỏi
                     </Link>
                   ) : (

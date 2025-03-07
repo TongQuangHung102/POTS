@@ -3,16 +3,25 @@
     min-height: 100vh;
     background-color: #f5f5f5;
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    padding-left: 30px;
+    margin-left: var(--sidebar-width);
+}
+.back{
+    border-bottom: 1px solid gray;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
 }
 
 .sidebar {
     width: 300px;
     background: white;
+    margin-top: 30px;
     padding: 20px;
     position: fixed;
-    height: 100vh;
+    height: 80vh;
     box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
     overflow-y: auto;
+    border-radius: 10px;
 }
 
 .sidebarHeader {
@@ -39,8 +48,16 @@
     transition: all 0.3s ease;
     width: 100%;
     text-align: center;
+    margin: 5px;
 }
-
+.loading{
+    display: flex;
+    justify-content: center; 
+    align-items: center;     
+    height: 100vh;  
+    font-size: 20px;
+    font-weight: 700;
+}
 .questionButton:hover {
     background: #beffb1;
     color: white;
@@ -82,23 +99,24 @@
 
 .answerButton {
     padding: 5px;
-    border: 2px solid #ddd;
+    border: 1px solid #e6e6e6;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
     text-align: left;
     font-size: 1rem;
+    background-color: white;
 }
 
 .answerButton:hover {
     border-color: #00770e;
-    background: #f8f9fa;
+    background-color: #e8ffe3;
 }
 
 .answerButton.selected {
-    background: #beffb1;
     color: rgb(0, 0, 0);
-    border-color: #000000;
+    border: 2px solid #008a00;
+    font-weight: 700;
 }
 
 .submitButton {
@@ -127,7 +145,6 @@
     background: white;
     padding: 30px;
     border-radius: 12px;
-    text-align: center;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
@@ -168,6 +185,100 @@
     border-radius: 8px;
     color: #666;
 }
+
+
+.wrong {
+    border: 1px solid #FF6347 !important;
+    color: rgb(0, 0, 0);
+}
+
+.correctAnswer {
+    border: 2px solid #4CAF50;
+}
+
+.resultCard {
+    margin-bottom: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+.resultContainer {
+    margin-top: 20px;
+}
+
+.upgradeContainer {
+    position: relative;
+    text-align: center;
+    background: #f8f9fa;
+    padding: 40px;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    max-width: 100%;
+    height: 50vh;
+    margin: auto;
+    overflow: hidden; 
+}
+
+.upgradeContent{
+    margin-top: 3vw !important;
+    padding: 20px;
+    position: relative;
+    z-index: 12;
+    border-radius: 20px;
+    background: rgba(202, 202, 202, 0.5);
+}
+
+.upgradeContainer::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: url('../../../public/images/result.jpg');
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    filter: blur(4px); /* Điều chỉnh độ mờ */
+    z-index: 1;
+}
+
+
+.upgradeContainer h2 {
+    position: relative;
+    font-size: 24px;
+    color: #ff1d1d;
+    margin-bottom: 10px;
+    z-index: 12;
+}
+
+.upgradeContainer p {
+    position: relative;
+    font-size: 16px;
+    color: #555;
+    margin-bottom: 20px;
+    z-index: 12;
+}
+
+.upgradeButton {
+    position: relative;
+    background-color: #007bff;
+    color: white;
+    padding: 12px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease-in-out;
+    z-index: 12;
+}
+
+.upgradeButton:hover {
+    background-color: #0056b3;
+}
+
+
 
 @media (max-width: 768px) {
     .sidebar {

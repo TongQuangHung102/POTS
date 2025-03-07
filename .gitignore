@@ -22,6 +22,8 @@ yarn.lock
 .env.development.local
 .env.test.local
 .env.production.local
+venv/
+env/
 
 # Visual Studio
 .vscode/

@@ -171,7 +171,7 @@ return (
                     <label>
                         Tên bài kiểm tra:
                         <select name="testName" value={test.categoryName} onChange={handleSelectChange} required>
-                            {testCategory.map((item) => (
+                            {testCategory.filter(l => l.isVisible).map((item) => (
                                 <option key={item.testCategoryId} value={item.categoryName}>
                                     {item.categoryName}
                                 </option>

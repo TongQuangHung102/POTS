@@ -1,10 +1,10 @@
 import { useState, useEffect  } from "react";
+import { useParams } from "react-router-dom";
 import styles from "./AddQuestionForm.module.css"; // Import CSS Module
 
 const AddQuestionForm = ({ onAddQuestion }) => {
     const [questionText, setQuestionText] = useState("");
     const [levelId, setLevelId] = useState("");
-    const [lessonId, setLessonId] = useState("");
     const [isVisible, setIsVisible] = useState(true);
     const [createByAI, setCreateByAI] = useState(false);
     const [correctAnswer, setCorrectAnswer] = useState(null);
@@ -16,6 +16,9 @@ const AddQuestionForm = ({ onAddQuestion }) => {
     const [levels, setLevels] = useState([]);
     const [error, setError] = useState(null); 
     const [loading, setLoading] = useState(true);
+
+    const {lessonId} = useParams();
+    console.log(lessonId);
 
     useEffect(() => {
         const fetchLevels = async () => {
@@ -60,7 +63,7 @@ const AddQuestionForm = ({ onAddQuestion }) => {
             questionText: questionText,
             createAt: new Date().toISOString(),
             levelId: parseInt(levelId),
-            lessonId: 2,
+            lessonId: lessonId,
             isVisible: true,
             createByAI: false,
             correctAnswer: parseInt(correctAnswer),
@@ -79,7 +82,6 @@ const AddQuestionForm = ({ onAddQuestion }) => {
                 alert("Câu hỏi đã được thêm thành công!");
                 setQuestionText("");
                 setLevelId("");
-                setLessonId("");
                 setCorrectAnswer("");
                 setAnswerQuestions([{ answerText: "", number: 1 }]);
             } else {

@@ -1,4 +1,5 @@
 ﻿using backend.Dtos;
+using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -19,27 +20,92 @@ namespace backend.Controllers
         [HttpGet("get-all-grade")]
         public async Task<IActionResult> GetAllGrades()
         {
-            return await _gradeService.GetAllGradesAsync();
+            try
+            {
+                var grades = await _gradeService.GetAllGradesAsync();
+                var gradeDto = grades.Select(g => new
+                {
+                    gradeId = g.GradeId,
+                    gradeName = g.GradeName,
+                    gradeDescription = g.Description,
+                    gradeIsVisible = g.IsVisible,
+                    userName = g.User?.UserName ?? "Chưa có",
+                    userId = g.User?.UserId ?? 0
+                });
+                return Ok(gradeDto);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi.", error = ex.Message });
+            }
         }
         [HttpGet("get-grade/{id}")]
         public async Task<IActionResult> GetGradeById(int id)
         {
-            return await _gradeService.GetGradeByIdAsync(id);
+            try
+            {
+                var grade = await _gradeService.GetGradeByIdAsync(id);
+                return Ok(grade);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi.", error = ex.Message });
+            }
         }
         [HttpGet("get-grade-by-userId/{id}")]
         public async Task<IActionResult> GetGradeByUserId(int id)
         {
-            return await _gradeService.GetGradeByUserIdAsync(id);
+            try
+            {
+                var grade = await _gradeService.GetGradeByUserIdAsync(id);
+                return Ok(grade);
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi.", error = ex.Message });
+            }
         }
         [HttpPut("update-grade/{id}")]
         public async Task<IActionResult> UpdateGrade(int id, [FromBody] GradeDto gradeDto)
         {
-            return await _gradeService.UpdateGradeAsync(id, gradeDto);
+            try
+            {
+                await _gradeService.UpdateGradeAsync(id, gradeDto);
+                return Ok(new { message = "Cập nhật grade thành công!" });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi.", error = ex.Message });
+            }
         }
         [HttpPost("add-grade")]
         public async Task<IActionResult> AddGrade([FromBody] GradeDto gradeDto)
         {
-            return await _gradeService.AddGradeAsync(gradeDto);
+            try
+            {
+                await _gradeService.AddGradeAsync(gradeDto);
+                return Ok(new { message = "Thêm grade thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi.", error = ex.Message });
+            }
         }
 
         [HttpPut("assign-content-managers")]

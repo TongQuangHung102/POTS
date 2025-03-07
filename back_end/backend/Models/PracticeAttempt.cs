@@ -3,16 +3,19 @@ using System.ComponentModel.DataAnnotations;
 
 namespace backend.Models
 {
-    public class QuizAttempt
+    public class PracticeAttempt
     {
         [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
-        public int AttemptId { get; set; }
+        public int PracticeId { get; set; }
         public int CorrectAnswers { get; set; }
-        public int Level { get; set; }
+        public int LevelId { get; set; }
         public TimeSpan Time { get; set; }
         public int UserId { get; set; }
         public int LessonId { get; set; }
+
+        [ForeignKey("LevelId")]
+        public virtual Level Level { get; set; }
 
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
