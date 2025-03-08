@@ -17,9 +17,9 @@ namespace backend.Repositories
             await _attemptDAO.AddPracticeAttemp(practiceAttempt);
         }
 
-        public async Task<StudentPerformance> GetOrCreateStudentPerformanceAsync(int userId, int lessonId)
+        public Task<PracticeAttempt> GetLastAttempt(int userId, int lessonId)
         {
-            return await _attemptDAO.GetOrCreateStudentPerformanceAsync(userId, lessonId);
+          return _attemptDAO.GetLastAttempt(userId, lessonId);
         }
 
         public async Task<List<PracticeAttempt>> GetUserAttemptsAsync(int userId, int lessonId)
@@ -27,9 +27,6 @@ namespace backend.Repositories
           return await _attemptDAO.GetUserAttemptsAsync(userId, lessonId);
         }
 
-        public async Task UpdateStudentPerformanceAsync(StudentPerformance studentPerformance)
-        {
-            await _attemptDAO.UpdateStudentPerformanceAsync(studentPerformance);
-        }
+
     }
 }

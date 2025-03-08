@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { data, useLocation, useParams } from "react-router-dom";
 import styles from "./Quiz.module.css";
 import { fetchTestQuestions } from "../../services/TestQuestion";
-import { fetchPracticeQuestions, submitPracticeResult  } from "../../services/PracticeService";
+import { fetchPracticeQuestions, submitPracticeResult } from "../../services/PracticeService";
 import { formatElapsedTime } from "../../utils/timeUtils"
 import BackLink from "../../components/BackLink";
 import QuizResult from "./QuizResult";
@@ -15,21 +15,25 @@ const Quiz = () => {
     const [userAnswers, setUserAnswers] = useState([]);
     const [showScore, setShowScore] = useState(false);
     const [score, setScore] = useState(0);
+    const [sampleQuestion, setsampleQuestion] = useState('');
+
+    const [byAI, setByAI] = useState(true);
 
     const questionRefs = useRef([]);
-    const hasFetched = useRef(false); 
+    const hasFetched = useRef(false);
 
     const [elapsedTime, setElapsedTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [timeLeft, setTimeLeft] = useState(0);
     const [totalTime, setTotalTime] = useState(0);
 
-    const {user} = useAuth();
+    const { user, loading } = useAuth();
     const location = useLocation();
 
-    const isPremium = false; //goi cua hoc sinh
+    const isPremium = true; //goi cua hoc sinh
 
     const mode = location.pathname.includes("practice") ? "practice" : "test";
+
 
     useEffect(() => {
         if (mode === "test" && duration > 0) {
@@ -55,9 +59,9 @@ const Quiz = () => {
             }, 1000);
             return () => clearInterval(timer);
         }
-        
+
     }, [timeLeft, mode]);
-    
+
 
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
@@ -73,8 +77,9 @@ const Quiz = () => {
     };
 
     useEffect(() => {
-        if (hasFetched.current) return; // Nếu đã fetch thì không gọi lại
-    hasFetched.current = true;
+        if (loading) return; 
+        if (hasFetched.current) return;
+        hasFetched.current = true;
 
         setIsLoading(true);
 
@@ -84,32 +89,32 @@ const Quiz = () => {
             if (mode === "test") {
                 result = await fetchTestQuestions(testId);
             } else {
-                result = await fetchPracticeQuestions(lessonId, 10);
+                result = await fetchPracticeQuestions(user.userId, lessonId);
             }
             if (result.error) {
                 setError(result.error);
             } else {
                 if (mode === "test") {
-                    setQuestions(result.data);
-                    setUserAnswers(Array(result.data.length).fill(null));
-                }
-                else {
                     setQuestions(result.data.questions);
                     setUserAnswers(Array(result.data.questions.length).fill(null));
                 }
-                if (mode === "test" && result.data.length > 0) {
-                    setDuration(result.data[0].test.durationInMinutes);
+                else {
+                    setQuestions(result.data.questions);
+                    setByAI(result.data.byAi);
+                    setsampleQuestion(result.data.questions[3].questionText);
+                    setUserAnswers(Array(result.data.questions.length).fill(null));
+                }
+                if (mode === "test" && result.data.questions.length > 0) {
+                    setDuration(result.data[0].questions.test.durationInMinutes);
                 }
             }
-            console.log('in ra 1 lan roi');
-
             setIsLoading(false);
             setElapsedTime(0);
         };
 
         fetchQuestions();
         hasFetched.current = true;
-    }, [testId, mode]);
+    }, [loading, isLoading]);
 
 
     const handleAnswerClick = (questionIndex, answerIndex) => {
@@ -130,24 +135,25 @@ const Quiz = () => {
         });
 
         if (mode === "test") {
-            setTotalTime(duration * 60 - timeLeft); 
+            setTotalTime(duration * 60 - timeLeft);
         } else {
-            setTotalTime(elapsedTime); 
+            setTotalTime(elapsedTime);
         }
-        
+
         setScore(totalScore);
         setShowScore(true);
 
         if (mode !== "test") {
-            const formattedTime = formatElapsedTime(elapsedTime); 
+            const formattedTime = formatElapsedTime(elapsedTime);
             const data = {
                 correctAnswers: totalScore,
                 level: 2,
                 time: formattedTime,
-                userId: user.userId, 
-                lessonId: lessonId
+                userId: user.userId,
+                lessonId: lessonId,
+                sampleQuestion: sampleQuestion
             };
-    
+
             try {
                 await submitPracticeResult(data);
                 console.log("Gửi kết quả thành công:", data);
@@ -177,8 +183,8 @@ const Quiz = () => {
                         <p>Bạn đã trả lời đúng <strong>{score}</strong> trên <strong>{questions.length}</strong> câu hỏi</p>
                         <p>⏳ Thời gian làm bài: <strong>{formatTime(totalTime)}</strong></p>
                         <button
-                        className={styles.submitButton}
-                           onClick={restartQuiz}
+                            className={styles.submitButton}
+                            onClick={restartQuiz}
                         >
                             Làm lại bài kiểm tra
                         </button>
@@ -193,6 +199,7 @@ const Quiz = () => {
                                 <p>Thời gian đã làm: {formatTime(elapsedTime)}</p>
                             )}
                         </div>
+                        
                         {questions.map((_, index) => (
                             <button
                                 key={index}
@@ -209,6 +216,7 @@ const Quiz = () => {
                         >
                             Nộp bài
                         </button>
+                        {!byAI && <div><p className={styles.messageAi}>*Tính năng AI tạm thời không khả dụng, câu hỏi đang được lấy từ ngân hàng câu hỏi.</p></div>}
                     </>
                 )}
             </div>

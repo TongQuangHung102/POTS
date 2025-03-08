@@ -33,6 +33,7 @@ import ManageQuestionTest from '../pages/content_manager/ManageQuestionTest';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
+
     if (loading) {
         return <div>Loading...</div>;
     }

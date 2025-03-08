@@ -120,6 +120,30 @@ namespace backend.DataAccess.DAO
             await _context.SaveChangesAsync();
         }
 
+        public async Task<List<Question>> GetQuestionsFirstTimePractice(int count, int lessonId)
+        {
+            return await _context.Questions
+                .Where(q => q.LevelId == 2 && q.IsVisible && q.LessonId == lessonId) 
+                .OrderBy(q => Guid.NewGuid()) 
+                .Take(count)
+                .Include(q => q.Level)
+                .Include(q => q.Lesson)
+                .Include(q => q.AnswerQuestions)
+                .ToListAsync();
+        }
+
+        public async Task<List<Question>> GetQuestionsPractice(int count, int lessonId, int levelId)
+        {
+            return await _context.Questions
+                .Where(q => q.LevelId == levelId && q.IsVisible && q.LessonId == lessonId)
+                .OrderBy(q => Guid.NewGuid())
+                .Take(count)
+                .Include(q => q.Level)
+                .Include(q => q.Lesson)
+                .Include(q => q.AnswerQuestions)
+                .ToListAsync();
+        }
+
 
     }
 }
