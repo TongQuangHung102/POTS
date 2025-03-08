@@ -58,6 +58,15 @@ builder.Services.AddScoped<TestQuestionService>();
 builder.Services.AddScoped<PracticeAttemptDAO>();
 builder.Services.AddScoped<IPracticeRepository, PracticeRepository>();
 builder.Services.AddScoped<PracticeAttemptService>();
+builder.Services.AddScoped<AIQuestionDAO>();
+builder.Services.AddScoped<IAIQuestionRepository, AIQuestionRepository>();
+builder.Services.AddScoped<AIQuestionService>();
+builder.Services.AddHttpClient();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
