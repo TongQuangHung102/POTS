@@ -8,9 +8,10 @@ namespace backend.Repositories
         Task<int> GetTotalQuestionsAsync(int? chapterId, int? lessonId, int? levelId, string searchTerm, bool? isVisible);
         Task<Question?> GetQuestionByIdAsync(int questionId);
         Task UpdateQuestionAsync(Question question);
-
+        Task<List<Question>> GetQuestionsFirstTimePractice(int count, int lessonId);
         Task<int> AddQuestionAsync(Question question);
         Task AddAnswerQuestionsAsync(List<AnswerQuestion> answers);
+        Task<List<Question>> GetQuestionsPractice(int count, int lessonId, int levelId);
 
     }
 }

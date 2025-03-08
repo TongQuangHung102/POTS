@@ -67,6 +67,8 @@ builder.Services.AddControllers()
     {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
+builder.Services.AddScoped<StudentPerformanceDAO>();
+builder.Services.AddScoped<IStudentPerformanceRepository, StudentPerformanceRepository>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",

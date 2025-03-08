@@ -9,10 +9,12 @@ namespace backend.Services
     public class PracticeAttemptService
     {
         private readonly IPracticeRepository _practiceRepository;
+        private readonly IStudentPerformanceRepository _studentPerformanceRepository;
 
-        public PracticeAttemptService(IPracticeRepository practiceRepository)
+        public PracticeAttemptService(IPracticeRepository practiceRepository, IStudentPerformanceRepository studentPerformanceRepository)
         {
             _practiceRepository = practiceRepository;
+            _studentPerformanceRepository = studentPerformanceRepository;
         }
 
         public async Task AddPraticeAttempt(PracticeAttemptDto practiceAttemptDto)
@@ -23,7 +25,8 @@ namespace backend.Services
                 LevelId = practiceAttemptDto.Level,
                 Time = practiceAttemptDto.Time,
                 UserId = practiceAttemptDto.UserId,
-                LessonId = practiceAttemptDto.LessonId
+                LessonId = practiceAttemptDto.LessonId,
+                SampleQuestion = practiceAttemptDto.SampleQuestion
             };
             await _practiceRepository.AddPracticeAttemp(practiceAttempt);
             await UpdateStudentPerformanceAsync(practiceAttemptDto.UserId, practiceAttemptDto.LessonId);
@@ -41,13 +44,13 @@ namespace backend.Services
 
             int newLevel = avgAccuracy < 5 ? 2 : (avgAccuracy < 8 ? 3 : 4);
 
-            var studentPerformance = await _practiceRepository.GetOrCreateStudentPerformanceAsync(userId, lessonId);
+            var studentPerformance = await _studentPerformanceRepository.GetOrCreateStudentPerformanceAsync(userId, lessonId);
             studentPerformance.avg_Accuracy = avgAccuracy;
             studentPerformance.avg_Time_Per_Question = avgTimePerQuestion;
             studentPerformance.LastAttempt = DateTime.UtcNow;
             studentPerformance.LevelId = newLevel;
 
-            await _practiceRepository.UpdateStudentPerformanceAsync(studentPerformance);
+            await _studentPerformanceRepository.UpdateStudentPerformanceAsync(studentPerformance);
         }
     }
 }
