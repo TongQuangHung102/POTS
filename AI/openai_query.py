@@ -1,10 +1,12 @@
+# openai_query.py
+
 import json
 import logging
 from langchain.prompts import PromptTemplate
 from langchain_openai import OpenAI
 
 # Đặt API key của OpenAI
-openai_api_key = "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"  # Thay thế với API key thực
+openai_api_key = "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"
 
 # Cấu hình logging để ghi lại các lỗi
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -39,41 +41,61 @@ def ask_openai(context, num_questions, sample_questions=None, difficulty_mode='r
     # Tạo LLM
     llm = create_llm_with_prompt(max_tokens=1000)  # Giới hạn token cho mỗi câu hỏi
 
-    # Prompt cho câu hỏi ngẫu nhiên
-    prompt_random = PromptTemplate.from_template("""Context: {context}
+    prompt_random = PromptTemplate.from_template("""
+Context: {context}
 
-    Hãy tạo CHÍNH XÁC {num_questions} câu hỏi trắc nghiệm với MỨC ĐỘ KHÁC NHAU về chủ đề ở trên với 4 đáp án (A, B, C, D) cho mỗi câu hỏi.
+Hãy tạo CHÍNH XÁC {num_questions} câu hỏi trắc nghiệm với MỨC ĐỘ KHÁC NHAU về chủ đề ở trên với 4 đáp án (A, B, C, D) cho mỗi câu hỏi.
 
-    CHÚ Ý: 
-    - Phân bố mức độ câu hỏi từ dễ đến khó (1-4)
-    - Định dạng phải CHÍNH XÁC theo cấu trúc JSON
-    - LUÔN trả về mảng các câu hỏi
+CHÚ Ý:
+- Phân bố mức độ câu hỏi từ dễ đến khó (1-4)
+- Định dạng phải CHÍNH XÁC theo cấu trúc JSON
+- LUÔN trả về mảng các câu hỏi
+- Không thêm bất kỳ văn bản giải thích nào ngoài mảng JSON.
 
-    Mỗi câu hỏi PHẢI được định dạng CHÍNH XÁC như sau:
-    {{"questionText": "Nội dung câu hỏi", "levelId": {level_id}, "answerQuestions": [
-        {{"answerText": "Đáp án A", "number": 1}}, {{"answerText": "Đáp án B", "number": 2}},
-        {{"answerText": "Đáp án C", "number": 3}}, {{"answerText": "Đáp án D", "number": 4}}]
-    , "correctAnswer": số từ 1 đến 4 chỉ đáp án đúng}}
+Mỗi câu hỏi PHẢI được định dạng như sau:
+{{
+    "questionText": "Nội dung câu hỏi", 
+    "levelId": {level_id}, 
+    "answerQuestions": [
+        {{"answerText": "Đáp án A", "number": 1}}, 
+        {{"answerText": "Đáp án B", "number": 2}},
+        {{"answerText": "Đáp án C", "number": 3}}, 
+        {{"answerText": "Đáp án D", "number": 4}}
+    ],
+    "correctAnswer": số từ 1 đến 4 chỉ đáp án đúng
+}}
 
-    TRẢ VỀ mảng JSON của {num_questions} câu hỏi.
-    KHÔNG ĐƯỢC thêm bất kỳ văn bản giải thích nào ngoài mảng JSON.
-    """)
+TRẢ VỀ mảng JSON của {num_questions} câu hỏi. Mỗi câu hỏi phải là một phần tử trong mảng này.
+""")
+
 
     # Prompt cho câu hỏi có mức độ tương tự
     prompt_similar_level = PromptTemplate.from_template("""Context: {context}
 
-    Hãy tạo CHÍNH XÁC {num_questions} câu hỏi trắc nghiệm CÓ CÙNG MỨC ĐỘ (mức độ khó {level_id}) 
-    với các câu hỏi mẫu, nhưng NỘI DUNG HOÀN TOÀN KHÁC BIỆT.
+    Dựa trên kết quả sau đây:
+    - Số câu trả lời đúng: {num_correct}
+    - Tổng số câu hỏi: {total_questions}
+    - Thời gian làm bài: {time_taken} giây
+
+    Hãy phân tích và xác định MỨC ĐỘ (mức độ khó) của người dùng. Mức độ có thể là:
+    1. Mức độ dễ (beginner)
+    2. Mức độ trung bình (intermediate)
+    3. Mức độ khó (advanced)
+    4. Mức độ rất khó (expert)
+
+    Sau khi phân tích mức độ người dùng, hãy tạo {num_questions} câu hỏi trắc nghiệm với mức độ khó tương tự mức độ đã xác định.
 
     Yêu cầu:
-    - Mức độ câu hỏi: {level_id}
+    - Mức độ câu hỏi: {user_level}
     - Thay đổi tham số, tình huống nhưng giữ nguyên độ khó
     - 4 đáp án (A, B, C, D) cho mỗi câu hỏi
 
     Định dạng JSON chính xác:
-    {{"questionText": "Nội dung câu hỏi", "levelId": {level_id}, "answerQuestions": [
-        {{"answerText": "Đáp án A", "number": 1}}, {{"answerText": "Đáp án B", "number": 2}},
-        {{"answerText": "Đáp án C", "number": 3}}, {{"answerText": "Đáp án D", "number": 4}}]
+    {{"questionText": "Nội dung câu hỏi", "levelId": {user_level}, "answerQuestions": [
+        {{"answerText": "Đáp án A", "number": 1}},
+        {{"answerText": "Đáp án B", "number": 2}},
+        {{"answerText": "Đáp án C", "number": 3}},
+        {{"answerText": "Đáp án D", "number": 4}}]
     , "correctAnswer": số từ 1 đến 4 chỉ đáp án đúng}}
 
     TRẢ VỀ MẢNG ([]) của {num_questions} câu hỏi.
@@ -83,16 +105,34 @@ def ask_openai(context, num_questions, sample_questions=None, difficulty_mode='r
     try:
         # Chọn prompt và định dạng
         if difficulty_mode == 'random':
-            prompt = prompt_random.format(context=context, num_questions=num_questions, level_id=level_id)
+            # Truyền vào prompt cho câu hỏi ngẫu nhiên
+            prompt = prompt_random.format(
+                context=context, 
+                num_questions=num_questions, 
+                level_id=level_id
+            )
         elif difficulty_mode == 'similar':
+            # Lấy kết quả từ context nếu có
             if isinstance(context, dict):
                 context_text = context.get('context', '')
-                level_id = context.get('level_id', 2)
+                results = context.get('results', {})  # Lấy kết quả từ context
             else:
                 context_text = context
-                level_id = 2
+                results = {}
 
-            prompt = prompt_similar_level.format(context=context_text, num_questions=num_questions, level_id=level_id)
+            # Truyền kết quả vào prompt
+            num_correct = results.get('num_correct', 0)
+            total_questions = results.get('total_questions', 0)
+            time_taken = results.get('time_taken', 0)
+
+            prompt = prompt_similar_level.format(
+                context=context_text, 
+                num_questions=num_questions, 
+                num_correct=num_correct, 
+                total_questions=total_questions, 
+                time_taken=time_taken,
+                user_level=level_id  # Có thể là beginner, intermediate, advanced
+            )
         else:
             raise ValueError("Chế độ không hợp lệ. Chọn 'random' hoặc 'similar'.")
 
@@ -102,30 +142,26 @@ def ask_openai(context, num_questions, sample_questions=None, difficulty_mode='r
 
         # Đảm bảo rằng kết quả trả về là JSON hợp lệ
         try:
-            # Tìm dấu ngoặc vuông đầu tiên và cuối cùng để đảm bảo tính hợp lệ của JSON
             start_index = result_text.find('[')
             end_index = result_text.rfind(']') + 1
 
             if start_index >= 0 and end_index > start_index:
                 json_text = result_text[start_index:end_index]  # Cắt lấy phần JSON hợp lệ
-                questions = json.loads(json_text)  # Phân tích cú pháp JSON
+                questions = json.loads(json_text)
 
-                # Kiểm tra tất cả các câu hỏi sinh ra có trùng với câu hỏi mẫu không
                 if sample_questions:
                     filtered_questions = []
                     for question in questions:
-                        # Nếu câu hỏi không trùng với câu hỏi mẫu thì thêm vào filtered_questions
                         if not check_question_similarity(question, sample_questions):
                             filtered_questions.append(question)
 
-                    # Nếu có câu hỏi không trùng lặp, trả về chúng
                     if filtered_questions:
                         return filtered_questions
                     else:
                         logger.warning("Tất cả các câu hỏi sinh ra đều trùng với câu hỏi mẫu.")
                         return []
 
-                return questions  # Trả về tất cả các câu hỏi nếu không có câu hỏi mẫu
+                return questions
 
         except json.JSONDecodeError as e:
             logger.error(f"Lỗi khi phân tích JSON: {e}. Dữ liệu: {result_text}")
@@ -136,6 +172,7 @@ def ask_openai(context, num_questions, sample_questions=None, difficulty_mode='r
         return []
 
     return []
+
 
 def generate_large_mcq(context, num_questions, difficulty_mode='random', level_id=2):
     """

@@ -58,33 +58,6 @@ def generate_mcq():
         # logger.error(f"Lỗi trong generate-mcq: {e}", exc_info=True)
         return jsonify({"error": "Đã xảy ra lỗi không mong muốn"}), 500
 
-def calculate_user_level(num_correct, total_questions, time_taken):
-    """
-    Tính toán mức độ người dùng dựa trên tỷ lệ câu trả lời đúng và thời gian làm bài.
-    
-    Args:
-        num_correct (int): Số câu trả lời đúng
-        total_questions (int): Tổng số câu hỏi
-        time_taken (float): Thời gian làm bài (giây)
-    
-    Returns:
-        int: Mức độ từ 1 đến 4
-    """
-    if total_questions <= 0:
-        return 2  # Mặc định mức trung bình nếu không có dữ liệu
-    
-    accuracy = num_correct / total_questions
-    
-    # Điều chỉnh logic tính toán mức độ chi tiết hơn
-    if accuracy >= 0.8 and time_taken < 300:
-        return 4  # Mức độ cao
-    elif accuracy >= 0.7:
-        return 3  # Mức độ trung bình cao
-    elif accuracy >= 0.5:
-        return 2  # Mức độ trung bình
-    else:
-        return 1  # Mức độ thấp
-
 @app.route('/generate-question', methods=['POST'])
 def generate_question():
     """
@@ -104,21 +77,19 @@ def generate_question():
         if not is_valid:
             return jsonify({"error": error_message}), 400
         
-        # Xác định mức độ người dùng
+        # Lấy thông tin từ kết quả người dùng
         try:
             num_correct = int(results.get('num_correct', 0))
             total_questions = int(results.get('total_questions', 0))
             time_taken = float(results.get('time_taken', 0))
-            
-            user_level = calculate_user_level(num_correct, total_questions, time_taken)
         except (ValueError, TypeError):
-            user_level = 2  # Mức độ trung bình mặc định
+            return jsonify({"error": "Dữ liệu kết quả không hợp lệ"}), 400
         
-        # Sinh câu hỏi với mức độ tương ứng
+        # Tạo câu hỏi với mức độ tương ứng từ OpenAI
         questions = ask_openai(
             {
                 'context': user_question, 
-                'level_id': user_level
+                'results': results  # Truyền kết quả bài làm vào để AI tự phân tích
             }, 
             num_questions, 
             difficulty_mode='similar'
@@ -127,8 +98,8 @@ def generate_question():
         return jsonify({"questions": questions})
     
     except Exception as e:
-        # logger.error(f"Lỗi trong generate-question: {e}", exc_info=True)
         return jsonify({"error": "Đã xảy ra lỗi không mong muốn"}), 500
+
 
 @app.route('/')
 def home():
