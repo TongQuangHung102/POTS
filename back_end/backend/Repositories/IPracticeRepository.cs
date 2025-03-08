@@ -6,7 +6,8 @@ namespace backend.Repositories
     {
         Task<List<PracticeAttempt>> GetUserAttemptsAsync(int userId, int lessonId);
          Task AddPracticeAttemp(PracticeAttempt practiceAttempt);
-        Task<StudentPerformance> GetOrCreateStudentPerformanceAsync(int userId, int lessonId);
-        Task UpdateStudentPerformanceAsync(StudentPerformance studentPerformance);
+        Task<PracticeAttempt> GetLastAttempt(int userId, int lessonId);
+
+
     }
 }

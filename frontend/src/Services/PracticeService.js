@@ -1,11 +1,11 @@
-export const fetchPracticeQuestions = async (subject, numQuestions) => {
+export const fetchPracticeQuestions = async (userId, lessonId) => {
     try {
         const response = await fetch(`https://localhost:7259/api/Question/gen-question-practice`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-                question: subject, 
-                numQuestions: numQuestions }),
+                userId: userId, 
+                lessonId: lessonId }),
         });
 
         if (!response.ok) throw new Error("Không thể tải câu hỏi luyện tập.");

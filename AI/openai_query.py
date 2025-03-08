@@ -76,8 +76,8 @@ def ask_openai(context, num_questions, sample_questions=None, difficulty_mode='r
         {{"answerText": "Đáp án C", "number": 3}}, {{"answerText": "Đáp án D", "number": 4}}]
     , "correctAnswer": số từ 1 đến 4 chỉ đáp án đúng}}
 
-    TRẢ VỀ mảng JSON của {num_questions} câu hỏi.
-    KHÔNG ĐƯỢC thêm bất kỳ văn bản giải thích nào ngoài mảng JSON.
+    TRẢ VỀ MẢNG ([]) của {num_questions} câu hỏi.
+    KHÔNG ĐƯỢC thêm bất kỳ văn bản giải thích nào ngoài MẢNG JSON.
     """)
 
     try:

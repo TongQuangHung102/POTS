@@ -58,6 +58,8 @@ builder.Services.AddScoped<TestQuestionService>();
 builder.Services.AddScoped<PracticeAttemptDAO>();
 builder.Services.AddScoped<IPracticeRepository, PracticeRepository>();
 builder.Services.AddScoped<PracticeAttemptService>();
+builder.Services.AddScoped<StudentPerformanceDAO>();
+builder.Services.AddScoped<IStudentPerformanceRepository, StudentPerformanceRepository>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",

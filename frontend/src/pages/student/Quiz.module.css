@@ -278,6 +278,18 @@
     background-color: #0056b3;
 }
 
+.messageAi{
+    margin-top: 10px;
+    font-size: 12px;
+    font-style: italic;
+    animation: blinkText 5s infinite;
+}
+
+@keyframes blinkText {
+    0% { color: white; }
+    50% { color: red; }
+    100% { color: white; }
+}
 
 
 @media (max-width: 768px) {
