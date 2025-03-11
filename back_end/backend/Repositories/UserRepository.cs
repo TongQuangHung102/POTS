@@ -46,6 +46,11 @@ namespace backend.Repositories
             return await _userDAO.GetUsersByRoleAsync(roleId);
         }
 
+        public async Task<User> GetAllInfomationUser(int userId)
+        {
+            return await _userDAO.GetAllInfomationUser(userId);
+        }
+
 
     }
 }

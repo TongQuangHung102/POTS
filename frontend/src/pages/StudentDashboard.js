@@ -1,48 +1,71 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
+import { useNavigate } from "react-router-dom";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Tooltip } from 'chart.js';
 import { Bar, Doughnut } from 'react-chartjs-2';
+import { BiBookmark } from "react-icons/bi";
 import './StudentDashboard.css';
-import Header from '../components/Header';
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip);
 
 const StudentDashboard = () => {
-  const activityData = {
-    labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'Chủ Nhật'],
-    datasets: [{
-      data: [3, 5, 4, 4, 3, 3, 4],
-      backgroundColor: '#99CCFF',
-      borderRadius: 5
-    }]
-  };
+  const [dashboardData, setDashboardData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [activityData, setActivityData] = useState({});
+  const [activityOptions, setActivityOptions] = useState({});
+  const [rank, setRank] = useState({});
+
+  const userId = sessionStorage.getItem('userId');
+  const gradeId = sessionStorage.getItem('gradeId')
+
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    setIsLoading(true);
+    fetch(`https://localhost:7259/api/Dashboard/student-dashboard/${userId}`)
+      .then(res => res.json())
+      .then(data => {
+        setDashboardData(data);
+        setIsLoading(false);
+        console.log(data);
+  
+        setActivityData({
+          labels: data.activity.labels,
+          datasets: [{
+            data: data.activity.data,
+            backgroundColor: '#99CCFF',
+            borderRadius: 5
+          }]
+        });
+  
+        setActivityOptions({
+          plugins: { legend: { display: false } },
+          scales: {
+            y: {
+              beginAtZero: true,
+              max: Math.ceil(data.avg_time * 20),
+              ticks: { stepSize: 1 }
+            }
+          }
+        });
+  
+        setRank({
+          datasets: [{
+            data: [data.percentiles[1], data.percentiles[0]],
+            backgroundColor: ['#99CCFF', '#f8f9fa'],
+            borderWidth: 0
+          }]
+        });
+      })
+      .catch(err => {
+        console.error("Lỗi:", err);
+        setIsLoading(false);
+      });
+  }, []);
+  
 
   const activityCardRef = useRef(null);
   const performanceCardRef = useRef(null);
   const previousWidthRef = useRef(window.innerWidth);
 
-  const activityOptions = {
-    plugins: {
-      legend: {
-        display: false
-      }
-    },
-    scales: {
-      y: {
-        beginAtZero: true,
-        max: 5,
-        ticks: {
-          stepSize: 1
-        }
-      }
-    }
-  };
-
-  const performanceData = {
-    datasets: [{
-      data: [75, 25],
-      backgroundColor: ['#99CCFF', '#f8f9fa'],
-      borderWidth: 0
-    }]
-  };
 
   const performanceOptions = {
     responsive: true,
@@ -80,7 +103,9 @@ const StudentDashboard = () => {
   };
 
   useEffect(() => {
-    adjustCardHeight();
+    setTimeout(() => {
+      adjustCardHeight();
+    }, 200);
 
     window.addEventListener('resize', adjustCardHeight);
     const resizeInterval = setInterval(monitorResize, 300);
@@ -91,38 +116,42 @@ const StudentDashboard = () => {
     };
   }, []);
 
+  if (isLoading) {
+    return <div className="loading-dashboard">Đang tải dữ liệu...</div>;
+  }
+  if (!dashboardData) {
+    return <div className="loading-dashboard">Không có dữ liệu hiển thị</div>;
+  }
+
   return (
     <div className="dashboard-container bg-light">
       <div className="main-content">
-        <div class="row">
-          <Header/>
-        </div>
         <div className="row">
           {/* Stats Row */}
           <div className="col-md-9">
             <div className="row mb-4">
               <div className="col-md-3">
                 <div className="stats-card">
-                  <small className="text-danger">Bài tập đã hoàn thành</small>
-                  <div className="stats-number">15</div>
+                  <small className="text-danger">Số lần luyện tập</small>
+                  <div className="stats-number">{dashboardData.practiceNumber}</div>
                 </div>
               </div>
               <div className="col-md-3">
                 <div className="stats-card">
                   <small className="text-primary">Điểm trung bình</small>
-                  <div className="stats-number">90</div>
+                  <div className="stats-number">{dashboardData.avg_score}/10</div>
                 </div>
               </div>
               <div className="col-md-3">
                 <div className="stats-card">
-                  <small className="text-success">Thời gian trung bình</small>
-                  <div className="stats-number">70</div>
+                  <small className="text-success">Thời gian trung bình mỗi câu</small>
+                  <div className="stats-number">{dashboardData.avg_time}s</div>
                 </div>
               </div>
               <div className="col-md-3">
                 <div className="stats-card">
-                  <small className="text-warning">Phân loại</small>
-                  <div className="stats-number">Giỏi</div>
+                  <small className="text-warning">Xếp loại</small>
+                  <div className="stats-number">{dashboardData.rate}</div>
                 </div>
               </div>
             </div>
@@ -133,9 +162,9 @@ const StudentDashboard = () => {
                 <div className="card" ref={activityCardRef}>
                   <div className="card-body">
                     <div className="d-flex justify-content-between align-items-center">
-                      <h5 className="card-title">Thời gian hoạt động</h5>
+                      <h5 className="card-title">Thời gian luyện tập(phút)</h5>
                       <select className="form-select" style={{ width: "auto" }}>
-                        <option>Tuần</option>
+                        <option>7 ngày gần nhất</option>
                       </select>
                     </div>
                     <div className="activity-chart">
@@ -151,10 +180,10 @@ const StudentDashboard = () => {
                       <h5 className="card-title">Xếp hạng</h5>
                     </div>
                     <div className="progress-circle">
-                      <Doughnut data={performanceData} options={performanceOptions} />
+                      <Doughnut data={rank} options={performanceOptions} />
                     </div>
                     <div className="text-center mt-3">
-                      <small className="text-success">5th trong khối 9</small>
+                      <small className="text-success">Thứ {dashboardData.rank} trong khối </small>
                     </div>
                   </div>
                 </div>
@@ -163,21 +192,20 @@ const StudentDashboard = () => {
 
             {/* Upcoming Submission Section */}
             <div className="upcoming-submission">
-              <h5 className="mb-4">Khóa học đang tham gia</h5>
+              <h5 className="mb-4">Thông tin khối</h5>
               <div className="d-flex align-items-center">
                 <div className="submission-icon">
-                  <i className="bi bi-file-earmark-text text-primary fs-4"></i>
+                <BiBookmark size={30}/>
                 </div>
                 <div className="flex-grow-1">
-                  <h6 className="mb-1">Khối lớp 5</h6>
+                  <h6 className="mb-1">{dashboardData.student.gradeName}</h6>
                   <small className="text-muted d-block">Môn Toán</small>
                 </div>
                 <div className="text-end">
                   <div className="due-date">
                     <i className="bi bi-calendar me-1"></i>
-                    Ngày bắt đầu
+                    <button className='btn btn-primary' onClick={() => navigate("/student/course")}>Luyện tập</button>
                   </div>
-                  <small className="text-muted">Thu 21 April 2022</small>
                 </div>
               </div>
             </div>
@@ -197,10 +225,10 @@ const StudentDashboard = () => {
                     />
                   </div>
                   <h5 className="mt-3 mb-1">
-                    Người dùng 1 <i className="bi bi-patch-check-fill text-primary"></i>
+                  {dashboardData.student.name}<i className="bi bi-patch-check-fill text-primary"></i>
                   </h5>
                   <p>Học sinh</p>
-                  <a href="#profile">Profile</a>
+                  <a onClick={() => navigate("/student/profile")}>Profile</a>
                 </div>
               </div>
 

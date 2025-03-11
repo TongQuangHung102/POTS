@@ -23,7 +23,8 @@ namespace backend.Services
             {
                 CorrectAnswers = practiceAttemptDto.CorrectAnswers,
                 LevelId = practiceAttemptDto.Level,
-                Time = practiceAttemptDto.Time,
+                CreateAt = DateTime.UtcNow,
+                TimePractice = practiceAttemptDto.TimePractice,
                 UserId = practiceAttemptDto.UserId,
                 LessonId = practiceAttemptDto.LessonId,
                 SampleQuestion = practiceAttemptDto.SampleQuestion
@@ -38,17 +39,17 @@ namespace backend.Services
 
             if (!userAttempts.Any()) return;
 
-            double avgAccuracy = userAttempts.Average(a => (double)a.CorrectAnswers / 10 );
+            double avgAccuracy = userAttempts.Average(a => (double)a.CorrectAnswers);
             Console.WriteLine("điểm trung bình là: " + avgAccuracy);
-            TimeSpan avgTimePerQuestion = TimeSpan.FromSeconds(userAttempts.Average(a => a.Time.TotalSeconds / 10));
+            double avgTimePerQuestion = userAttempts.Average(b => b.TimePractice);
 
             int newLevel = avgAccuracy < 5 ? 2 : (avgAccuracy < 8 ? 3 : 4);
 
             var studentPerformance = await _studentPerformanceRepository.GetOrCreateStudentPerformanceAsync(userId, lessonId);
             studentPerformance.avg_Accuracy = avgAccuracy;
-            studentPerformance.avg_Time_Per_Question = avgTimePerQuestion;
             studentPerformance.LastAttempt = DateTime.UtcNow;
             studentPerformance.LevelId = newLevel;
+            studentPerformance.avg_Time = avgTimePerQuestion;
 
             await _studentPerformanceRepository.UpdateStudentPerformanceAsync(studentPerformance);
         }

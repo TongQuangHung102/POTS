@@ -1,6 +1,8 @@
-﻿using backend.Dtos;
+﻿using backend.DataAccess.DAO;
+using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
+using Microsoft.EntityFrameworkCore;
 using System.Text.RegularExpressions;
 
 namespace backend.Services
@@ -8,10 +10,12 @@ namespace backend.Services
     public class ChapterService
     {
         private readonly ICurriculumRepository _curriculumRepository;
+        private readonly IStudentPerformanceRepository _studentPerformanceRepository;
 
-        public ChapterService(ICurriculumRepository curriculumRepository)
+        public ChapterService(ICurriculumRepository curriculumRepository, IStudentPerformanceRepository studentPerformanceRepository)
         {
             _curriculumRepository = curriculumRepository;
+            _studentPerformanceRepository = studentPerformanceRepository;
         }
         public async Task<List<Chapter>> GetAllChaptersAsync(int gradeId)
         {
@@ -116,7 +120,32 @@ namespace backend.Services
                 throw new InvalidOperationException($"Chương đã tồn tại : {duplicatesInfo}");
             }
         }
-        
-       
+
+        public async Task<List<StudentChapterDto>> GetFilteredChaptersAsync(int grade, int studentId)
+        {
+            var chapters = await _curriculumRepository.GetAllChapterAsync(grade);
+            var studentPerformances = await _studentPerformanceRepository.GetStudentPerformanceAsync(studentId);
+
+            return chapters.Where(c => c.IsVisible == true).Select(chapter => new StudentChapterDto
+            {
+                ChapterId = chapter.ChapterId,
+                Name = chapter.ChapterName,
+                Order = chapter.Order,
+                Lessons = chapter.Lessons.Select(lesson => new StudentLessonDto
+                {
+                    LessonId = lesson.LessonId,
+                    LessonName = lesson.LessonName,
+                    Order = lesson.Order,
+                    AverageScore = studentPerformances
+                                            .Where(sp => sp.LessonId == lesson.LessonId)
+                                            .Select(sp => sp.avg_Accuracy)
+                                            .FirstOrDefault(),
+                    AverageTime = studentPerformances
+                                            .Where(sp => sp.LessonId == lesson.LessonId)
+                                            .Select(sp => sp.avg_Time)
+                                            .FirstOrDefault()
+                }).ToList()
+            }).ToList();
+        }
     }
 }

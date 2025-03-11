@@ -38,6 +38,26 @@ namespace backend.Controllers
             }
         }
 
+        [HttpGet("get-student-chapter/{gradeId}/{studentId}")]
+        public async Task<ActionResult<List<ChapterDto>>> GetStudentChapter(int gradeId, int studentId)
+        {
+            try
+            {
+                var chapters = await _chapterService.GetFilteredChaptersAsync(gradeId, studentId);
+
+                if (chapters == null || !chapters.Any())
+                {
+                    return NoContent();
+                }
+
+                return Ok(chapters);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi máy chủ nội bộ", error = ex.Message });
+            }
+        }
+
         [HttpGet("get-lesson-by-chapterId")]
         public async Task<ActionResult<List<LessonDto>>> GetAllLessonByChapterId(int chapterId)
         {
@@ -57,6 +77,8 @@ namespace backend.Controllers
                 return StatusCode(500, new { message = "Lỗi máy chủ nội bộ", error = ex.Message });
             }
         }
+
+
 
         [HttpPost("add-chapters")]
         public async Task<IActionResult> AddChapters([FromBody] AddChaptersRequest chaptersRequest)

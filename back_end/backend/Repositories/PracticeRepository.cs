@@ -17,9 +17,34 @@ namespace backend.Repositories
             await _attemptDAO.AddPracticeAttemp(practiceAttempt);
         }
 
-        public Task<PracticeAttempt> GetLastAttempt(int userId, int lessonId)
+        public async Task<double> GetAveragePracticeScoreAsync(int userId)
         {
-          return _attemptDAO.GetLastAttempt(userId, lessonId);
+            return await _attemptDAO.GetAveragePracticeScoreAsync(userId);
+        }
+
+        public async Task<double> GetAveragePracticeTimeAsync(int userId)
+        {
+            return await _attemptDAO.GetAveragePracticeTimeAsync(userId);
+        }
+
+        public async Task<PracticeAttempt> GetLastAttempt(int userId, int lessonId)
+        {
+          return await _attemptDAO.GetLastAttempt(userId, lessonId);
+        }
+
+        public async Task<List<(int UserId, double AverageScore, double TotalPracticeTime)>> GetStudentDataAsync(int gradeId)
+        {
+            return await _attemptDAO.GetStudentDataAsync(gradeId);
+        }
+
+        public async Task<int> GetTotalNumberPracticeAsync(int userId)
+        {
+            return await _attemptDAO.GetTotalNumberPracticeAsync(userId);
+        }
+
+        public async Task<double> GetTotalPracticeTimeByDateAsync(int userId, DateTime date)
+        {
+            return await _attemptDAO.GetTotalPracticeTimeByDateAsync(userId, date);
         }
 
         public async Task<List<PracticeAttempt>> GetUserAttemptsAsync(int userId, int lessonId)
