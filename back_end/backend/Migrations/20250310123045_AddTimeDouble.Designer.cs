@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
@@ -11,9 +12,10 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250310123045_AddTimeDouble")]
+    partial class AddTimeDouble
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -590,7 +592,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("StudentTests");
+                    b.ToTable("StudentTest");
                 });
 
             modelBuilder.Entity("backend.Models.SubscriptionPlan", b =>

@@ -35,6 +35,7 @@ namespace backend.Models
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Level> Levels { get; set; }
         public DbSet<StudentAnswer> StudentAnswers { get; set; }
+        public DbSet<StudentTest> StudentTests { get; set; }
         public DbSet<TestCategory> TestCategories { get; set; }
         public DbSet<TestQuestion> TestQuestions { get; set; }
         public DbSet<TestSubmission> TestSubmissions { get; set; }

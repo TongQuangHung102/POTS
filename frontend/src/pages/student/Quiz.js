@@ -2,8 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { data, useLocation, useParams } from "react-router-dom";
 import styles from "./Quiz.module.css";
 import { fetchTestQuestions } from "../../services/TestQuestion";
-import { fetchPracticeQuestions, submitPracticeResult } from "../../services/PracticeService";
-import { formatElapsedTime } from "../../utils/timeUtils"
+import { fetchPracticeQuestions, submitPracticeResult, submitTestResult } from "../../services/PracticeService";
+
 import BackLink from "../../components/BackLink";
 import QuizResult from "./QuizResult";
 import { useAuth } from "../../hooks/useAuth";
@@ -26,6 +26,8 @@ const Quiz = () => {
     const [duration, setDuration] = useState(0);
     const [timeLeft, setTimeLeft] = useState(0);
     const [totalTime, setTotalTime] = useState(0);
+    const [startTime, setStartTime] = useState(new Date().toISOString());
+
 
     const { user, loading } = useAuth();
     const location = useLocation();
@@ -77,7 +79,7 @@ const Quiz = () => {
     };
 
     useEffect(() => {
-        if (loading) return; 
+        if (loading) return;
         if (hasFetched.current) return;
         hasFetched.current = true;
 
@@ -88,6 +90,7 @@ const Quiz = () => {
             let result;
             if (mode === "test") {
                 result = await fetchTestQuestions(testId);
+                console.log(result);
             } else {
                 result = await fetchPracticeQuestions(user.userId, lessonId);
             }
@@ -95,17 +98,18 @@ const Quiz = () => {
                 setError(result.error);
             } else {
                 if (mode === "test") {
-                    setQuestions(result.data.questions);
-                    setUserAnswers(Array(result.data.questions.length).fill(null));
+                    setQuestions(result.data);
+                    setUserAnswers(Array(result.data.length).fill(null));
                 }
                 else {
                     setQuestions(result.data.questions);
                     setByAI(result.data.byAi);
-                    setsampleQuestion(result.data.questions[3].questionText);
+                    //  setsampleQuestion(result.data.questions[3].questionText);
                     setUserAnswers(Array(result.data.questions.length).fill(null));
                 }
-                if (mode === "test" && result.data.questions.length > 0) {
-                    setDuration(result.data[0].questions.test.durationInMinutes);
+                if (mode === "test" && result.data.length > 0) {
+                    setDuration(result.data[0].test.durationInMinutes);
+                    setStartTime(new Date().toISOString());
                 }
             }
             setIsLoading(false);
@@ -125,14 +129,13 @@ const Quiz = () => {
 
     const handleSubmit = async () => {
         let totalScore = 0;
-        console.log(userAnswers);
         userAnswers.forEach((answer, index) => {
-            console.log(questions[index].correctAnswer);
-            console.log((answer + 1));
             if (answer !== null && questions[index].correctAnswer === (answer + 1)) {
                 totalScore += 1;
             }
         });
+
+        const endTime = new Date().toISOString(); 
 
         if (mode === "test") {
             setTotalTime(duration * 60 - timeLeft);
@@ -144,23 +147,36 @@ const Quiz = () => {
         setShowScore(true);
 
         if (mode !== "test") {
-            const formattedTime = formatElapsedTime(elapsedTime);
             const data = {
                 correctAnswers: totalScore,
                 level: 2,
-                time: formattedTime,
+                timePractice: elapsedTime,
                 userId: user.userId,
                 lessonId: lessonId,
                 sampleQuestion: sampleQuestion
             };
-
             try {
                 await submitPracticeResult(data);
                 console.log("Gửi kết quả thành công:", data);
             } catch (error) {
                 console.error("Lỗi khi gửi kết quả:", error);
             }
+        } else {
+            const data = {
+                startTime: startTime,
+                endTime: endTime,
+                score: totalScore,
+                testId: testId,
+                userId: user.userId,
+            };
+            try {
+                await submitTestResult(data);
+                console.log("Gửi kết quả bài kiểm tra thành công:", data);
+            } catch (error) {
+                console.error("Lỗi khi gửi kết quả bài kiểm tra:", error);
+            }
         }
+
     };
     if (isLoading) return <div className={styles.loading}>
         <p>Đang tải câu hỏi...</p>
@@ -174,7 +190,7 @@ const Quiz = () => {
             <div className={styles.sidebar}>
                 <div className={styles.back}><BackLink /></div>
                 <div className={styles.quizHeader}>
-                    <h5>{mode === "test" ? "Bài kiểm tra" : "Luyện tập"}: {questions.length > 0 ? questions[0].test?.testName : "N/A"}</h5>
+                    <h5>{mode === "test" ? "Bài kiểm tra" : "Luyện tập"}</h5>
                 </div>
                 {showScore ? (
                     // Khi đã nộp bài, hiển thị kết quả
@@ -199,7 +215,7 @@ const Quiz = () => {
                                 <p>Thời gian đã làm: {formatTime(elapsedTime)}</p>
                             )}
                         </div>
-                        
+
                         {questions.map((_, index) => (
                             <button
                                 key={index}

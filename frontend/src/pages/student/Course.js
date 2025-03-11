@@ -3,18 +3,23 @@ import styles from './Course.module.css';
 import TestPage from './Test';
 import BackLink from '../../components/BackLink';
 import { useNavigate } from 'react-router-dom'; 
+import { fetchStudentChapters } from '../../services/ChapterService';
 
 // Component cho Badge
-const LessonBadge = () => (
-    <img
-        className={styles.lessonbadge}
-        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJDNi40ODggMiAyIDYuNDg4IDIgMTJzNC40ODggMTAgMTAgMTAgMTAtNC40ODggMTAtMTBTMTcuNTEyIDIgMTIgMnptMCAxOGMtNC40MTEgMC04LTMuNTg5LTgtOHMzLjU4OS04IDgtOCA4IDMuNTg5IDggOC0zLjU4OSA4LTggOHoiIGZpbGw9IiM2Njg1RTEiLz48cGF0aCBkPSJNMTIgMThjLTMuMzA5IDAtNi0yLjY5MS02LTZzMi42OTEtNiA2LTYgNiAyLjY5MSA2IDYtMi42OTEgNi02IDZ6IiBmaWxsPSIjRTdFQ0ZGIi8+PC9zdmc+"
-        alt="Badge"
-    />
-);
+const LessonBadge = ({averageScore, averageTime}) =>{
+    if (averageScore == null || averageTime == null) {
+        return null; 
+    }
+
+    return (
+        <div className={styles.lessonbadge}>
+            {averageScore.toFixed(2)}đ / {averageTime.toFixed(2)}s
+        </div>
+    );
+} 
 
 // Component cho mỗi bài học
-const LessonItem = ({ id, number, title }) => {
+const LessonItem = ({ id, number, title, averageScore, averageTime  }) => {
     const navigate = useNavigate();
 
     const handlePractice = (id) =>{
@@ -28,7 +33,10 @@ const LessonItem = ({ id, number, title }) => {
                 <div className={styles.lessonIcon}>📄</div>
                 <div className={styles.lessonTitle}>{title}</div>
             </div>
-            <LessonBadge />
+            <LessonBadge
+                averageScore={averageScore}
+                averageTime={averageTime}
+            />
         </div>
     );
 };
@@ -60,6 +68,8 @@ const CourseSection = ({ title, order, lessons, initialExpanded = false }) => {
                         number={lesson.number}
                         title={lesson.title}
                         id= {lesson.id}
+                        averageScore={lesson.averageScore}
+                        averageTime={lesson.averageTime}
                     />
                 ))}
 
@@ -75,26 +85,27 @@ const CourseProgress = () => {
     const [tests, setTests] = useState([]);
     const [viewTests, setViewTests] = useState(false);
     const gradeId = sessionStorage.getItem("gradeId");
-    const API_URL = `https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`;
+    const userId = sessionStorage.getItem("userId");
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-
-                const formattedSections = data.filter(chapter => chapter.isVisible)
+                const data = await fetchStudentChapters(gradeId, userId)
+console.log(data);
+                const formattedSections = data
                 .map(chapter => ({
                     order: chapter.order,
-                    title: chapter.chapterName,
+                    title: chapter.name,
                     initialExpanded: false,
-                    lessons: chapter.lessons.filter(lesson => lesson.isVisible)
+                    lessons: chapter.lessons
                     .map(lesson => ({
                         number: String(lesson.order).padStart(2, "0"),
                         title: lesson.lessonName,
-                        id: lesson.lessonId
+                        id: lesson.lessonId,
+                        averageScore: lesson.averageScore,
+                        averageTime: lesson.averageTime
                     }))
                 }));
 

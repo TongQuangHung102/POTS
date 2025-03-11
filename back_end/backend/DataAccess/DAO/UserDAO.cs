@@ -58,6 +58,14 @@ namespace backend.DataAccess.DAO
                 .FirstOrDefaultAsync(u => u.UserId == userId);
         }
 
+        public async Task<User> GetAllInfomationUser(int userId)
+        {
+            return await _context.Users
+                .Include(u => u.RoleNavigation)
+                .Include(m => m.Grade)
+                .FirstOrDefaultAsync(u => u.UserId == userId);
+        }
+
         public async Task UpdateUserAsync(User user)
         {
             _context.Users.Update(user);

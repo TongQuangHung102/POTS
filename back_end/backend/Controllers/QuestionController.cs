@@ -63,7 +63,7 @@ namespace backend.Controllers
             }
             var response = new
             {
-                byAi, 
+                byAi,
                 questions = questions.Select(question => new
                 {
                     question.QuestionText,

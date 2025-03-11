@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using backend.Models;
 
@@ -11,9 +12,10 @@ using backend.Models;
 namespace backend.Migrations
 {
     [DbContext(typeof(MyDbContext))]
-    partial class MyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250310080335_AddNewCreateAtPractice")]
+    partial class AddNewCreateAtPractice
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -387,8 +389,8 @@ namespace backend.Migrations
                     b.Property<string>("SampleQuestion")
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<double>("TimePractice")
-                        .HasColumnType("float");
+                    b.Property<TimeSpan>("Time")
+                        .HasColumnType("time");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -525,8 +527,8 @@ namespace backend.Migrations
                     b.Property<double?>("avg_Accuracy")
                         .HasColumnType("float");
 
-                    b.Property<double?>("avg_Time")
-                        .HasColumnType("float");
+                    b.Property<TimeSpan?>("avg_Time_Per_Question")
+                        .HasColumnType("time");
 
                     b.HasKey("UserId", "LessonId");
 
@@ -590,7 +592,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("StudentTests");
+                    b.ToTable("StudentTest");
                 });
 
             modelBuilder.Entity("backend.Models.SubscriptionPlan", b =>
