@@ -56,7 +56,7 @@ namespace backend.Services
 
             foreach (var questionDto in questionsResponse.Questions)
             {
-                var aiQuestion = new AIQuestion
+                var aiQuestion = new Models.AIQuestion
                 {
                     QuestionText = questionDto.QuestionText,
                     LevelId = questionDto.LevelId,

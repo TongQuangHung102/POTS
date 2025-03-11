@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using backend.Dtos;
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.DataAccess.DAO
@@ -68,6 +69,8 @@ namespace backend.DataAccess.DAO
             _context.Chapters.UpdateRange(chapters);
             await _context.SaveChangesAsync();
         }
+        
+
 
     }
 }

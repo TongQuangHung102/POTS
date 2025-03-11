@@ -24,7 +24,7 @@ namespace backend.DataAccess.DAO
                     UserId = userId,
                     LessonId = lessonId,
                     avg_Accuracy = 0,
-                    avg_Time_Per_Question = TimeSpan.Zero,
+                    avg_Time = 0,
                     LastAttempt = DateTime.UtcNow,
                     LevelId = 2
                 };
@@ -39,5 +39,26 @@ namespace backend.DataAccess.DAO
             _context.StudentPerformances.Update(studentPerformance);
             await _context.SaveChangesAsync();
         }
+
+        public async Task<List<StudentPerformance>> GetStudentPerformanceAsync(int studentId)
+        {
+            return await _context.StudentPerformances
+                .Where(sp => sp.UserId == studentId)
+                .ToListAsync();
+        }
+
+        public async Task<List<StudentPerformance>> GetAverageStudentPerformanceByLevel()
+        {
+            return await _context.StudentPerformances
+                .GroupBy(sp => sp.UserId)
+                .Select(g => new StudentPerformance
+                {
+                    UserId = g.Key,
+                    avg_Accuracy = g.Average(sp => sp.avg_Accuracy ?? 0), 
+                    avg_Time = g.Average(sp => sp.avg_Time ?? 0)
+                })
+                .ToListAsync();
+        }
+
     }
 }

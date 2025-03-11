@@ -224,7 +224,7 @@ namespace backend.Services
                         {
                             num_correct = attempt.CorrectAnswers,
                             total_questions = 5,
-                            time_taken = (int)attempt.Time.TotalSeconds
+                            time_taken = (int)attempt.TimePractice
                         }
                     });
 
@@ -255,7 +255,7 @@ namespace backend.Services
                         QuestionText = q.QuestionText,
                         LevelId = q.LevelId,
                         CorrectAnswer = q.CorrectAnswer,
-                        CreateAt = DateTime.Now, 
+                        CreateAt = DateTime.Now,
                         IsVisible = true,
                         CreateByAI = true,
                         LessonId = questionRequest.lessonId,
@@ -269,8 +269,8 @@ namespace backend.Services
                 }
                 else
                 {
-                   var q =  await _questionRepository.GetQuestionsFirstTimePractice(5, questionRequest.lessonId);
-                   return (q, byAi);   
+                    var q = await _questionRepository.GetQuestionsFirstTimePractice(5, questionRequest.lessonId);
+                    return (q, byAi);
                 }
             }
             catch (HttpRequestException ex)

@@ -2,7 +2,6 @@ import React from 'react';
 import { Card, Row, Col, Table } from 'react-bootstrap';
 import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend, BarElement } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
-import Header from '../components/Header';
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend, BarElement);
 
@@ -101,9 +100,6 @@ const AdminDashboard = () => {
 
   return (
     <div className="main-content">
-      <Row>
-        <Header/>
-      </Row>
       <Row>
         <Col md={12}>
           <Row className="mb-4">
