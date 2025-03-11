@@ -20,5 +20,16 @@ namespace backend.Repositories
         {
             await _aiQuestionDAO.AddAIAnswerQuestionsAsync(answerQuestion);
         }
+        public async Task<(List<AIQuestion>, int)> GetAIQuestionsByFilters(int lessonId, int? levelId, string? status, DateTime? createdAt, int pageNumber, int pageSize)
+        {
+            return await _aiQuestionDAO.GetAIQuestionsByFilters(lessonId, levelId, status, createdAt, pageNumber, pageSize);
+        }
+        public async Task<bool> UpdateLessonIdAsync(int lessonId, List<int> aiQuestionIds)
+        {
+            return await _aiQuestionDAO.UpdateLessonIdAsync(lessonId, aiQuestionIds);
+        }
+
+
+
     }
 }

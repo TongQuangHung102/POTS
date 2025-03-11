@@ -18,45 +18,36 @@ namespace backend.Services
             _repository = repository;
         }
 
-        public async Task<bool> GenerateAndSaveAIQuestions(AIQuestionRequestDto request)
+        public async Task<List<int>> GenerateAndSaveAIQuestions(AIQuestionRequestDto request)
         {
-            // Debug: Kiểm tra dữ liệu nhận được từ Controller
             Console.WriteLine("===== DỮ LIỆU NHẬN ĐƯỢC TỪ CONTROLLER =====");
             Console.WriteLine("Question: " + request.Question);
             Console.WriteLine("NumQuestions: " + request.NumQuestions);
 
             var jsonRequest = JsonConvert.SerializeObject(request);
-
-
-            // Debug: Kiểm tra JSON đã serialize
             Console.WriteLine("===== JSON GỬI ĐI ĐẾN FLASK =====");
             Console.WriteLine(jsonRequest);
 
             var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-
-            // Debug: Kiểm tra Content-Type gửi đi
-            Console.WriteLine("Content-Type gửi đi: " + content.Headers.ContentType);
-
             var response = await _httpClient.PostAsync("http://127.0.0.1:5000/generate-mcq", content);
 
-            // Debug: Kiểm tra kết quả phản hồi từ Flask
             Console.WriteLine("===== KẾT QUẢ NHẬN TỪ FLASK =====");
             Console.WriteLine("StatusCode: " + response.StatusCode);
             string responseBody = await response.Content.ReadAsStringAsync();
             Console.WriteLine("Response Body: " + responseBody);
 
             if (!response.IsSuccessStatusCode)
-                return false;
+                return new List<int>();
 
             var questionsResponse = JsonConvert.DeserializeObject<AIQuestionResponseDto>(responseBody);
-
-
             if (questionsResponse == null || questionsResponse.Questions.Count == 0)
-                return false;
+                return new List<int>();
+
+            List<int> generatedQuestionIds = new List<int>();
 
             foreach (var questionDto in questionsResponse.Questions)
             {
-                var aiQuestion = new AIQuestion
+                var aiQuestion = new Models.AIQuestion
                 {
                     QuestionText = questionDto.QuestionText,
                     LevelId = questionDto.LevelId,
@@ -70,6 +61,7 @@ namespace backend.Services
                 await _repository.SaveAIQuestionAsync(aiQuestion);
                 await Task.Delay(100);
                 int aiQuestionId = aiQuestion.QuestionId;
+                generatedQuestionIds.Add(aiQuestionId);
 
                 foreach (var answerDto in questionDto.AnswerQuestions)
                 {
@@ -83,7 +75,19 @@ namespace backend.Services
                 }
             }
 
-            return true;
+            return generatedQuestionIds;
+        }
+
+
+        public async Task<(List<Models.AIQuestion>, int)> GetAIQuestionsByFilters(
+            int lessonId, int? levelId, string? status, DateTime? createdAt, int pageNumber, int pageSize)
+        {
+            return await _repository.GetAIQuestionsByFilters(lessonId, levelId, status, createdAt, pageNumber, pageSize);
+        }
+
+        public async Task<bool> UpdateLessonIdAsync(int lessonId, List<int> aiQuestionIds)
+        {
+            return await _repository.UpdateLessonIdAsync(lessonId, aiQuestionIds);
         }
 
 
