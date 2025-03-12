@@ -58,6 +58,24 @@ builder.Services.AddScoped<TestQuestionService>();
 builder.Services.AddScoped<PracticeAttemptDAO>();
 builder.Services.AddScoped<IPracticeRepository, PracticeRepository>();
 builder.Services.AddScoped<PracticeAttemptService>();
+builder.Services.AddScoped<AIQuestionDAO>();
+builder.Services.AddScoped<IAIQuestionRepository, AIQuestionRepository>();
+builder.Services.AddScoped<AIQuestionService>();
+builder.Services.AddScoped<IStudentPerformanceRepository, StudentPerformanceRepository>();
+builder.Services.AddScoped<StudentPerformanceDAO>();
+builder.Services.AddScoped<StudentService>();
+builder.Services.AddScoped<StudentPerformanceService>();
+builder.Services.AddScoped<StudentTestService>();
+builder.Services.AddScoped<IStudentTestRepository, StudentTestRepository>();
+builder.Services.AddScoped<StudentTestDAO>();
+builder.Services.AddHttpClient();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
+builder.Services.AddScoped<StudentPerformanceDAO>();
+builder.Services.AddScoped<IStudentPerformanceRepository, StudentPerformanceRepository>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
@@ -68,6 +86,22 @@ builder.Services.AddCors(options =>
 });
 
 var key = Encoding.ASCII.GetBytes("UltraSecureKey_ForJWTAuth!987654321@2025$");
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false
+    };
+});
+
 
 builder.Services.AddHttpClient();
 builder.Services.AddAuthorization();

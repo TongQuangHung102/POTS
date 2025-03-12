@@ -11,6 +11,7 @@ namespace backend.Repositories
         Task<User?> GetUserByEmailAsync(string email);
         Task CreateUserAsync(User user);
         Task<List<User>> GetUsersByRoleAsync(int roleId);
+        Task<User> GetAllInfomationUser(int userId);
 
     }
 }

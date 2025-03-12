@@ -3,6 +3,7 @@ using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using Org.BouncyCastle.Asn1.Ocsp;
 using System.Net.Http;
 using System.Text;
@@ -14,13 +15,15 @@ namespace backend.Services
     {
         private readonly IQuestionRepository _questionRepository;
         private readonly ICurriculumRepository _curriculumRepository;
+        private readonly IPracticeRepository _practiceRepository;
         private readonly HttpClient _httpClient;
 
-        public QuestionService(IQuestionRepository questionRepository, HttpClient httpClient, ICurriculumRepository curriculumRepository)
+        public QuestionService(IQuestionRepository questionRepository, HttpClient httpClient, ICurriculumRepository curriculumRepository, IPracticeRepository practiceRepository)
         {
             _questionRepository = questionRepository;
             _httpClient = httpClient;
             _curriculumRepository = curriculumRepository;
+            _practiceRepository = practiceRepository;
         }
 
         public async Task<IActionResult> GetAllQuestionsAsync(int? chapterId, int? lessonId, int? levelId,string searchTerm, bool? isVisible, int page, int pageSize)
@@ -201,45 +204,88 @@ namespace backend.Services
             }
         }
 
-        public async Task<IActionResult> GenQuestionAIForPractice(QuestionRequest questionRequest)
+        public async Task<(List<Question>, bool byAi)> GenQuestionAIForPractice(QuestionRequest questionRequest)
         {
-            int lessonId = Convert.ToInt32(questionRequest.Question);
-            var lesson = await _curriculumRepository.GetLessonByIdAsync(lessonId);
+            int levelId = 0;
+            bool byAi = true;
             try
             {
-                var jsonContent = JsonConvert.SerializeObject(new
+                var attempt = await _practiceRepository.GetLastAttempt(questionRequest.userId, questionRequest.lessonId);
+
+                if (attempt != null)
                 {
-                    question = lesson.LessonName,
-                    num_questions = questionRequest.NumQuestions
-                });
+                    levelId = attempt.LevelId;
 
-                var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                    var jsonContent = JsonConvert.SerializeObject(new PracticeSession
+                    {
+                        question = attempt.SampleQuestion,
+                        num_questions = 5,
+                        results = new PracticeResults
+                        {
+                            num_correct = attempt.CorrectAnswers,
+                            total_questions = 5,
+                            time_taken = (int)attempt.TimePractice
+                        }
+                    });
 
-                HttpResponseMessage response = await _httpClient.PostAsync("http://127.0.0.1:5000/generate-mcq", httpContent);
-                response.EnsureSuccessStatusCode();
+                    var httpContent = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+                    Console.WriteLine(await httpContent.ReadAsStringAsync());
 
-                string responseBody = await response.Content.ReadAsStringAsync();
 
-                var options = new JsonSerializerOptions
+                    HttpResponseMessage response = await _httpClient.PostAsync("http://localhost:5000/generate-question", httpContent);
+
+                    if (!response.IsSuccessStatusCode)
+                    {
+                        throw new HttpRequestException($"Lỗi gọi API AI: {response.StatusCode}");
+                    }
+
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    Console.WriteLine("Du lieu tra ve" + responseBody);
+
+
+                    var aiResponse = JsonConvert.DeserializeObject<AIQuestionResponse>(responseBody);
+
+                    if (aiResponse == null || aiResponse.Questions == null)
+                    {
+                        throw new Exception("AI API trả về danh sách rỗng hoặc không hợp lệ.");
+                    }
+
+                    var questions = aiResponse.Questions.Select(q => new Question
+                    {
+                        QuestionText = q.QuestionText,
+                        LevelId = q.LevelId,
+                        CorrectAnswer = q.CorrectAnswer,
+                        CreateAt = DateTime.Now,
+                        IsVisible = true,
+                        CreateByAI = true,
+                        LessonId = questionRequest.lessonId,
+                        AnswerQuestions = q.AnswerQuestions.Select(a => new AnswerQuestion
+                        {
+                            AnswerText = a.AnswerText,
+                            Number = a.Number
+                        }).ToList()
+                    }).ToList();
+                    return (questions, byAi);
+                }
+                else
                 {
-                    Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
-                    PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-                };
-
-                var jsonResponse = JsonConvert.DeserializeObject<object>(responseBody);
-                return new JsonResult(jsonResponse);
+                    var q = await _questionRepository.GetQuestionsFirstTimePractice(5, questionRequest.lessonId);
+                    return (q, byAi);
+                }
             }
+            catch (HttpRequestException ex)
+            {
+                Console.WriteLine("Lỗi khi gọi API AI: " + ex.Message);
+            }
+
             catch (Exception ex)
             {
-                return new ObjectResult(new { message = "Đã xảy ra lỗi khi thêm câu hỏi.", error = ex.Message })
-                {
-                    StatusCode = 500
-                };
+                Console.WriteLine("Lỗi không xác định: " + ex.Message);
             }
+
+            byAi = false;
+            return (await _questionRepository.GetQuestionsPractice(5, questionRequest.lessonId, levelId), byAi);
         }
-
-
-
 
     }
 }

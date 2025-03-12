@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation  } from 'react-router-dom';
 import styles from './QuestionManage.module.css';
 
 const QuestionManage = () => {
     // State chứa danh sách câu hỏi từ API
     const { lessonId, gradeId, chapterId } = useParams();
+    const location = useLocation();
+    const lessonName = location.state?.lessonName || "Không có tên bài học";
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -157,13 +159,17 @@ const QuestionManage = () => {
     const handleAddQuestion = () => {
         navigate(`/content_manage/grades/${gradeId}/chapters/${chapterId}/lessons/${lessonId}/add-question`);
     };
-
+    const goToAIQuestions = () => {
+        navigate(`/content_manage/grades/${gradeId}/chapters/${chapterId}/lessons/${lessonId}/list-aiquestion`, {state: { lessonName }});
+    };
     return (
         <div className={styles.questionManager}>
-            <h1>Quản Lý Câu Hỏi</h1>
+            <h1>Quản Lý Câu Hỏi {lessonName}</h1>
             <div className={styles.groupbtn}>
                 <button onClick={handleAddQuestion}>Thêm câu hỏi</button>
-                <button>Tạo câu hỏi bằng AI</button>
+                <button onClick={() => goToAIQuestions(lessonName)}>
+    Danh sách câu hỏi AI
+</button>
             </div>
             <div className={styles.toolbar}>
 

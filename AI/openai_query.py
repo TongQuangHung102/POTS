@@ -98,8 +98,8 @@ TRẢ VỀ mảng JSON của {num_questions} câu hỏi. Mỗi câu hỏi phải
         {{"answerText": "Đáp án D", "number": 4}}]
     , "correctAnswer": số từ 1 đến 4 chỉ đáp án đúng}}
 
-    TRẢ VỀ mảng JSON của {num_questions} câu hỏi.
-    KHÔNG ĐƯỢC thêm bất kỳ văn bản giải thích nào ngoài mảng JSON.
+    TRẢ VỀ MẢNG ([]) của {num_questions} câu hỏi.
+    KHÔNG ĐƯỢC thêm bất kỳ văn bản giải thích nào ngoài MẢNG JSON.
     """)
 
     try:

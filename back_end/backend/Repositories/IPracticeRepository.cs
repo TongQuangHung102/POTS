@@ -6,7 +6,12 @@ namespace backend.Repositories
     {
         Task<List<PracticeAttempt>> GetUserAttemptsAsync(int userId, int lessonId);
          Task AddPracticeAttemp(PracticeAttempt practiceAttempt);
-        Task<StudentPerformance> GetOrCreateStudentPerformanceAsync(int userId, int lessonId);
-        Task UpdateStudentPerformanceAsync(StudentPerformance studentPerformance);
+        Task<PracticeAttempt> GetLastAttempt(int userId, int lessonId);
+        Task<double> GetTotalPracticeTimeByDateAsync(int userId, DateTime date);
+        Task<int> GetTotalNumberPracticeAsync(int userId);
+        Task<double> GetAveragePracticeTimeAsync(int userId);
+        Task<double> GetAveragePracticeScoreAsync(int userId);
+        Task<List<(int UserId, double AverageScore, double TotalPracticeTime)>> GetStudentDataAsync(int gradeId);
+
     }
 }

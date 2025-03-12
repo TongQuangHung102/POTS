@@ -1,4 +1,5 @@
 ﻿using backend.Dtos;
+using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -49,7 +50,33 @@ namespace backend.Controllers
         [HttpPost("gen-question-practice")]
         public async Task<IActionResult> GetGeneratedQuestion([FromBody] QuestionRequest request)
         {
-            return await _questionService.GenQuestionAIForPractice(request);
+            if (request == null)
+            {
+                return BadRequest("Dữ liệu request không hợp lệ.");
+            }
+
+            var (questions, byAi) = await _questionService.GenQuestionAIForPractice(request);
+
+            if (questions == null || questions.Count == 0)
+            {
+                return NotFound("Không tìm thấy câu hỏi.");
+            }
+            var response = new
+            {
+                byAi,
+                questions = questions.Select(question => new
+                {
+                    question.QuestionText,
+                    question.CorrectAnswer,
+                    AnswerQuestions = question.AnswerQuestions.Select(a => new
+                    {
+                        a.AnswerText,
+                        a.Number
+                    }).ToList()
+                }).ToList()
+            };
+
+            return Ok(response);
         }
     }
 }

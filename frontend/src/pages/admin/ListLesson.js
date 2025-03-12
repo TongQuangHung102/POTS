@@ -161,7 +161,7 @@ const ListLesson = () => {
                       Quản lý câu hỏi
                     </Link>
                   ) : (
-                    <Link to={`/content_manage/grades/${gradeId}/chapters/${chapterId}/lessons/${lesson.lessonId}/questions`}>
+                    <Link to={`/content_manage/grades/${gradeId}/chapters/${chapterId}/lessons/${lesson.lessonId}/questions`} state={{ lessonName: lesson.lessonName }}>
                       Quản lý câu hỏi
                     </Link>
                   )}

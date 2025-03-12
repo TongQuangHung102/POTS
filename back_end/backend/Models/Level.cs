@@ -10,6 +10,7 @@ namespace backend.Models
         public int LevelId { get; set; }
         public string LevelName { get; set; }
         public string LevelDescription { get; set; }
+        public int LevelNumber { get; set; }
 
         public virtual ICollection<Question> Questions { get; set; }
         public virtual ICollection<AIQuestion> AIQuestions { get; set; }

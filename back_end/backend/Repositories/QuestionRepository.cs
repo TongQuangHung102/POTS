@@ -39,5 +39,14 @@ namespace backend.Repositories
             await _questionDAO.AddAnswerQuestionsAsync(answers);
         }
 
+        public async Task<List<Question>> GetQuestionsFirstTimePractice(int count, int lessonId)
+        {
+            return await _questionDAO.GetQuestionsFirstTimePractice(count, lessonId);
+        }
+
+        public async Task<List<Question>> GetQuestionsPractice(int count, int lessonId, int levelId)
+        {
+            return await _questionDAO.GetQuestionsPractice(count, lessonId, levelId);
+        }
     }
 }

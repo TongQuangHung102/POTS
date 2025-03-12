@@ -312,6 +312,9 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<int>("LevelNumber")
+                        .HasColumnType("int");
+
                     b.HasKey("LevelId");
 
                     b.ToTable("Levels");
@@ -372,14 +375,20 @@ namespace backend.Migrations
                     b.Property<int>("CorrectAnswers")
                         .HasColumnType("int");
 
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
                     b.Property<int>("LessonId")
                         .HasColumnType("int");
 
                     b.Property<int>("LevelId")
                         .HasColumnType("int");
 
-                    b.Property<TimeSpan>("Time")
-                        .HasColumnType("time");
+                    b.Property<string>("SampleQuestion")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<double>("TimePractice")
+                        .HasColumnType("float");
 
                     b.Property<int>("UserId")
                         .HasColumnType("int");
@@ -516,8 +525,8 @@ namespace backend.Migrations
                     b.Property<double?>("avg_Accuracy")
                         .HasColumnType("float");
 
-                    b.Property<TimeSpan?>("avg_Time_Per_Question")
-                        .HasColumnType("time");
+                    b.Property<double?>("avg_Time")
+                        .HasColumnType("float");
 
                     b.HasKey("UserId", "LessonId");
 
@@ -581,7 +590,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("StudentTest");
+                    b.ToTable("StudentTests");
                 });
 
             modelBuilder.Entity("backend.Models.SubscriptionPlan", b =>

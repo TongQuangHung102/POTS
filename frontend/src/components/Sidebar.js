@@ -1,7 +1,7 @@
 import React from "react";
-import { NavLink } from "react-router-dom";
-import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare, BiNotepad } from "react-icons/bi";
-import { useAuth } from "../hooks/useAuth"; 
+import { NavLink, useNavigate } from "react-router-dom";
+import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare, BiLogOut } from "react-icons/bi";
+import { useAuth } from "../hooks/useAuth";
 
 const Sidebar = () => {
   const { user } = useAuth();
@@ -34,14 +34,14 @@ const Sidebar = () => {
     ],
     student: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/student/course", icon: <BiAlignRight />, label: "Luyện tập" },
       { path: "/student/package", icon: <BiPackage />, label: "Gói" },
-      { path: "/student/course", icon: <BiAlignRight />, label: "Khóa học" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
     content_manager: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
-      { path: "/content_manage/grades", icon: <BiAlignRight />, label: "Quản lý nội dung"},
+      { path: "/content_manage/grades", icon: <BiAlignRight />, label: "Quản lý nội dung" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
@@ -52,6 +52,18 @@ const Sidebar = () => {
   };
 
   const menuItems = menuConfig[role];
+
+  const navigate = useNavigate();
+  const { setUser } = useAuth();
+
+  const handleLogout = () => {
+    sessionStorage.removeItem("token");
+    sessionStorage.removeItem("userId");
+    sessionStorage.removeItem("roleId");
+    setUser(null);
+
+    navigate("/login");
+  };
 
   return (
     <div className="sidebar d-none d-md-block">
@@ -68,6 +80,11 @@ const Sidebar = () => {
           </NavLink>
         ))}
       </nav>
+      <div className="mb-4 border-top pt-3 text-danger">
+        <button onClick={handleLogout} type="button" className="btn btn-default btn-sm">
+          <BiLogOut size={18} /> Log out
+        </button>
+      </div>
     </div>
   );
 };

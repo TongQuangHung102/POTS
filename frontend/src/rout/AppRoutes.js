@@ -30,8 +30,10 @@ import AddQuestionForm from '../pages/content_manager/AddQuestionForm';
 import Test from '../pages/student/Test';
 import ListGradesAssign from '../pages/content_manager/ListGradesAssign';
 import ManageQuestionTest from '../pages/content_manager/ManageQuestionTest';
+import ListAIQuestion from '../pages/content_manager/ListAIQuestion';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
+
 
     if (loading) {
         return <div>Loading...</div>;
@@ -94,6 +96,7 @@ const AppRoutes = () => {
                 <Route path="/content_manage/grades/:gradeId/chapters/:chapterId" element={<ListLesson />} />
                 <Route path='/content_manage/grades/:gradeId/list_tests' element={<ListTest />}></Route> 
                 <Route path='/content_manage/grades/:gradeId/list_tests/:testId/questions' element={<ManageQuestionTest />}></Route> 
+                <Route path='/content_manage/grades/:gradeId/chapters/:chapterId/lessons/:lessonId/list-aiquestion' element={<ListAIQuestion />} />
             </Route>
             {/* Nếu chưa đăng nhập, điều hướng đến login */}
             {!user && (

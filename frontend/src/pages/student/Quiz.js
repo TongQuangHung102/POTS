@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useLocation, useParams } from "react-router-dom";
+import { data, useLocation, useParams } from "react-router-dom";
 import styles from "./Quiz.module.css";
 import { fetchTestQuestions } from "../../services/TestQuestion";
-import { fetchPracticeQuestions, submitPracticeResult  } from "../../services/PracticeService";
-import { formatElapsedTime } from "../../utils/timeUtils"
+import { fetchPracticeQuestions, submitPracticeResult, submitTestResult } from "../../services/PracticeService";
+
 import BackLink from "../../components/BackLink";
 import QuizResult from "./QuizResult";
 import { useAuth } from "../../hooks/useAuth";
@@ -15,21 +15,27 @@ const Quiz = () => {
     const [userAnswers, setUserAnswers] = useState([]);
     const [showScore, setShowScore] = useState(false);
     const [score, setScore] = useState(0);
+    const [sampleQuestion, setsampleQuestion] = useState('');
+
+    const [byAI, setByAI] = useState(true);
 
     const questionRefs = useRef([]);
-    const hasFetched = useRef(false); 
+    const hasFetched = useRef(false);
 
     const [elapsedTime, setElapsedTime] = useState(0);
     const [duration, setDuration] = useState(0);
     const [timeLeft, setTimeLeft] = useState(0);
     const [totalTime, setTotalTime] = useState(0);
+    const [startTime, setStartTime] = useState(new Date().toISOString());
 
-    const {user} = useAuth();
+
+    const { user, loading } = useAuth();
     const location = useLocation();
 
-    const isPremium = false; //goi cua hoc sinh
+    const isPremium = true; //goi cua hoc sinh
 
     const mode = location.pathname.includes("practice") ? "practice" : "test";
+
 
     useEffect(() => {
         if (mode === "test" && duration > 0) {
@@ -55,9 +61,9 @@ const Quiz = () => {
             }, 1000);
             return () => clearInterval(timer);
         }
-        
+
     }, [timeLeft, mode]);
-    
+
 
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
@@ -73,8 +79,9 @@ const Quiz = () => {
     };
 
     useEffect(() => {
-        if (hasFetched.current) return; // Nếu đã fetch thì không gọi lại
-    hasFetched.current = true;
+        if (loading) return;
+        if (hasFetched.current) return;
+        hasFetched.current = true;
 
         setIsLoading(true);
 
@@ -83,8 +90,9 @@ const Quiz = () => {
             let result;
             if (mode === "test") {
                 result = await fetchTestQuestions(testId);
+                console.log(result);
             } else {
-                result = await fetchPracticeQuestions(lessonId, 10);
+                result = await fetchPracticeQuestions(user.userId, lessonId);
             }
             if (result.error) {
                 setError(result.error);
@@ -95,21 +103,22 @@ const Quiz = () => {
                 }
                 else {
                     setQuestions(result.data.questions);
+                    setByAI(result.data.byAi);
+                    //  setsampleQuestion(result.data.questions[3].questionText);
                     setUserAnswers(Array(result.data.questions.length).fill(null));
                 }
                 if (mode === "test" && result.data.length > 0) {
                     setDuration(result.data[0].test.durationInMinutes);
+                    setStartTime(new Date().toISOString());
                 }
             }
-            console.log('in ra 1 lan roi');
-
             setIsLoading(false);
             setElapsedTime(0);
         };
 
         fetchQuestions();
         hasFetched.current = true;
-    }, [testId, mode]);
+    }, [loading, isLoading]);
 
 
     const handleAnswerClick = (questionIndex, answerIndex) => {
@@ -120,41 +129,54 @@ const Quiz = () => {
 
     const handleSubmit = async () => {
         let totalScore = 0;
-        console.log(userAnswers);
         userAnswers.forEach((answer, index) => {
-            console.log(questions[index].correctAnswer);
-            console.log((answer + 1));
             if (answer !== null && questions[index].correctAnswer === (answer + 1)) {
                 totalScore += 1;
             }
         });
 
+        const endTime = new Date().toISOString(); 
+
         if (mode === "test") {
-            setTotalTime(duration * 60 - timeLeft); 
+            setTotalTime(duration * 60 - timeLeft);
         } else {
-            setTotalTime(elapsedTime); 
+            setTotalTime(elapsedTime);
         }
-        
+
         setScore(totalScore);
         setShowScore(true);
 
         if (mode !== "test") {
-            const formattedTime = formatElapsedTime(elapsedTime); 
             const data = {
                 correctAnswers: totalScore,
                 level: 2,
-                time: formattedTime,
-                userId: user.userId, 
-                lessonId: lessonId
+                timePractice: elapsedTime,
+                userId: user.userId,
+                lessonId: lessonId,
+                sampleQuestion: sampleQuestion
             };
-    
             try {
                 await submitPracticeResult(data);
                 console.log("Gửi kết quả thành công:", data);
             } catch (error) {
                 console.error("Lỗi khi gửi kết quả:", error);
             }
+        } else {
+            const data = {
+                startTime: startTime,
+                endTime: endTime,
+                score: totalScore,
+                testId: testId,
+                userId: user.userId,
+            };
+            try {
+                await submitTestResult(data);
+                console.log("Gửi kết quả bài kiểm tra thành công:", data);
+            } catch (error) {
+                console.error("Lỗi khi gửi kết quả bài kiểm tra:", error);
+            }
         }
+
     };
     if (isLoading) return <div className={styles.loading}>
         <p>Đang tải câu hỏi...</p>
@@ -168,7 +190,7 @@ const Quiz = () => {
             <div className={styles.sidebar}>
                 <div className={styles.back}><BackLink /></div>
                 <div className={styles.quizHeader}>
-                    <h5>{mode === "test" ? "Bài kiểm tra" : "Luyện tập"}: {questions.length > 0 ? questions[0].test?.testName : "N/A"}</h5>
+                    <h5>{mode === "test" ? "Bài kiểm tra" : "Luyện tập"}</h5>
                 </div>
                 {showScore ? (
                     // Khi đã nộp bài, hiển thị kết quả
@@ -177,8 +199,8 @@ const Quiz = () => {
                         <p>Bạn đã trả lời đúng <strong>{score}</strong> trên <strong>{questions.length}</strong> câu hỏi</p>
                         <p>⏳ Thời gian làm bài: <strong>{formatTime(totalTime)}</strong></p>
                         <button
-                        className={styles.submitButton}
-                           onClick={restartQuiz}
+                            className={styles.submitButton}
+                            onClick={restartQuiz}
                         >
                             Làm lại bài kiểm tra
                         </button>
@@ -193,6 +215,7 @@ const Quiz = () => {
                                 <p>Thời gian đã làm: {formatTime(elapsedTime)}</p>
                             )}
                         </div>
+
                         {questions.map((_, index) => (
                             <button
                                 key={index}
@@ -209,6 +232,7 @@ const Quiz = () => {
                         >
                             Nộp bài
                         </button>
+                        {!byAI && <div><p className={styles.messageAi}>*Tính năng AI tạm thời không khả dụng, câu hỏi đang được lấy từ ngân hàng câu hỏi.</p></div>}
                     </>
                 )}
             </div>
