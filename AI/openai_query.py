@@ -1,6 +1,7 @@
 # openai_query.py
 
 import json
+import re
 import logging
 from langchain.prompts import PromptTemplate
 from langchain_openai import OpenAI
@@ -48,8 +49,9 @@ Hãy tạo CHÍNH XÁC {num_questions} câu hỏi trắc nghiệm với MỨC Đ
 
 CHÚ Ý:
 - Phân bố mức độ câu hỏi từ dễ đến khó (1-4)
-- Định dạng phải CHÍNH XÁC theo cấu trúc JSON
-- LUÔN trả về mảng các câu hỏi
+- Định dạng JSON PHẢI ĐÚNG CÚ PHÁP không thiếu dấu phẩy, ngoặc
+- LUÔN trả về duy nhất một mảng JSON trong dấu ngoặc vuông [ ]
+- ĐẢM BẢO TẤT CẢ các phần tử trong mảng answerQuestions đều được phân tách bằng dấu phẩy
 - Không thêm bất kỳ văn bản giải thích nào ngoài mảng JSON.
 
 Mỗi câu hỏi PHẢI được định dạng như sau:
@@ -72,35 +74,51 @@ TRẢ VỀ mảng JSON của {num_questions} câu hỏi. Mỗi câu hỏi phải
     # Prompt cho câu hỏi có mức độ tương tự
     prompt_similar_level = PromptTemplate.from_template("""Context: {context}
 
-    Dựa trên kết quả sau đây:
-    - Số câu trả lời đúng: {num_correct}
-    - Tổng số câu hỏi: {total_questions}
-    - Thời gian làm bài: {time_taken} giây
+Dựa trên kết quả sau đây:
+- Số câu trả lời đúng: {num_correct}
+- Tổng số câu hỏi: {total_questions}
+- Thời gian làm bài: {time_taken} giây
 
-    Hãy phân tích và xác định MỨC ĐỘ (mức độ khó) của người dùng. Mức độ có thể là:
-    1. Mức độ dễ (beginner)
-    2. Mức độ trung bình (intermediate)
-    3. Mức độ khó (advanced)
-    4. Mức độ rất khó (expert)
+Hãy phân tích và xác định MỨC ĐỘ (mức độ khó) của người dùng. Mức độ có thể là:
+1. Mức độ dễ (beginner): Người dùng trả lời đúng ít câu và mất nhiều thời gian.
+2. Mức độ trung bình (intermediate): Người dùng trả lời đúng một phần câu hỏi và mất thời gian vừa phải.
+3. Mức độ khó (advanced): Người dùng trả lời đúng nhiều câu và làm bài nhanh.
+4. Mức độ rất khó (expert): Người dùng trả lời đúng tất cả câu hỏi trong thời gian rất ngắn.
 
-    Sau khi phân tích mức độ người dùng, hãy tạo {num_questions} câu hỏi trắc nghiệm với mức độ khó tương tự mức độ đã xác định.
+Ví dụ:
+- Nếu người dùng trả lời đúng tất cả câu hỏi trong vòng 10 giây (hoặc thời gian nhanh tương tự), họ có thể thuộc mức độ "advanced" hoặc "expert".
+- Nếu người dùng trả lời đúng ít câu hoặc mất nhiều thời gian, họ có thể thuộc mức độ "beginner" hoặc "intermediate".
 
-    Yêu cầu:
-    - Mức độ câu hỏi: {user_level}
-    - Thay đổi tham số, tình huống nhưng giữ nguyên độ khó
-    - 4 đáp án (A, B, C, D) cho mỗi câu hỏi
+Sau khi phân tích mức độ người dùng, hãy tạo {num_questions} câu hỏi trắc nghiệm với mức độ khó tương ứng với mức độ đã phân tích.
 
-    Định dạng JSON chính xác:
-    {{"questionText": "Nội dung câu hỏi", "levelId": {user_level}, "answerQuestions": [
-        {{"answerText": "Đáp án A", "number": 1}},
-        {{"answerText": "Đáp án B", "number": 2}},
-        {{"answerText": "Đáp án C", "number": 3}},
-        {{"answerText": "Đáp án D", "number": 4}}]
-    , "correctAnswer": số từ 1 đến 4 chỉ đáp án đúng}}
+Yêu cầu:
+- Mức độ câu hỏi: {user_level}
+- Thay đổi tham số, tình huống nhưng giữ nguyên độ khó
+- 4 đáp án (A, B, C, D) cho mỗi câu hỏi
 
-    TRẢ VỀ MẢNG ([]) của {num_questions} câu hỏi.
-    KHÔNG ĐƯỢC thêm bất kỳ văn bản giải thích nào ngoài MẢNG JSON.
-    """)
+CHÚ Ý:
+- Phân bố mức độ câu hỏi từ dễ đến khó (1-4)
+- Định dạng JSON PHẢI ĐÚNG CÚ PHÁP không thiếu dấu phẩy, ngoặc
+- LUÔN trả về duy nhất một mảng JSON trong dấu ngoặc vuông [ ]
+- ĐẢM BẢO TẤT CẢ các phần tử trong mảng answerQuestions đều được phân tách bằng dấu phẩy
+- Không thêm bất kỳ văn bản giải thích nào ngoài mảng JSON.
+
+Định dạng JSON chính xác:
+{{
+    "questionText": "Nội dung câu hỏi",
+    "levelId": {user_level}, 
+    "answerQuestions": [
+    {{"answerText": "Đáp án A", "number": 1}},
+    {{"answerText": "Đáp án B", "number": 2}},
+    {{"answerText": "Đáp án C", "number": 3}},
+    {{"answerText": "Đáp án D", "number": 4}}],
+    "correctAnswer": số từ 1 đến 4 chỉ đáp án đúng
+}}
+
+TRẢ VỀ mảng JSON của {num_questions} câu hỏi.
+KHÔNG ĐƯỢC thêm bất kỳ văn bản giải thích nào ngoài mảng JSON.
+""")
+
 
     try:
         # Chọn prompt và định dạng
@@ -140,38 +158,27 @@ TRẢ VỀ mảng JSON của {num_questions} câu hỏi. Mỗi câu hỏi phải
         response = llm.generate([prompt])
         result_text = response.generations[0][0].text.strip()
 
-        # Đảm bảo rằng kết quả trả về là JSON hợp lệ
-        try:
-            start_index = result_text.find('[')
-            end_index = result_text.rfind(']') + 1
+        #Phân tích JSON từ chuỗi trả về của OpenAI
+        questions = parse_multiple_questions(result_text)
 
-            if start_index >= 0 and end_index > start_index:
-                json_text = result_text[start_index:end_index]  # Cắt lấy phần JSON hợp lệ
-                questions = json.loads(json_text)
+        # Kiểm tra trùng lặp câu hỏi với câu hỏi mẫu
+        if sample_questions:
+            filtered_questions = []
+            for question in questions:
+                if not check_question_similarity(question, sample_questions):
+                    filtered_questions.append(question)
 
-                if sample_questions:
-                    filtered_questions = []
-                    for question in questions:
-                        if not check_question_similarity(question, sample_questions):
-                            filtered_questions.append(question)
+            if filtered_questions:
+                return filtered_questions
+            else:
+                logger.warning("Tất cả các câu hỏi sinh ra đều trùng với câu hỏi mẫu.")
+                return []
 
-                    if filtered_questions:
-                        return filtered_questions
-                    else:
-                        logger.warning("Tất cả các câu hỏi sinh ra đều trùng với câu hỏi mẫu.")
-                        return []
-
-                return questions
-
-        except json.JSONDecodeError as e:
-            logger.error(f"Lỗi khi phân tích JSON: {e}. Dữ liệu: {result_text}")
-            return []
+        return questions
 
     except Exception as e:
         logger.error(f"Lỗi trong quá trình sinh câu hỏi: {e}")
         return []
-
-    return []
 
 
 def generate_large_mcq(context, num_questions, difficulty_mode='random', level_id=2):
@@ -189,3 +196,61 @@ def generate_large_mcq(context, num_questions, difficulty_mode='random', level_i
         all_questions.extend(response)
 
     return all_questions[:num_questions]
+
+
+
+def parse_multiple_questions(result_text):
+    """
+    Hàm để phân tích và tách nhiều câu hỏi từ chuỗi trả về của OpenAI, sửa lỗi cú pháp JSON nếu có.
+    """
+    questions = []
+    try:
+        # Tìm kiếm mảng JSON hoàn chỉnh
+        json_array_pattern = r'\[\s*\{.*?\}\s*\]'
+        json_array_match = re.search(json_array_pattern, result_text, re.DOTALL)
+        
+        if json_array_match:
+            # Nếu tìm thấy mảng JSON hoàn chỉnh, sử dụng nó
+            try:
+                questions = json.loads(json_array_match.group(0))
+                return questions
+            except json.JSONDecodeError:
+                #logger.warning("Không thể phân tích mảng JSON hoàn chỉnh, thử phương pháp phân tích từng câu hỏi")
+                pass
+        # Tìm tất cả các dấu { để bắt đầu câu hỏi
+        start_indices = [match.start() for match in re.finditer(r'\{\s*"questionText"', result_text)]
+        
+        for i, start_idx in enumerate(start_indices):
+            try:
+                # Xác định kết thúc của câu hỏi hiện tại
+                if i < len(start_indices) - 1:
+                    end_idx = start_indices[i + 1]
+                    question_text = result_text[start_idx:end_idx].strip()
+                    # Đảm bảo kết thúc đúng với }
+                    if not question_text.endswith('}'):
+                        question_text = question_text.rsplit('}', 1)[0] + '}'
+                else:
+                    # Câu hỏi cuối cùng
+                    question_text = result_text[start_idx:].strip()
+                    # Tìm dấu } cuối cùng để đóng đối tượng JSON
+                    last_brace = question_text.rfind('}')
+                    if last_brace != -1:
+                        question_text = question_text[:last_brace + 1]
+                
+                # Sửa lỗi cú pháp phổ biến trong answerQuestions array
+                question_text = re.sub(r'(\}\s*\{)', '},{', question_text)
+                
+                # Sửa lỗi cú pháp thiếu dấu phẩy trong answerQuestions array
+                question_text = re.sub(r'(\}\s*)"answerText"', '},{"answerText"', question_text)
+                
+                # Cố gắng phân tích JSON
+                question = json.loads(question_text)
+                questions.append(question)
+            except json.JSONDecodeError as e:
+                logger.error(f"Lỗi khi phân tích câu hỏi JSON: {e}. Dữ liệu: {question_text}")
+        
+        return questions
+
+    except Exception as e:
+        logger.error(f"Lỗi phân tích các câu hỏi: {e}")
+        return []
