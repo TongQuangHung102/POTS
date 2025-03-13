@@ -2,6 +2,8 @@ from flask import Flask, request, jsonify
 from openai_query import ask_openai, generate_large_mcq
 import logging
 
+from vector_db import search_in_vector_db
+
 app = Flask(__name__)
 
 # # Cấu hình logging để ghi lại các lỗi
@@ -99,6 +101,30 @@ def generate_question():
     
     except Exception as e:
         return jsonify({"error": "Đã xảy ra lỗi không mong muốn"}), 500
+
+
+# @app.route('/generate-question-from-db', methods=['POST'])
+# def generate_question_from_db():
+#     """API để tạo câu hỏi từ OpenAI với kiến thức trong Vector DB."""
+#     try:
+#         data = request.get_json()
+#         chapter = data.get('chapter', '').strip()
+#         num_questions = int(data.get('num_questions', 5))
+        
+#         # Tìm kiếm nội dung liên quan trong Vector DB
+#         context = search_in_vector_db(chapter)
+        
+#         # Kiểm tra nếu không tìm thấy dữ liệu
+#         if not context:
+#             return jsonify({"error": "Không tìm thấy kiến thức liên quan"}), 404
+        
+#         # Sinh câu hỏi từ OpenAI với context tìm được
+#         questions = ask_openai(context, num_questions)
+        
+#         return jsonify({"questions": questions})
+    
+#     except Exception as e:
+#         return jsonify({"error": "Đã xảy ra lỗi không mong muốn"}), 500
 
 
 @app.route('/')
