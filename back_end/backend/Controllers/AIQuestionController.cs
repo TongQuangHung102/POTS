@@ -83,6 +83,27 @@ namespace backend.Controllers
                 ? Ok(new { message = "Cập nhật LessonId thành công!" })
                 : BadRequest(new { error = "Cập nhật LessonId thất bại!" });
         }
+        [HttpGet("get-aiquestion-by-id/{questionId}")]
+        public async Task<IActionResult> GetAIQuestionById(int questionId)
+        {
+            var questionDto = await _service.GetAIQuestionByIdAsync(questionId);
+            return questionDto != null ? Ok(questionDto) : NotFound("Không tìm thấy câu hỏi.");
+        }
+        [HttpPut("update-aiquestion/{questionId}")]
+        public async Task<IActionResult> UpdateAIQuestion(int questionId, [FromBody] AiQuestionsDto request)
+        {
+            if (request == null || questionId <= 0 || request.AnswerQuestions == null)
+            {
+                return BadRequest(new { error = "Dữ liệu không hợp lệ!" });
+            }
+
+            bool success = await _service.UpdateAIQuestionAsync(questionId, request);
+
+            return success
+                ? Ok(new { message = "Cập nhật câu hỏi AI thành công!" })
+                : NotFound(new { error = "Không tìm thấy câu hỏi AI!" });
+        }
+
 
     }
 }

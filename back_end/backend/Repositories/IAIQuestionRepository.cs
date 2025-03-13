@@ -9,5 +9,8 @@ namespace backend.Repositories
         Task SaveAnswerAsync(AnswerQuestion answerQuestion);
         Task<(List<AIQuestion>, int)> GetAIQuestionsByFilters(int lessonId, int? levelId, string? status, DateTime? createdAt, int pageNumber, int pageSize);
         Task<bool> UpdateLessonIdAsync(int lessonId, List<int> aiQuestionIds);
+        Task<AIQuestion?> GetAIQuestionByIdAsync(int questionId);
+        Task<bool> UpdateAIQuestionAsync(AIQuestion aiQuestion);
+        Task<bool> DeleteAnswersByQuestionId(int questionId);
     }
 }

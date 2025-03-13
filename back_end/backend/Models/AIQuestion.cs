@@ -20,5 +20,6 @@ namespace backend.Models
         [ForeignKey("LessonId")]
         public virtual Lesson Lesson { get; set; }
         public virtual Level Level { get; set; }
+        public virtual ICollection<AnswerQuestion> AnswerQuestions { get; set; }
     }
 }
