@@ -90,6 +90,54 @@ namespace backend.Services
             return await _repository.UpdateLessonIdAsync(lessonId, aiQuestionIds);
         }
 
+        public async Task<AiQuestionsDto?> GetAIQuestionByIdAsync(int questionId)
+        {
+            var question = await _repository.GetAIQuestionByIdAsync(questionId);
+            if (question == null) return null;
+
+            return new AiQuestionsDto
+            {
+                QuestionId = question.QuestionId,
+                QuestionText = question.QuestionText,
+                LevelId = question.LevelId,
+                CorrectAnswer = question.CorrectAnswer,
+                Status = question.Status,
+                AnswerQuestions = question.AnswerQuestions.Select(a => new AIAnswer
+                {
+                    AnswerText = a.AnswerText,
+                    Number = a.Number
+                }).ToList()
+            };
+        }
+
+        public async Task<bool> UpdateAIQuestionAsync(int questionId, AiQuestionsDto updatedQuestion)
+        {
+            var existingQuestion = await _repository.GetAIQuestionByIdAsync(questionId);
+            if (existingQuestion == null)
+            {
+                return false; // Không tìm thấy câu hỏi
+            }
+
+            // Cập nhật thông tin câu hỏi
+            existingQuestion.QuestionText = updatedQuestion.QuestionText;
+            existingQuestion.LevelId = updatedQuestion.LevelId;
+            existingQuestion.CorrectAnswer = updatedQuestion.CorrectAnswer;
+
+            // Xóa đáp án cũ và thêm đáp án mới
+            await _repository.DeleteAnswersByQuestionId(questionId);
+            foreach (var answerDto in updatedQuestion.AnswerQuestions)
+            {
+                var newAnswer = new AnswerQuestion
+                {
+                    AnswerText = answerDto.AnswerText,
+                    Number = answerDto.Number,
+                    QuestionAiId = questionId
+                };
+                await _repository.SaveAnswerAsync(newAnswer);
+            }
+
+            return await _repository.UpdateAIQuestionAsync(existingQuestion);
+        }
 
     }
 

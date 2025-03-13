@@ -28,6 +28,19 @@ namespace backend.Repositories
         {
             return await _aiQuestionDAO.UpdateLessonIdAsync(lessonId, aiQuestionIds);
         }
+        public async Task<AIQuestion?> GetAIQuestionByIdAsync(int questionId)
+        {
+            return await _aiQuestionDAO.GetAIQuestionByIdAsync(questionId);
+        }
+        public async Task<bool> UpdateAIQuestionAsync(AIQuestion aiQuestion)
+        {
+            return await _aiQuestionDAO.UpdateAIQuestionAsync(aiQuestion);
+        }
+
+        public async Task<bool> DeleteAnswersByQuestionId(int questionId)
+        {
+            return await _aiQuestionDAO.DeleteAnswersByQuestionId(questionId);
+        }
 
 
 
