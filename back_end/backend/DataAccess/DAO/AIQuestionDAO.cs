@@ -1,4 +1,4 @@
-﻿using backend.Models;
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.DataAccess.DAO
@@ -73,11 +73,32 @@ namespace backend.DataAccess.DAO
             await _context.SaveChangesAsync();
             return true;
         }
+
         public async Task<int> CountQuestionAIInGrade(int gradeId)
         {
             return await _context.AIQuestions
                 .Where(q => q.Lesson.Chapter.Grade.GradeId == gradeId)
                 .CountAsync();
+        }
+        public async Task<AIQuestion?> GetAIQuestionByIdAsync(int questionId)
+        {
+            return await _context.AIQuestions
+                .Include(q => q.AnswerQuestions) 
+                .FirstOrDefaultAsync(q => q.QuestionId == questionId);
+        }
+        public async Task<bool> UpdateAIQuestionAsync(AIQuestion question)
+        {
+            _context.AIQuestions.Update(question);
+            return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> DeleteAnswersByQuestionId(int questionId)
+        {
+            var answers = await _context.AnswerQuestions.Where(a => a.QuestionAiId == questionId).ToListAsync();
+            if (!answers.Any()) return false;
+
+            _context.AnswerQuestions.RemoveRange(answers);
+            return await _context.SaveChangesAsync() > 0;
         }
 
     }

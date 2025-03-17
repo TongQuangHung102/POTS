@@ -22,9 +22,43 @@ const ListAIQuestion = () => {
 
     const [showModal, setShowModal] = useState(false);
     const [numQuestions, setNumQuestions] = useState(1);
+
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [editQuestionData, setEditQuestionData] = useState(null);
+
     useEffect(() => {
         fetchAIQuestions();
     }, [lessonId, currentPage, status, levelId, createdAt]);
+  
+    const fetchQuestionById = async (questionId) => {
+        try {
+            const response = await fetch(`https://localhost:7259/api/AIQuestion/get-aiquestion-by-id/${questionId}`);
+            if (!response.ok) throw new Error("Lỗi khi lấy chi tiết câu hỏi");
+    
+            const data = await response.json();
+    
+            console.log("Chi tiết câu hỏi:", data); // Debug
+    
+            // Chuyển đổi dữ liệu đáp án đúng
+            const formattedAnswers = data.answerQuestions.map((answer) => ({
+                id: answer.number,  // Đảm bảo ID là number
+                text: answer.answerText, 
+                isCorrect: answer.number === data.correctAnswer // Xác định đáp án đúng
+            }));
+    
+            setEditQuestionData({
+                ...data,
+                answers: formattedAnswers, // Gán danh sách đáp án vào dữ liệu chỉnh sửa
+                correctAnswer: data.correctAnswer // Đáp án đúng
+            });
+            setEditModalVisible(true);
+        } catch (error) {
+            console.error("Lỗi:", error);
+        }
+    };
+    
+    
+    
     const fetchAIQuestions = async () => {
         setLoading(true);
         setError(null);
@@ -61,10 +95,9 @@ const ListAIQuestion = () => {
 
     };
 
-    const editQuestion = (id) => {
-        console.log(`Chỉnh sửa câu hỏi với ID: ${id}`);
-   
-    };
+    const editQuestion = (questionId) => {
+        fetchQuestionById(questionId);
+    };  
     const handleAddAIQuestions = async () => {
         setLoading(true);
         setShowModal(false);
@@ -128,6 +161,35 @@ const ListAIQuestion = () => {
         }
     };
     
+    const handleSaveEditQuestion = async () => {
+        if (!editQuestionData) return;
+    
+        try {
+            const response = await fetch(`https://localhost:7259/api/AIQuestion/update-aiquestion/${editQuestionData.questionId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    questionText: editQuestionData.questionText,
+                    status: editQuestionData.status,
+                    levelId: editQuestionData.levelId,
+                    correctAnswer: editQuestionData.correctAnswer,
+                    answerQuestions: editQuestionData.answers.map(answer => ({
+                        number: answer.id,
+                        answerText: answer.text
+                    }))
+                })
+            });
+    
+            if (!response.ok) throw new Error("Lỗi khi cập nhật câu hỏi");
+    
+            alert("Cập nhật câu hỏi thành công!");
+            setEditModalVisible(false);
+            await fetchAIQuestions(); // Load lại danh sách câu hỏi sau khi cập nhật
+        } catch (error) {
+            console.error("Lỗi:", error);
+            alert("Có lỗi xảy ra khi cập nhật câu hỏi.");
+        }
+    };
     
 
     
@@ -234,6 +296,78 @@ const ListAIQuestion = () => {
                     </div>
                 </div>
             )}
+{editModalVisible && editQuestionData && (
+    <div className={styles.modal}>
+        <div className={styles.modalContent}>
+            <h2>Chỉnh sửa câu hỏi AI</h2>
+            <label>Câu hỏi:</label>
+            <textarea
+                value={editQuestionData.questionText}
+                onChange={(e) => setEditQuestionData({ ...editQuestionData, questionText: e.target.value })}
+            />
+
+            {/* <label>Trạng thái:</label>
+            <select
+                value={editQuestionData.status}
+                onChange={(e) => setEditQuestionData({ ...editQuestionData, status: e.target.value })}
+            >
+                <option value="Pending">Chờ duyệt</option>
+                <option value="Approved">Đã duyệt</option>
+            </select> */}
+
+            <label>Mức độ:</label>
+            <select
+                value={editQuestionData.levelId}
+                onChange={(e) => setEditQuestionData({ ...editQuestionData, levelId: Number(e.target.value) })}
+            >
+                <option value="1">Yếu</option>
+                <option value="2">Trung bình</option>
+                <option value="3">Khá</option>
+                <option value="4">Giỏi</option>
+            </select>
+
+            
+
+
+            <label>Các câu trả lời:</label>
+{editQuestionData.answers.map((answer, index) => (
+    <div key={answer.id} className={styles.answer}>
+        <input
+            className={`${styles.answerItem} ${editQuestionData.correctAnswer === answer.id ? styles.correctAnswer : ""}`}
+            type="text"
+            value={answer.text}
+            required
+            onChange={(e) => {
+                const updatedAnswers = [...editQuestionData.answers];
+                updatedAnswers[index].text = e.target.value;
+                setEditQuestionData({ ...editQuestionData, answers: updatedAnswers });
+            }}
+        />
+        <input
+            className={styles.radioInput}
+            type="radio"
+            name="correctAnswer"
+            value={answer.id}
+            checked={editQuestionData.correctAnswer === answer.id}
+            onChange={(e) =>
+                setEditQuestionData({ ...editQuestionData, correctAnswer: Number(e.target.value) })
+            }
+        /> Đáp án đúng
+    </div>
+))}
+
+
+
+
+            <div className={styles.modalActions}>
+            <button onClick={handleSaveEditQuestion}>Lưu</button>
+            <button onClick={() => setEditModalVisible(false)}>Hủy</button>
+            </div>
+        </div>
+    </div>
+)}
+
+
         </div>
     );
 };
