@@ -104,6 +104,14 @@ namespace backend.Controllers
                 : NotFound(new { error = "Không tìm thấy câu hỏi AI!" });
         }
 
+        [HttpPut("approve-aiquestion/{questionId}")]
+        public async Task<IActionResult> ApproveAIQuestion(int questionId)
+        {
+            var result = await _service.ApproveAIQuestionAsync(questionId);
+            return result
+                ? Ok(new { message = "Câu hỏi AI đã được phê duyệt." })
+                : BadRequest(new { error = "Không thể cập nhật câu hỏi AI." });
+        }
 
     }
 }

@@ -42,6 +42,14 @@ namespace backend.Repositories
             return await _aiQuestionDAO.DeleteAnswersByQuestionId(questionId);
         }
 
+        public async Task<int> SaveQuestionAsync(Question question)
+        {
+            return await _aiQuestionDAO.AddQuestionAsync(question);
+        }
+        public async Task<bool> UpdateAnswerAsync(AnswerQuestion answerQuestion)
+        {
+            return await _aiQuestionDAO.UpdateAnswerAsync(answerQuestion);
+        }
 
 
     }

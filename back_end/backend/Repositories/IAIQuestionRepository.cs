@@ -12,5 +12,8 @@ namespace backend.Repositories
         Task<AIQuestion?> GetAIQuestionByIdAsync(int questionId);
         Task<bool> UpdateAIQuestionAsync(AIQuestion aiQuestion);
         Task<bool> DeleteAnswersByQuestionId(int questionId);
+        Task<int> SaveQuestionAsync(Question question);
+        Task<bool> UpdateAnswerAsync(AnswerQuestion answerQuestion);
+
     }
 }

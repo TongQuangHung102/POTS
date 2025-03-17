@@ -10,12 +10,12 @@ const ListAIQuestion = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    // Phân trang
+
     const [currentPage, setCurrentPage] = useState(1);
     const questionsPerPage = 10;
     const [totalPages, setTotalPages] = useState(1);
 
-    // Bộ lọc
+
     const [status, setStatus] = useState("");
     const [levelId, setLevelId] = useState("");
     const [createdAt, setCreatedAt] = useState("");
@@ -37,19 +37,19 @@ const ListAIQuestion = () => {
     
             const data = await response.json();
     
-            console.log("Chi tiết câu hỏi:", data); // Debug
+            console.log("Chi tiết câu hỏi:", data); 
     
-            // Chuyển đổi dữ liệu đáp án đúng
+        
             const formattedAnswers = data.answerQuestions.map((answer) => ({
-                id: answer.number,  // Đảm bảo ID là number
+                id: answer.number, 
                 text: answer.answerText, 
-                isCorrect: answer.number === data.correctAnswer // Xác định đáp án đúng
+                isCorrect: answer.number === data.correctAnswer 
             }));
     
             setEditQuestionData({
                 ...data,
-                answers: formattedAnswers, // Gán danh sách đáp án vào dữ liệu chỉnh sửa
-                correctAnswer: data.correctAnswer // Đáp án đúng
+                answers: formattedAnswers, 
+                correctAnswer: data.correctAnswer 
             });
             setEditModalVisible(true);
         } catch (error) {
@@ -74,7 +74,12 @@ const ListAIQuestion = () => {
             const response = await fetch(apiUrl);
 
             console.log("Response status:", response.status);
-
+            if (response.status === 404) {
+                console.warn("Không có dữ liệu!");
+                setAiQuestions([]); 
+                setTotalPages(1);
+                return;
+            }
             if (!response.ok) throw new Error("Lỗi khi lấy danh sách câu hỏi AI");
 
             const data = await response.json();
@@ -90,10 +95,30 @@ const ListAIQuestion = () => {
         }
     };
 
-    const approveQuestion = (id) => {
-        console.log(`Phê duyệt câu hỏi với ID: ${id}`);
-
+    const approveQuestion = async (questionId, currentStatus) => {
+        if (currentStatus === "Approved") {
+            alert("Câu hỏi này đã được phê duyệt.");
+            return;
+        }
+    
+        try {
+            const response = await fetch(`https://localhost:7259/api/AIQuestion/approve-aiquestion/${questionId}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+            });
+    
+            if (!response.ok) {
+                throw new Error("Lỗi khi phê duyệt câu hỏi.");
+            }
+    
+            alert("Phê duyệt câu hỏi thành công!");
+            await fetchAIQuestions(); 
+        } catch (error) {
+            console.error("Lỗi:", error);
+            alert("Có lỗi xảy ra khi phê duyệt câu hỏi.");
+        }
     };
+    
 
     const editQuestion = (questionId) => {
         fetchQuestionById(questionId);
@@ -184,7 +209,7 @@ const ListAIQuestion = () => {
     
             alert("Cập nhật câu hỏi thành công!");
             setEditModalVisible(false);
-            await fetchAIQuestions(); // Load lại danh sách câu hỏi sau khi cập nhật
+            await fetchAIQuestions(); 
         } catch (error) {
             console.error("Lỗi:", error);
             alert("Có lỗi xảy ra khi cập nhật câu hỏi.");
@@ -241,12 +266,12 @@ const ListAIQuestion = () => {
                             <tr key={q.questionId}>
                                 <td>{q.questionId}</td>
                                 <td>{q.questionText}</td>
-                                <td>{q.status}</td>
+                                <td>{q.status === "Approved" ? "Đã duyệt" : q.status === "Pending" ? "Chờ duyệt" : q.status}</td>
                                 <td>
                                     {q.levelId === 1 ? "Yếu" : q.levelId === 2 ? "Trung bình" : q.levelId === 3 ? "Khá" : "Giỏi"}
                                 </td>
                                 <td>
-                                    <button className={styles.approveBtn} onClick={() => approveQuestion(q.questionId)}>Phê Duyệt</button>
+                                    <button className={styles.approveBtn} onClick={() => approveQuestion(q.questionId, q.status)}>Phê Duyệt</button>
                                     <button className={styles.editBtn} onClick={() => editQuestion(q.questionId)}>Chỉnh Sửa</button>
                                 </td>
                             </tr>
