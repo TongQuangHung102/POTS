@@ -40,9 +40,8 @@ const Sidebar = () => {
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
     content_manager: [
-      { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
-      { path: "/content_manage/grades", icon: <BiAlignRight />, label: "Quản lý nội dung" },
-      { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
+      { path: "/content_manage/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/content_manage/grades", icon: <BiAlignRight />, label: "Quản lý khối" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
     guest: [
@@ -60,6 +59,7 @@ const Sidebar = () => {
     sessionStorage.removeItem("token");
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("roleId");
+    sessionStorage.removeItem("gradeId");
     setUser(null);
 
     navigate("/login");

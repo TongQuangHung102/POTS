@@ -39,7 +39,56 @@ namespace backend.DataAccess.DAO
                 .Select(p => p.TimePractice)
                 .SumAsync();
 
-            return totalMinutes;
+            return totalMinutes / 60;
+        }
+
+        public async Task<double> GetTotalPracticeTimeAllStudentByDateAsync(DateTime date, int? gradeId = null)
+        {
+            var query = _context.PracticeAttempts
+                .Where(p => p.CreateAt.Date == date.Date) 
+                .AsQueryable(); 
+
+            if (gradeId.HasValue) 
+            {
+                query = query.Where(p => p.User.GradeId == gradeId.Value);
+            }
+
+            var totalMinutes = await query.Select(p => p.TimePractice).SumAsync();
+
+            return totalMinutes / 60; 
+        }
+
+
+
+        public async Task<double> GetAverageScoreByDateAsync(int userId, DateTime date)
+        {
+            var scores = await _context.PracticeAttempts
+                .Where(p => p.UserId == userId && p.CreateAt.Date == date.Date)
+                .Select(p => p.CorrectAnswers)
+                .ToListAsync(); 
+
+            if (!scores.Any())
+            {
+                return 0; 
+            }
+
+            return scores.Average();
+        }
+
+
+        public async Task<double> GetAverageTimeByDateAsync(int userId, DateTime date)
+        {
+            var time = await _context.PracticeAttempts
+                .Where(p => p.UserId == userId && p.CreateAt.Date == date.Date)
+                .Select(p => p.TimePractice)
+                .ToListAsync();
+
+            if (!time.Any())
+            {
+                return 0;
+            }
+
+            return time.Average() / 10;
         }
 
         public async Task<int> GetTotalNumberPracticeAsync(int userId)

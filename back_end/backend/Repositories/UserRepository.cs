@@ -17,9 +17,9 @@ namespace backend.Repositories
             return await _userDAO.GetUsersAsync(roleId, email, skip, take);
         }
 
-        public async Task<int> GetTotalUsersAsync(int? roleId, string email)
+        public async Task<int> GetTotalUsersAsync(int? roleId, string email, int? gradeId = null)
         {
-            return await _userDAO.GetTotalUsersAsync(roleId, email);
+            return await _userDAO.GetTotalUsersAsync(roleId, email, gradeId);
         }
 
         public async Task<User?> GetUserByIdAsync(int userId)
@@ -51,6 +51,14 @@ namespace backend.Repositories
             return await _userDAO.GetAllInfomationUser(userId);
         }
 
+        public async Task<int> GetTotalNewStudent(int date, int? gradeId = null)
+        {
+           return await _userDAO.GetTotalNewStudent(date, gradeId);
+        }
 
+        public async Task<int> GetTotalStudentByDate(DateTime date , int? gradeId = null)
+        {
+            return await _userDAO.GetTotalStudentByDate(date, gradeId);
+        }
     }
 }

@@ -9,7 +9,7 @@
         public int Rank { get; set; }
         public List<double> Percentiles { get; set; }
         public ActivityDto Activity { get; set; }
-
+        public ScoreAndTimeDto ScoreTime { get; set; }
         public StudentDto Student { get; set; }
     }
 
@@ -18,5 +18,12 @@
     {
         public List<string> Labels { get; set; } 
         public List<double> Data { get; set; } 
+    }
+
+    public class ScoreAndTimeDto
+    {
+        public List<string> Labels { get; set; }
+        public List<double> ScoreData { get; set; }
+        public List<double> TimeData { get; set; }
     }
 }

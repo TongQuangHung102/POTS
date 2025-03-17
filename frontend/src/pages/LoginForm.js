@@ -103,7 +103,10 @@ const LoginForm = () => {
       } 
       else if (data.role === 2) window.location.href = "/parent";
       else if (data.role === 3) window.location.href = "/admin";
-      else if (data.role === 4) window.location.href = "/content_manage";
+      else if (data.role === 4) {
+        sessionStorage.setItem("managedGrades", JSON.stringify(data.grades));
+        window.location.href = "/content_manage";
+      } 
       else if (data.role === 1 && data.gradeId === null) window.location.href = "/choose-grade"
       else window.location.href = "/choose-role";
     }

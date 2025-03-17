@@ -1,5 +1,7 @@
 ﻿using backend.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using static Microsoft.EntityFrameworkCore.DbLoggerCategory;
 
 namespace backend.DataAccess.DAO
 {
@@ -34,7 +36,7 @@ namespace backend.DataAccess.DAO
             return await query.Skip(skip).Take(take).ToListAsync();
         }
 
-        public async Task<int> GetTotalUsersAsync(int? roleId, string email)
+        public async Task<int> GetTotalUsersAsync(int? roleId, string email, int? gradeId = null)
         {
             var query = _context.Users.AsQueryable();
 
@@ -46,6 +48,38 @@ namespace backend.DataAccess.DAO
             if (!string.IsNullOrEmpty(email))
             {
                 query = query.Where(u => u.Email.Contains(email));
+            }
+            if (gradeId.HasValue)
+            {
+                query = query.Where(u => u.GradeId == gradeId.Value);
+            }
+
+            return await query.CountAsync();
+        }
+
+        public async Task<int> GetTotalNewStudent(int date, int? gradeId = null)
+        {
+            var query = _context.Users
+               .Where(u => u.Role == 1 && u.CreateAt >= DateTime.Today.AddDays(-date))
+                .AsQueryable();
+
+            if (gradeId.HasValue) 
+            {
+                query = query.Where(u => u.GradeId == gradeId.Value);
+            }
+
+            return await query.CountAsync();
+        }
+
+        public async Task<int> GetTotalStudentByDate(DateTime date, int? gradeId = null)
+        {
+            var query = _context.Users
+                .Where(u => u.Role == 1 && u.CreateAt.Date == date.Date)
+                .AsQueryable();
+
+            if (gradeId.HasValue) 
+            {
+                query = query.Where(u => u.GradeId == gradeId.Value);
             }
 
             return await query.CountAsync();

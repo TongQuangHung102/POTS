@@ -1,4 +1,4 @@
-﻿using backend.DataAccess.DAO;
+using backend.DataAccess.DAO;
 using backend.Models;
 
 namespace backend.Repositories
@@ -51,6 +51,9 @@ namespace backend.Repositories
             return await _aiQuestionDAO.UpdateAnswerAsync(answerQuestion);
         }
 
-
+        public async Task<int> CountQuestionAIInGrade(int gradeId)
+        {
+            return await _aiQuestionDAO.CountQuestionAIInGrade(gradeId);
+        }
     }
 }

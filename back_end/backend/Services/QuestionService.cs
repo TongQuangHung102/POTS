@@ -224,7 +224,7 @@ namespace backend.Services
                         {
                             num_correct = attempt.CorrectAnswers,
                             total_questions = 5,
-                            time_taken = (int)attempt.TimePractice
+                            time_taken = 300
                         }
                     });
 
@@ -286,6 +286,30 @@ namespace backend.Services
             byAi = false;
             return (await _questionRepository.GetQuestionsPractice(5, questionRequest.lessonId, levelId), byAi);
         }
+
+        public async Task<List<Question>> GenerateTestQuestionsAsync(GenerateTestRequest request)
+        {
+            if (request == null || request.Chapters == null || request.Chapters.Count == 0)
+            {
+                throw new ArgumentException("Danh sách chương không được để trống.");
+            }
+
+            var questions = new List<Question>();
+
+            foreach (var chapterRequest in request.Chapters)
+            {
+                var chapterQuestions = await _questionRepository.GetQuestionsByChapterAutoAsync(chapterRequest);
+                questions.AddRange(chapterQuestions);
+            }
+
+            if (questions.Count == 0)
+            {
+                throw new Exception("Không tìm thấy câu hỏi phù hợp.");
+            }
+
+            return questions;
+        }
+
 
     }
 }
