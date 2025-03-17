@@ -34,5 +34,9 @@ namespace backend.DataAccess.DAO
             _context.Grades.Add(grade);
             await _context.SaveChangesAsync();
         }
+        public async Task<Grades> GetUserIdByGrade(int gradeId)
+        {
+            return await _context.Grades.Include(g => g.User).Where(g => g.GradeId == gradeId).FirstOrDefaultAsync();
+        }
     }
 }

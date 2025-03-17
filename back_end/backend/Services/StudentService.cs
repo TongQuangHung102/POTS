@@ -35,15 +35,29 @@ namespace backend.Services
             if (avg_score >= 6.5 && avg_score < 8.5 ) rate = "Khá";
             if (avg_score >= 8.5) rate = "Giỏi";
 
-            var activityLabels = new List<string>();
-            var activityValues = new List<double>();
+            var activityLabelsTime = new List<string>();
+            var activityValuesTime = new List<double>();
+            var activityLabelsScore = new List<string>();
+            var activityValuesScore = new List<double>();
+            var activityValuesTime2 = new List<double>();
 
             for (int i = 6; i >= 0; i--)
             {
                 var date = today.AddDays(-i);
-                activityLabels.Add(date.ToString("dd/MM"));
+                activityLabelsTime.Add(date.ToString("dd/MM"));
                 var practiceTime = await _practiceRepository.GetTotalPracticeTimeByDateAsync(userId, date);
-                activityValues.Add(practiceTime);
+                activityValuesTime.Add(practiceTime);
+            }
+
+            for (int i = 6; i >= 0; i--)
+            {
+                var date = today.AddDays(-i);
+                activityLabelsScore.Add(date.ToString("dd/MM"));
+                var practiceScore = await _practiceRepository.GetAverageScoreByDateAsync(userId, date);
+                var practiceTime = await _practiceRepository.GetAverageTimeByDateAsync(userId, date);
+                activityValuesScore.Add(practiceScore);
+                activityValuesTime2.Add(practiceTime);
+
             }
 
 
@@ -51,14 +65,20 @@ namespace backend.Services
             {
                 PracticeNumber = totalPractice,
                 Avg_score = Math.Round(avg_score, 2),
-                Avg_time = avg_time / 10, 
+                Avg_time = Math.Round((avg_time / 10), 2) , 
                 Rate = rate,
                 Rank = rank,
                 Percentiles = percentiles,
                 Activity = new ActivityDto
                 {
-                    Labels = activityLabels,
-                    Data = activityValues
+                    Labels = activityLabelsTime,
+                    Data = activityValuesTime
+                },
+                ScoreTime = new ScoreAndTimeDto
+                {
+                    Labels = activityLabelsScore,
+                    ScoreData = activityValuesScore,
+                    TimeData = activityValuesTime2
                 },
                 Student = new StudentDto
                 {

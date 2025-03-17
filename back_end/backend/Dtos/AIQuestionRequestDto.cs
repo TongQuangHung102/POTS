@@ -7,7 +7,6 @@ namespace backend.Dtos
     public class AIQuestionRequestDto
     {
 
-
         [JsonProperty("question")]
         [Required]
         public string Question { get; set; }

@@ -27,6 +27,16 @@ namespace backend.Repositories
             return await _attemptDAO.GetAveragePracticeTimeAsync(userId);
         }
 
+        public async Task<double> GetAverageScoreByDateAsync(int userId, DateTime date)
+        {
+            return await _attemptDAO.GetAverageScoreByDateAsync(userId, date);
+        }
+
+        public async Task<double> GetAverageTimeByDateAsync(int userId, DateTime date)
+        {
+            return await _attemptDAO.GetAverageTimeByDateAsync(userId, date);
+        }
+
         public async Task<PracticeAttempt> GetLastAttempt(int userId, int lessonId)
         {
           return await _attemptDAO.GetLastAttempt(userId, lessonId);
@@ -40,6 +50,11 @@ namespace backend.Repositories
         public async Task<int> GetTotalNumberPracticeAsync(int userId)
         {
             return await _attemptDAO.GetTotalNumberPracticeAsync(userId);
+        }
+
+        public async Task<double> GetTotalPracticeTimeAllStudentByDateAsync(DateTime date, int? gradeId = null)
+        {
+            return await _attemptDAO.GetTotalPracticeTimeAllStudentByDateAsync(date);
         }
 
         public async Task<double> GetTotalPracticeTimeByDateAsync(int userId, DateTime date)

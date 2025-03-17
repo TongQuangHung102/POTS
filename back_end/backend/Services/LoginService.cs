@@ -14,11 +14,15 @@ namespace backend.Services
     {
         private readonly IAuthRepository _authRepository;
         private readonly PasswordEncryption _passwordEncryption;
-        public LoginService(IAuthRepository authRepository, PasswordEncryption passwordEncryption)
+        private readonly IGradeRepository _gradeRepository;
+
+        public LoginService(IAuthRepository authRepository, PasswordEncryption passwordEncryption, IGradeRepository gradeRepository)
         {
             _authRepository = authRepository;
             _passwordEncryption = passwordEncryption;
+            _gradeRepository = gradeRepository;
         }
+
         public async Task<LoginResponseDto> LoginAsync(LoginRequestDto request)
         {
             var user = await _authRepository.GetUserByEmail(request.Email);
@@ -40,6 +44,21 @@ namespace backend.Services
                     UserId = user.UserId,
                     Role = user.Role,
                     GradeId = user.GradeId,
+                    Token = GenerateJwtToken(user)
+                };
+            }
+            if (user.Role == 4)
+            {
+                var grades = await _gradeRepository.GetGradeByUserIdAsync(user.UserId);
+                return new LoginResponseDto
+                {
+                    UserId = user.UserId,
+                    Role = user.Role,
+                    Grades = grades.Select(g => new GradesResponseDto
+                    {
+                        Id = g.GradeId,
+                        Name = g.GradeName
+                    }).ToList(),
                     Token = GenerateJwtToken(user)
                 };
             }
@@ -89,6 +108,20 @@ namespace backend.Services
                     UserId = user.UserId,
                     Role = user.Role,
                     GradeId = user.GradeId,
+                    Token = GenerateJwtToken(user)
+                };
+            }
+            if(user.Role == 4)
+            {
+                var grades = await _gradeRepository.GetGradeByUserIdAsync(user.UserId);
+                return new LoginResponseDto
+                {
+                    UserId = user.UserId,
+                    Role = user.Role,
+                    Grades = grades.Select(g => new GradesResponseDto{
+                        Id = g.GradeId,
+                        Name = g.GradeName
+                    }).ToList(),
                     Token = GenerateJwtToken(user)
                 };
             }

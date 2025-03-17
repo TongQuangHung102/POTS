@@ -20,16 +20,14 @@ namespace backend.Services
 
         public async Task<List<int>> GenerateAndSaveAIQuestions(AIQuestionRequestDto request)
         {
-            Console.WriteLine("===== DỮ LIỆU NHẬN ĐƯỢC TỪ CONTROLLER =====");
-            Console.WriteLine("Question: " + request.Question);
-            Console.WriteLine("NumQuestions: " + request.NumQuestions);
+
 
             var jsonRequest = JsonConvert.SerializeObject(request);
             Console.WriteLine("===== JSON GỬI ĐI ĐẾN FLASK =====");
             Console.WriteLine(jsonRequest);
 
             var content = new StringContent(jsonRequest, Encoding.UTF8, "application/json");
-            var response = await _httpClient.PostAsync("http://127.0.0.1:5000/generate-mcq", content);
+            var response = await _httpClient.PostAsync("http://localhost:5000/generate-mcq", content);
 
             Console.WriteLine("===== KẾT QUẢ NHẬN TỪ FLASK =====");
             Console.WriteLine("StatusCode: " + response.StatusCode);

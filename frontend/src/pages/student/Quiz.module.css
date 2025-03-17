@@ -40,7 +40,7 @@
 .questionButton {
     flex: 1 1 calc(33.33% - 10px);
     max-width: calc(33.33% - 10px);
-    border: 2px solid #188e00;
+    border: 2px solid #c4c4c4;
     border-radius: 8px;
     background: white;
     color: #000000;
@@ -59,14 +59,15 @@
     font-weight: 700;
 }
 .questionButton:hover {
-    background: #beffb1;
-    color: white;
+    background: #e3eed4;
+    color: rgb(0, 0, 0);
+    border-color: #6b9071;
 }
 
 .questionButton.answered {
-    background: #4caf50;
-    color: white;
-    border-color: #4caf50;
+    background: #e3eed4;
+    color: rgb(0, 0, 0);
+    border-color: #6b9071;
 }
 
 .mainContent {
@@ -99,7 +100,7 @@
 
 .answerButton {
     padding: 5px;
-    border: 1px solid #e6e6e6;
+    border: 1px solid #aec3b0;
     border-radius: 8px;
     cursor: pointer;
     transition: all 0.3s ease;
@@ -109,19 +110,19 @@
 }
 
 .answerButton:hover {
-    border-color: #00770e;
-    background-color: #e8ffe3;
+    border-color: #6b9071;
+    background-color: #e3eed4;
 }
 
 .answerButton.selected {
     color: rgb(0, 0, 0);
-    border: 2px solid #008a00;
+    border: 2px solid #6b9071;
     font-weight: 700;
 }
 
 .submitButton {
-    background: #4caf50;
-    color: white;
+    background: #aec3b0;
+    color: rgb(0, 0, 0);
     padding: 15px 30px;
     border: none;
     border-radius: 8px;
@@ -138,7 +139,8 @@
 }
 
 .submitButton:hover:not(:disabled) {
-    background: #45a049;
+    background: #6b9071;
+    color: white;
 }
 
 .scoreCard {

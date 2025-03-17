@@ -31,6 +31,7 @@ import Test from '../pages/student/Test';
 import ListGradesAssign from '../pages/content_manager/ListGradesAssign';
 import ManageQuestionTest from '../pages/content_manager/ManageQuestionTest';
 import ListAIQuestion from '../pages/content_manager/ListAIQuestion';
+import ContentManageDashboard from '../pages/content_manager/ContentManageDashboard';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
@@ -88,7 +89,7 @@ const AppRoutes = () => {
 
             <Route path='/content_manage' element={<ContentManageLayout />}> 
                 <Route index element={<Navigate to="/content_manage/dashboard" replace />} />  
-                <Route path="/content_manage/dashboard" element={<StudentDashboard />} />  
+                <Route path="/content_manage/dashboard" element={<ContentManageDashboard />} />  
                 <Route path="/content_manage/grades" element={<ListGradesAssign />} />  
                 <Route path='/content_manage/grades/:gradeId/chapters/:chapterId/lessons/:lessonId/questions' element={<QuestionManage />}></Route> 
                 <Route path='/content_manage/grades/:gradeId/chapters/:chapterId/lessons/:lessonId/add-question' element={<AddQuestionForm />}></Route> 

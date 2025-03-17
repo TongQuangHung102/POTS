@@ -48,11 +48,21 @@ const Quiz = () => {
     useEffect(() => {
         if (timeLeft > 0) {
             const timer = setInterval(() => {
-                setTimeLeft(prevTime => prevTime - 1);
+                setTimeLeft(prevTime => {
+                    if (prevTime - 1 <= 0) {
+                        clearInterval(timer);
+                        handleSubmit(); 
+                        return 0;
+                    }
+                    return prevTime - 1;
+                });
             }, 1000);
             return () => clearInterval(timer);
+        } else if (timeLeft === 0 && mode === "test") {
+            handleSubmit(); 
         }
     }, [timeLeft]);
+    
 
     useEffect(() => {
         if (mode !== "test" || timeLeft <= 0) {
@@ -102,9 +112,10 @@ const Quiz = () => {
                     setUserAnswers(Array(result.data.length).fill(null));
                 }
                 else {
+                    console.log(result.data.questions);
                     setQuestions(result.data.questions);
                     setByAI(result.data.byAi);
-                    //  setsampleQuestion(result.data.questions[3].questionText);
+                    setsampleQuestion(result.data.questions[0].questionText);
                     setUserAnswers(Array(result.data.questions.length).fill(null));
                 }
                 if (mode === "test" && result.data.length > 0) {

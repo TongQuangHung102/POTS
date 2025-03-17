@@ -31,7 +31,7 @@ namespace backend.DataAccess.DAO
 
         public async Task<User> GetUserByEmailAsync(string email)
         {
-            return await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            return await _context.Users.Include(u => u.Grades).FirstOrDefaultAsync(u => u.Email == email);
         }
      
         public async Task UpdatePasswordAsync(string email, string newPassword)
