@@ -1,4 +1,4 @@
-﻿using backend.DataAccess.DAO;
+using backend.DataAccess.DAO;
 using backend.Models;
 
 namespace backend.Repositories
@@ -40,6 +40,15 @@ namespace backend.Repositories
         public async Task<bool> DeleteAnswersByQuestionId(int questionId)
         {
             return await _aiQuestionDAO.DeleteAnswersByQuestionId(questionId);
+        }
+
+        public async Task<int> SaveQuestionAsync(Question question)
+        {
+            return await _aiQuestionDAO.AddQuestionAsync(question);
+        }
+        public async Task<bool> UpdateAnswerAsync(AnswerQuestion answerQuestion)
+        {
+            return await _aiQuestionDAO.UpdateAnswerAsync(answerQuestion);
         }
 
         public async Task<int> CountQuestionAIInGrade(int gradeId)

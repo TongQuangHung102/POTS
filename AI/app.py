@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify
 from openai_query import ask_openai, generate_large_mcq
 import logging
 
-from vector_db import search_in_vector_db
+# from vector_db import search_in_vector_db
 
 app = Flask(__name__)
 
