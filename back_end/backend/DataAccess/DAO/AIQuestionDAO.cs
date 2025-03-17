@@ -100,6 +100,18 @@ namespace backend.DataAccess.DAO
             _context.AnswerQuestions.RemoveRange(answers);
             return await _context.SaveChangesAsync() > 0;
         }
+        public async Task<int> AddQuestionAsync(Question question)
+        {
+            _context.Questions.Add(question);
+            await _context.SaveChangesAsync();
+            await _context.Entry(question).ReloadAsync();
+            return question.QuestionId; 
+        }
+        public async Task<bool> UpdateAnswerAsync(AnswerQuestion answerQuestion)
+        {
+            _context.AnswerQuestions.Update(answerQuestion);
+            return await _context.SaveChangesAsync() > 0;
+        }
 
     }
 }

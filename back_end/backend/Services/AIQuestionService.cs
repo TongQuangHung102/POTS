@@ -1,6 +1,7 @@
 ﻿using backend.Dtos;
 using backend.Models;
 using backend.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -113,15 +114,15 @@ namespace backend.Services
             var existingQuestion = await _repository.GetAIQuestionByIdAsync(questionId);
             if (existingQuestion == null)
             {
-                return false; // Không tìm thấy câu hỏi
+                return false; 
             }
 
-            // Cập nhật thông tin câu hỏi
+
             existingQuestion.QuestionText = updatedQuestion.QuestionText;
             existingQuestion.LevelId = updatedQuestion.LevelId;
             existingQuestion.CorrectAnswer = updatedQuestion.CorrectAnswer;
 
-            // Xóa đáp án cũ và thêm đáp án mới
+         
             await _repository.DeleteAnswersByQuestionId(questionId);
             foreach (var answerDto in updatedQuestion.AnswerQuestions)
             {
@@ -136,6 +137,41 @@ namespace backend.Services
 
             return await _repository.UpdateAIQuestionAsync(existingQuestion);
         }
+        public async Task<bool> ApproveAIQuestionAsync(int questionId)
+        {
+            var aiQuestion = await _repository.GetAIQuestionByIdAsync(questionId);
+            if (aiQuestion == null || aiQuestion.Status != "Pending")
+            {
+                return false;
+            }
+
+
+            aiQuestion.Status = "Approved";
+            await _repository.UpdateAIQuestionAsync(aiQuestion);
+
+
+            var newQuestion = new Question
+            {
+                QuestionText = aiQuestion.QuestionText,
+                CreateAt = DateTime.UtcNow,
+                LevelId = aiQuestion.LevelId,
+                CorrectAnswer = aiQuestion.CorrectAnswer,
+                IsVisible = true,
+                CreateByAI = true,
+                LessonId = aiQuestion.LessonId
+            };
+
+            int newQuestionId = await _repository.SaveQuestionAsync(newQuestion);
+
+            foreach (var aiAnswer in aiQuestion.AnswerQuestions)
+            {
+                aiAnswer.QuestionId = newQuestionId;
+                await _repository.UpdateAnswerAsync(aiAnswer);
+            }
+
+            return true;
+        }
+
 
     }
 
