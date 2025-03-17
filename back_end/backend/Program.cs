@@ -68,6 +68,8 @@ builder.Services.AddScoped<StudentPerformanceService>();
 builder.Services.AddScoped<StudentTestService>();
 builder.Services.AddScoped<IStudentTestRepository, StudentTestRepository>();
 builder.Services.AddScoped<StudentTestDAO>();
+builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<ContentManageService>();
 builder.Services.AddHttpClient();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

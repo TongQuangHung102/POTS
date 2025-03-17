@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using backend.Dtos;
+using backend.Models;
 using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
 
@@ -143,6 +144,40 @@ namespace backend.DataAccess.DAO
                 .Include(q => q.AnswerQuestions)
                 .ToListAsync();
         }
+
+        public async Task<int> CountQuestionInGrade(int gradeId)
+        {
+            return await _context.Questions
+                .Where(q => q.Lesson.Chapter.Grade.GradeId == gradeId) 
+                .CountAsync();
+        }
+
+        public async Task<List<Question>> GetQuestionsByChapterAutoAsync(ChapterQuestionAutoRequest chapterRequest)
+        {
+            var questions = new List<Question>();
+
+            var lessonIds = await _context.Lessons
+                .Where(l => l.ChapterId == chapterRequest.ChapterId)
+                .Select(l => l.LessonId)
+                .ToListAsync();
+
+            foreach (var level in chapterRequest.LevelRequests)
+            {
+                var levelQuestions = await _context.Questions
+                    .Where(q => lessonIds.Contains(q.LessonId) && q.LevelId == level.LevelId)
+                    .OrderBy(q => Guid.NewGuid()) 
+                    .Take(level.QuestionCount)
+                    .Include(q => q.Level)
+                    .Include(q => q.Lesson)
+                    .Include(q => q.AnswerQuestions)
+                    .ToListAsync();
+
+                questions.AddRange(levelQuestions);
+            }
+
+            return questions;
+        }
+
 
 
     }

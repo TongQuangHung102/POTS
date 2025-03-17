@@ -78,5 +78,43 @@ namespace backend.Controllers
 
             return Ok(response);
         }
+
+        [HttpPost("generate-test")]
+        public async Task<IActionResult> GenerateTestQuestions([FromBody] GenerateTestRequest request)
+        {
+            try
+            {
+                var questions = await _questionService.GenerateTestQuestionsAsync(request);
+                var response = questions.Select(question => new 
+                {
+                    question.QuestionId,
+                    question.QuestionText,
+                    question.CreateAt,
+                    question.CorrectAnswer,
+                    question.IsVisible,
+                    question.CreateByAI,
+                    Level = new
+                    {
+                        question.Level.LevelName
+                    },
+                    Lesson = new
+                    {
+                        question.Lesson.LessonName
+                    },
+                    AnswerQuestions = question.AnswerQuestions.Select(a => new
+                    {
+                        a.AnswerQuestionId,
+                        a.AnswerText,
+                        a.Number
+                    }).ToList()
+                });
+                return Ok(response);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+        }
+
     }
 }

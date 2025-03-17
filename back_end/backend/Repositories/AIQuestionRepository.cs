@@ -29,7 +29,9 @@ namespace backend.Repositories
             return await _aiQuestionDAO.UpdateLessonIdAsync(lessonId, aiQuestionIds);
         }
 
-
-
+        public async Task<int> CountQuestionAIInGrade(int gradeId)
+        {
+            return await _aiQuestionDAO.CountQuestionAIInGrade(gradeId);
+        }
     }
 }

@@ -73,6 +73,12 @@ namespace backend.DataAccess.DAO
             await _context.SaveChangesAsync();
             return true;
         }
+        public async Task<int> CountQuestionAIInGrade(int gradeId)
+        {
+            return await _context.AIQuestions
+                .Where(q => q.Lesson.Chapter.Grade.GradeId == gradeId)
+                .CountAsync();
+        }
 
     }
 }

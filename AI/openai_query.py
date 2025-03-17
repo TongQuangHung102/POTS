@@ -47,7 +47,7 @@ Context: {context}
 Hãy tạo CHÍNH XÁC {num_questions} câu hỏi trắc nghiệm với MỨC ĐỘ KHÁC NHAU về chủ đề ở trên với 4 đáp án (A, B, C, D) cho mỗi câu hỏi.
 
 CHÚ Ý:
-- Phân bố mức độ câu hỏi từ dễ đến khó (1-4)
+- Phân bố mức độ câu hỏi từ dễ đến khó (2-4)
 - Định dạng phải CHÍNH XÁC theo cấu trúc JSON
 - LUÔN trả về mảng các câu hỏi
 - Không thêm bất kỳ văn bản giải thích nào ngoài mảng JSON.

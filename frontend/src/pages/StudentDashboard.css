@@ -3,6 +3,7 @@
   border-radius: 12px;
   background-color: #ffffff;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  height: 100px;
 }
 
 .stats-number {
@@ -11,8 +12,8 @@
 }
 
 .activity-chart {
-  height: 20vw;
-  margin: 20px 0;
+  height: 22vw;
+  margin: 0px !important;
 }
 
 .progress-circle {
@@ -31,6 +32,7 @@
 }
 
 .upcoming-submission {
+  height: 150px;
   background-color: #fff;
   border-radius: 12px;
   padding: 20px;
