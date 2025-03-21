@@ -19,13 +19,15 @@ namespace backend.DataAccess.DAO
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<Chapter>> GetAllChapterAsync(int grade)
+        public async Task<List<Chapter>> GetAllChapterAsync(int id)
         {
-            return await _context.Chapters.Include(m => m.User).Include(ls => ls.Lessons).Where(g => g.GradeId == grade).ToListAsync();
+            return await _context.Chapters.Include(m => m.User).Include(ls => ls.Lessons)
+                .Where(g => g.SubjectGradeId == id)
+                .ToListAsync();
         }
         public async Task<Chapter> GetChapterByIdAsync(int id)
         {
-            return await _context.Chapters.FirstOrDefaultAsync(ch => ch.ChapterId == id);
+            return await _context.Chapters.Include(l => l.Lessons).FirstOrDefaultAsync(ch => ch.ChapterId == id);
         }
 
         public async Task UpdateChapterAsync(Chapter chapter)
@@ -47,6 +49,19 @@ namespace backend.DataAccess.DAO
         public async Task<Lesson> GetLessonByIdAsync(int id)
         {
             return await _context.Lessons.FirstOrDefaultAsync(ls => ls.LessonId == id);
+        }
+        public async Task<Lesson> GetLessonWithQuestionsByIdAsync(int id)
+        {
+            return await _context.Lessons
+                .Include(ls => ls.Questions)
+                .FirstOrDefaultAsync(ls => ls.LessonId == id);
+        }
+
+        public async Task<Lesson> GetLessonWithQuestionsAIByIdAsync(int id)
+        {
+            return await _context.Lessons
+                .Include(ls => ls.AIQuestions)
+                .FirstOrDefaultAsync(ls => ls.LessonId == id);
         }
 
         public async Task<List<Lesson>> GetLessonByChapterIdAsync(int id)

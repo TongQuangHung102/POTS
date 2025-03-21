@@ -4,7 +4,7 @@ import BackLink from "../../components/BackLink";
 import { fetchLessons } from "../../services/LessonService";
 import './ListLesson.css';
 const ListLesson = () => {
-  const { gradeId, chapterId } = useParams();
+  const { gradeId, subjectId, chapterId } = useParams();
   const [lessons, setLessons] = useState([]);
   const [showAddLesson, setShowAddLesson] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -12,12 +12,14 @@ const ListLesson = () => {
   const [newLessonTitle, setNewLessonTitle] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [selectedLesson, setSelectedLesson] = useState(null);
+  const [chapterName, setChapterName] = useState('');
 
   const roleId = sessionStorage.getItem('roleId');
 
   const loadLessons = async () => {
     const data = await fetchLessons(chapterId);
-    setLessons(data);
+    setLessons(data.lessons);
+    setChapterName(data.chapterName);
   };
 
   useEffect(() => {
@@ -51,7 +53,7 @@ const ListLesson = () => {
         throw new Error(errorMessage);
       }
 
-     loadLessons();
+      loadLessons();
       setNewLessonTitle('');
       setShowAddLesson(false);
       setErrorMessage('');
@@ -60,6 +62,7 @@ const ListLesson = () => {
 
       setTimeout(() => {
         setSuccessMessage('');
+        setErrorMessage('');
       }, 3000);
     } catch (error) {
       setErrorMessage(error.message);
@@ -109,7 +112,7 @@ const ListLesson = () => {
 
   return (
     <div className="lesson-container">
-      <h2>Danh sách bài học</h2>
+      <h2>Danh sách bài học {chapterName}</h2>
       <div className="group-header">
         <div> <BackLink></BackLink></div>
         <button className="add-chapter" onClick={() => setShowAddLesson(true)}>Thêm Bài Mới</button>
@@ -149,28 +152,45 @@ const ListLesson = () => {
           </tr>
         </thead>
         <tbody>
-          {lessons.map(lesson => (
-            <tr key={lesson.lessonId}>
-              <td>{lesson.order}</td>
-              <td>{lesson.lessonName}</td>
-              <td>{lesson.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
-              <td>
-                <button>
-                  {roleId === "3" ? (
-                    <Link to={`/admin/grades/${gradeId}/chapters/${chapterId}/lessons/${lesson.lessonId}/questions`}>
-                      Quản lý câu hỏi
-                    </Link>
+          {lessons.length > 0 ? (
+            lessons.map(lesson => (
+              <tr key={lesson.lessonId}>
+                <td>{lesson.order}</td>
+                <td>{lesson.lessonName}</td>
+                <td>
+                  {lesson.isVisible ? (
+                    <span style={{ color: "green" }}>Hoạt động</span>
                   ) : (
-                    <Link to={`/content_manage/grades/${gradeId}/chapters/${chapterId}/lessons/${lesson.lessonId}/questions`} state={{ lessonName: lesson.lessonName }}>
-                      Quản lý câu hỏi
-                    </Link>
+                    <span style={{ color: "red" }}>Không hoạt động</span>
                   )}
-                </button>
-                <button onClick={() => handleEdit(lesson)}>Chỉnh sửa</button>
+                </td>
+                <td>
+                  <button>
+                    {roleId === "3" ? (
+                      <Link to={`/admin/grades/${gradeId}/subject/${subjectId}/chapters/${chapterId}/lessons/${lesson.lessonId}/questions`}>
+                        Quản lý câu hỏi
+                      </Link>
+                    ) : (
+                      <Link
+                        to={`/content_manage/grades/${gradeId}/subject/${subjectId}/chapters/${chapterId}/lessons/${lesson.lessonId}/questions`}
+                      >
+                        Quản lý câu hỏi
+                      </Link>
+                    )}
+                  </button>
+                  <button onClick={() => handleEdit(lesson)}>Chỉnh sửa</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+              <td colSpan="4" style={{ textAlign: "center", fontStyle: "italic", color: "gray" }}>
+                Chưa có bài học nào.
               </td>
             </tr>
-          ))}
+          )}
         </tbody>
+
       </table>
 
       {/* Form chỉnh sửa */}

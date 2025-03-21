@@ -25,7 +25,7 @@ namespace backend.DataAccess.DAO
         }
         public async Task<(List<AIQuestion>, int)> GetAIQuestionsByFilters(int lessonId, int? levelId, string? status, DateTime? createdAt, int pageNumber, int pageSize)
         {
-            var query = _context.AIQuestions.AsQueryable().Where(q => q.LessonId == lessonId);
+            var query = _context.AIQuestions.Include(q => q.AnswerQuestions).AsQueryable().Where(q => q.LessonId == lessonId);
 
             if (levelId.HasValue)
             {
@@ -77,7 +77,7 @@ namespace backend.DataAccess.DAO
         public async Task<int> CountQuestionAIInGrade(int gradeId)
         {
             return await _context.AIQuestions
-                .Where(q => q.Lesson.Chapter.Grade.GradeId == gradeId)
+                .Where(q => q.Lesson.Chapter.SubjectGrade.GradeId == gradeId)
                 .CountAsync();
         }
         public async Task<AIQuestion?> GetAIQuestionByIdAsync(int questionId)

@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Auth;
 using backend.Helpers;
 using backend.Models;
 using backend.Repositories;

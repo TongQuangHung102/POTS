@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Users;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;

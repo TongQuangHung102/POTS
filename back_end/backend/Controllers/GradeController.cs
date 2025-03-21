@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Curriculum;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Http;

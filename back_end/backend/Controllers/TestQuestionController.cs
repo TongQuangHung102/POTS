@@ -1,4 +1,4 @@
-using backend.Dtos;
+using backend.Dtos.Questions;
 using backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

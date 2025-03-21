@@ -31,9 +31,9 @@ namespace backend.Repositories
         {
             await _testDAO.UpdateAsync(test);
         }
-        public async Task<List<Test>> GetTestsByGradeIdAsync(int gradeId)
+        public async Task<List<Test>> GetTestBySubjectGradeIdAsync(int id)
         {
-            return await _testDAO.GetTestsByGradeIdAsync(gradeId);
+            return await _testDAO.GetTestBySubjectGradeIdAsync(id);
         }
 
     }

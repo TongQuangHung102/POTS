@@ -1,4 +1,5 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Dashboard;
+using backend.Dtos.Questions;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Http;
@@ -11,14 +12,16 @@ namespace backend.Controllers
     public class QuestionController : ControllerBase
     {
         private readonly QuestionService _questionService;
+        private readonly LessonService _lessonService;
 
-        public QuestionController(QuestionService questionService)
+        public QuestionController(QuestionService questionService, LessonService lessonService)
         {
             _questionService = questionService;
+            _lessonService = lessonService;
         }
 
         [HttpGet("get-all-question")]
-        public async Task<IActionResult> GetAllQuestions(
+        public async Task<QuestionResponseDto> GetAllQuestions(
             [FromQuery] int? chapterId,
             [FromQuery] int? lessonId,
             [FromQuery] int? levelId,

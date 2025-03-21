@@ -1,5 +1,5 @@
 ﻿using backend.DataAccess.DAO;
-using backend.Dtos;
+using backend.Dtos.PracticeAndTest;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -59,7 +59,7 @@ namespace backend.Services
                     IsVisible = testDto.IsVisible,
                     Order = testDto.Order,
                     CreatedAt = testDto.CreatedAt,
-                    GradeId = testDto.GradeId
+                    SubjectGradeId = testDto.SubjectGradeId
                 };
 
                 await _testRepository.AddAsync(test);
@@ -92,7 +92,7 @@ namespace backend.Services
                 existingTest.MaxScore = testDto.MaxScore;
                 existingTest.IsVisible = testDto.IsVisible;
                 existingTest.Order = testDto.Order;
-                existingTest.GradeId = testDto.GradeId;
+                existingTest.SubjectGradeId = testDto.SubjectGradeId;
 
                 await _testRepository.UpdateAsync(existingTest);
                 return new OkObjectResult(new { Message = "Cập nhật thành công!" });
@@ -106,9 +106,9 @@ namespace backend.Services
             }
 
         }
-        public async Task<List<TestDto>> GetTestsByGradeId(int gradeId)
+        public async Task<List<TestDto>> GetTestsBySubjectGradeId(int id)
         {
-            var tests = await _testRepository.GetTestsByGradeIdAsync(gradeId);
+            var tests = await _testRepository.GetTestBySubjectGradeIdAsync(id);
             return tests.Select(test => new TestDto
             {
                 TestId = test.TestId,
@@ -118,7 +118,7 @@ namespace backend.Services
                 MaxScore = test.MaxScore,
                 IsVisible = test.IsVisible,
                 Order = test.Order,
-                GradeId = test.GradeId
+                SubjectGradeId = test.SubjectGradeId
             }).ToList();
         }
 

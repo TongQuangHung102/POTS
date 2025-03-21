@@ -105,9 +105,6 @@ namespace backend.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("GradeId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
@@ -117,12 +114,15 @@ namespace backend.Migrations
                     b.Property<int>("Semester")
                         .HasColumnType("int");
 
+                    b.Property<int>("SubjectGradeId")
+                        .HasColumnType("int");
+
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("ChapterId");
 
-                    b.HasIndex("GradeId");
+                    b.HasIndex("SubjectGradeId");
 
                     b.HasIndex("UserId");
 
@@ -460,6 +460,40 @@ namespace backend.Migrations
                     b.ToTable("Questions");
                 });
 
+            modelBuilder.Entity("backend.Models.Report", b =>
+                {
+                    b.Property<int>("ReportId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ReportId"), 1L, 1);
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("Reason")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("UserId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ReportId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Reports");
+                });
+
             modelBuilder.Entity("backend.Models.Role", b =>
                 {
                     b.Property<int>("RoleId")
@@ -593,6 +627,49 @@ namespace backend.Migrations
                     b.ToTable("StudentTests");
                 });
 
+            modelBuilder.Entity("backend.Models.Subject", b =>
+                {
+                    b.Property<int>("SubjectId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("SubjectId"), 1L, 1);
+
+                    b.Property<bool>("IsVisible")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("SubjectName")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("SubjectId");
+
+                    b.ToTable("Subjects");
+                });
+
+            modelBuilder.Entity("backend.Models.SubjectGrade", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"), 1L, 1);
+
+                    b.Property<int>("GradeId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("SubjectId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("GradeId");
+
+                    b.HasIndex("SubjectId");
+
+                    b.ToTable("SubjectGrades");
+                });
+
             modelBuilder.Entity("backend.Models.SubscriptionPlan", b =>
                 {
                     b.Property<int>("PlanId")
@@ -662,9 +739,6 @@ namespace backend.Migrations
                     b.Property<int>("DurationInMinutes")
                         .HasColumnType("int");
 
-                    b.Property<int>("GradeId")
-                        .HasColumnType("int");
-
                     b.Property<bool>("IsVisible")
                         .HasColumnType("bit");
 
@@ -674,13 +748,16 @@ namespace backend.Migrations
                     b.Property<int>("Order")
                         .HasColumnType("int");
 
+                    b.Property<int>("SubjectGradeId")
+                        .HasColumnType("int");
+
                     b.Property<string>("TestName")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("TestId");
 
-                    b.HasIndex("GradeId");
+                    b.HasIndex("SubjectGradeId");
 
                     b.ToTable("Tests");
                 });
@@ -906,17 +983,17 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Chapter", b =>
                 {
-                    b.HasOne("backend.Models.Grades", "Grade")
+                    b.HasOne("backend.Models.SubjectGrade", "SubjectGrade")
                         .WithMany("Chapters")
-                        .HasForeignKey("GradeId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .HasForeignKey("SubjectGradeId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("backend.Models.User", "User")
                         .WithMany("Chapters")
                         .HasForeignKey("UserId");
 
-                    b.Navigation("Grade");
+                    b.Navigation("SubjectGrade");
 
                     b.Navigation("User");
                 });
@@ -1078,6 +1155,25 @@ namespace backend.Migrations
                     b.Navigation("Level");
                 });
 
+            modelBuilder.Entity("backend.Models.Report", b =>
+                {
+                    b.HasOne("backend.Models.Question", "Question")
+                        .WithMany("Reports")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("backend.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Question");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("backend.Models.StudentAnswer", b =>
                 {
                     b.HasOne("backend.Models.PracticeAttempt", "PracticeAttempts")
@@ -1166,15 +1262,34 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
-            modelBuilder.Entity("backend.Models.Test", b =>
+            modelBuilder.Entity("backend.Models.SubjectGrade", b =>
                 {
                     b.HasOne("backend.Models.Grades", "Grade")
-                        .WithMany("Tests")
+                        .WithMany("SubjectGrades")
                         .HasForeignKey("GradeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("backend.Models.Subject", "Subject")
+                        .WithMany("SubjectGrades")
+                        .HasForeignKey("SubjectId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
                     b.Navigation("Grade");
+
+                    b.Navigation("Subject");
+                });
+
+            modelBuilder.Entity("backend.Models.Test", b =>
+                {
+                    b.HasOne("backend.Models.SubjectGrade", "SubjectGrade")
+                        .WithMany("Tests")
+                        .HasForeignKey("SubjectGradeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SubjectGrade");
                 });
 
             modelBuilder.Entity("backend.Models.TestQuestion", b =>
@@ -1290,9 +1405,7 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.Grades", b =>
                 {
-                    b.Navigation("Chapters");
-
-                    b.Navigation("Tests");
+                    b.Navigation("SubjectGrades");
 
                     b.Navigation("Users");
                 });
@@ -1332,6 +1445,8 @@ namespace backend.Migrations
 
                     b.Navigation("ContestQuestions");
 
+                    b.Navigation("Reports");
+
                     b.Navigation("StudentAnswers");
 
                     b.Navigation("TestQuestions");
@@ -1347,6 +1462,18 @@ namespace backend.Migrations
             modelBuilder.Entity("backend.Models.StudentTest", b =>
                 {
                     b.Navigation("TestSubmissions");
+                });
+
+            modelBuilder.Entity("backend.Models.Subject", b =>
+                {
+                    b.Navigation("SubjectGrades");
+                });
+
+            modelBuilder.Entity("backend.Models.SubjectGrade", b =>
+                {
+                    b.Navigation("Chapters");
+
+                    b.Navigation("Tests");
                 });
 
             modelBuilder.Entity("backend.Models.SubscriptionPlan", b =>

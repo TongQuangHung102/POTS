@@ -50,10 +50,10 @@ const ListGradesAssign = () => {
                                 <td>{grade.description}</td>
                                 <td>
                                     <button>
-                                        <Link to={`/content_manage/grades/${grade.gradeId}`}>Chương trình</Link>
+                                        <Link to={`/content_manage/grades/${grade.gradeId}`}>Môn học</Link>
                                     </button>
                                     <button>
-                                        <Link to={`/content_manage/grades/1/list_tests`}>Bài kiểm tra</Link>
+                                        <Link to={`/content_manage/grades/${grade.gradeId}/list_tests`}>Bài kiểm tra</Link>
                                     </button>
                                 </td>
                             </tr>

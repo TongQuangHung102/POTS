@@ -5,7 +5,7 @@ import './ListChapter.css';
 
 
 const ListTest = () => {
-    const { gradeId } = useParams();
+    const { gradeId, subjectId } = useParams();
     const [tests, setTests] = useState([]);
     const [newTest, setNewTest] = useState('');
     const [showAdd, setShowAdd] = useState(false);
@@ -14,6 +14,7 @@ const ListTest = () => {
     const [isEditing, setIsEditing] = useState(false);
     const [selectedTest, setSelectedTest] = useState(null);
     const [testCategory, setTestCategory] = useState([]);
+    const [selectedCategory, setSelectedCategory] = useState("0");
     const [test, setTest] = useState({
         testId: 0,
         testName: "",
@@ -23,16 +24,20 @@ const ListTest = () => {
         createdAt: Date.UTC,
         isVisible: true,
         order: 10,
-        gradeId: 1
+        subjectGradeId: 0
     });
 
     //get du lieu
     useEffect(() => {
         const fetchTest = async () => {
             try {
-                const response = await fetch('https://localhost:7259/api/Test/get-all-test');
+                const response = await fetch(`https://localhost:7259/api/Test/get-test-by-grade/${gradeId}/subject/${subjectId}`);
                 const data = await response.json();
-                setTests(data);
+                setTests(data.data);
+                setTest((prevTest) => ({
+                    ...prevTest,
+                    subjectGradeId: data.id, 
+                }));
             } catch (error) {
                 console.error("Có lỗi khi lấy dữ liệu bài kiểm tra", error);
             }
@@ -51,6 +56,11 @@ const ListTest = () => {
 
     //add new
     const handleAddTest = async () => {
+        if (!selectedCategory || selectedCategory === "0") {
+            alert("Vui lòng chọn loại bài kiểm tra!");
+            return;
+        }
+
         try {
             const response = await fetch('https://localhost:7259/api/Test/add-new-test', {
                 method: 'POST',
@@ -59,6 +69,7 @@ const ListTest = () => {
                 },
                 body: JSON.stringify(test),
             });
+            console.log(test);
 
             if (!response.ok) {
                 const errorResponse = await response.json();
@@ -68,6 +79,7 @@ const ListTest = () => {
                 }, 3000);
                 throw new Error(errorMessage);
             }
+           
 
             const testResponse = await fetch('https://localhost:7259/api/Test/get-all-test', {
                 method: 'GET',
@@ -93,6 +105,7 @@ const ListTest = () => {
     };
 
     const handleSelectChange = (e) => {
+        setSelectedCategory(e.target.value);
         setTest({ ...test, testName: e.target.value });
     };
 
@@ -124,7 +137,7 @@ const ListTest = () => {
                     createdAt: selectedTest.createdAt,
                     isVisible: selectedTest.isVisible,
                     order: selectedTest.order,
-                    gradeId: 1
+                    gradeId: gradeId
                 }),
             });
     
@@ -171,6 +184,7 @@ return (
                     <label>
                         Tên bài kiểm tra:
                         <select name="testName" value={test.categoryName} onChange={handleSelectChange} required>
+                            <option value={0}>--Chọn loại bài kiểm tra--</option>
                             {testCategory.filter(l => l.isVisible).map((item) => (
                                 <option key={item.testCategoryId} value={item.categoryName}>
                                     {item.categoryName}
@@ -226,7 +240,7 @@ return (
                         <td>
                             <button onClick={() => handleEdit(t)}>Chỉnh sửa</button>
                             <button>
-                                <Link to={`/content_manage/grades/${gradeId}/list_tests/${t.testId}/questions`}>Quản lý câu hỏi</Link>
+                                <Link to={`/content_manage/grades/${gradeId}/subject/${subjectId}/test/${t.testId}/questions`}>Quản lý câu hỏi</Link>
                             </button>
                         </td>
                     </tr>

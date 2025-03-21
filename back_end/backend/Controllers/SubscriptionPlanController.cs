@@ -1,5 +1,5 @@
 ﻿using backend.DataAccess.DAO;
-using backend.Dtos;
+using backend.Dtos.Subscriptions;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;

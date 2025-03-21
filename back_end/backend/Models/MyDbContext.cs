@@ -41,8 +41,13 @@ namespace backend.Models
         public DbSet<TestSubmission> TestSubmissions { get; set; }
         public DbSet<Test> Tests { get; set; }
         public DbSet<Grades> Grades { get; set; }
+        public DbSet<Report> Reports { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<SubjectGrade> SubjectGrades { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<StudentProgress>()
                 .HasKey(sp => new { sp.UserId, sp.LessonId });
 
@@ -92,15 +97,15 @@ namespace backend.Models
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Chapter>()
-                .HasOne(c => c.Grade)
-                .WithMany(g => g.Chapters)
-                .HasForeignKey(c => c.GradeId)
-                .OnDelete(DeleteBehavior.Cascade);
+             .HasOne(c => c.SubjectGrade)
+             .WithMany(sg => sg.Chapters)
+             .HasForeignKey(c => c.SubjectGradeId)
+              .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Test>()
-               .HasOne(t => t.Grade)
+               .HasOne(t => t.SubjectGrade)
                .WithMany(g => g.Tests)
-               .HasForeignKey(t => t.GradeId)
+               .HasForeignKey(t => t.SubjectGradeId)
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
@@ -108,6 +113,17 @@ namespace backend.Models
                 .WithMany(g => g.Users) 
                 .HasForeignKey(u => u.GradeId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SubjectGrade>()
+            .HasOne(sg => sg.Subject)
+            .WithMany(s => s.SubjectGrades)
+            .HasForeignKey(sg => sg.SubjectId);
+
+
+            modelBuilder.Entity<SubjectGrade>()
+                .HasOne(sg => sg.Grade)
+                .WithMany(g => g.SubjectGrades)
+                .HasForeignKey(sg => sg.GradeId);
 
             base.OnModelCreating(modelBuilder);
         }

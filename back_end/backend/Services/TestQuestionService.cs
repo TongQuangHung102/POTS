@@ -1,6 +1,6 @@
 
 using backend.DataAccess.DAO;
-using backend.Dtos;
+using backend.Dtos.Questions;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -51,38 +51,41 @@ namespace backend.Services
                 return new NotFoundObjectResult(new { message = "Chưa có câu hỏi nào được thêm vào bài kiểm tra." });
             }
 
-            var response = questions.Select(q => new
+            var response = new
             {
-                q.QuestionId,
-                q.Question.QuestionText,
-                q.Question.CreateAt,
-                q.Question.CorrectAnswer,
-                CorrectAnswerText = q.Question.AnswerQuestions.FirstOrDefault(a => a.Number == q.Question.CorrectAnswer)?.AnswerText,
-                q.Question.IsVisible,
-                q.Question.CreateByAI,
-                Level = new
+                Data = questions.Select(q => new
                 {
-                    q.Question.Level.LevelName,
-                    q.Question.Level.LevelId
-                },
-                Lesson = new
-                {
-                    q.Question.Lesson.LessonName
-                },
-                AnswerQuestions = q.Question.AnswerQuestions.Select(a => new
-                {
-                    a.AnswerQuestionId,
-                    a.AnswerText,
-                    a.Number
+                    q.QuestionId,
+                    q.Question.QuestionText,
+                    q.Question.CreateAt,
+                    q.Question.CorrectAnswer,
+                    CorrectAnswerText = q.Question.AnswerQuestions.FirstOrDefault(a => a.Number == q.Question.CorrectAnswer)?.AnswerText,
+                    q.Question.IsVisible,
+                    q.Question.CreateByAI,
+                    Level = new
+                    {
+                        q.Question.Level.LevelName,
+                        q.Question.Level.LevelId
+                    },
+                    Lesson = new
+                    {
+                        q.Question.Lesson.LessonName
+                    },
+                    AnswerQuestions = q.Question.AnswerQuestions.Select(a => new
+                    {
+                        a.AnswerQuestionId,
+                        a.AnswerText,
+                        a.Number
+                    }).ToList()
                 }).ToList(),
 
                 Test = new
                 {
-                    q.Test.TestName,
-                    q.Test.DurationInMinutes,
-                    q.Test.IsVisible
+                    TestName = questions.FirstOrDefault()?.Test?.TestName,
+                    DurationInMinutes = questions.FirstOrDefault()?.Test?.DurationInMinutes,
+                    IsVisible = questions.FirstOrDefault()?.Test?.IsVisible
                 }
-            });
+            };
 
             return new OkObjectResult(response);
         }
