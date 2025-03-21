@@ -1,4 +1,5 @@
 ﻿using backend.Dtos;
+using backend.Dtos.Dashboard;
 using backend.Models;
 using backend.Repositories;
 
@@ -21,12 +22,12 @@ namespace backend.Services
             _gradeRepository = gradeRepository;
         }
 
-        public async Task<AdminDashboardDto> GetAdminDashboardData()
+        public async Task<AdminDashboardDto> GetAdminDashboardData(int? gradeId)
         {
             var today = DateTime.Today;
 
-            var totalStudent = await _userRepository.GetTotalUsersAsync(1, null);
-            var newStudent = await _userRepository.GetTotalNewStudent(3);
+            var totalStudent = await _userRepository.GetTotalUsersAsync(1, null, gradeId);
+            var newStudent = await _userRepository.GetTotalNewStudent(3, gradeId);
             var totalQuestion = await _questionRepository.GetTotalQuestionsAsync(null, null, null, null, null);
             var subscriptionPlans = await _subscriptionPlanRepository.GetAllAsync();
             var grades = await _gradeRepository.GetAllGradesAsync();
@@ -42,7 +43,7 @@ namespace backend.Services
             {
                 var date = today.AddDays(-i);
                 totalTimeLabels.Add(date.ToString("dd/MM"));
-                var totalTimeChart = await _practiceRepository.GetTotalPracticeTimeAllStudentByDateAsync(date);
+                var totalTimeChart = await _practiceRepository.GetTotalPracticeTimeAllStudentByDateAsync(date, gradeId);
                 totalTimeValues.Add(totalTimeChart);
             }
 
@@ -50,7 +51,7 @@ namespace backend.Services
             {
                 var date = today.AddDays(-i);
                 totalStudentLabels.Add(date.ToString("dd/MM"));
-                var totalStudentChart = await _userRepository.GetTotalStudentByDate(date);
+                var totalStudentChart = await _userRepository.GetTotalStudentByDate(date, gradeId);
                 totalStudentValues.Add(totalStudentChart);
             }
 
@@ -61,8 +62,8 @@ namespace backend.Services
             });
             var listGrade = grades.Select(g => new ContentManageAssign
             {
-                Name = g.User.UserName,
-                Email = g.User.Email,
+                Name = g.User?.UserName ?? "N/A", 
+                Email = g.User?.Email ?? "N/A",
                 GradeAssign = g.GradeName
             });
 

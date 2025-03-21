@@ -1,5 +1,4 @@
 ﻿using backend.DataAccess.DAO;
-using backend.Dtos;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
@@ -10,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using static System.Net.WebRequestMethods;
 using backend.Models;
 using Google.Apis.Auth;
+using backend.Dtos.Auth;
+using backend.Dtos.AIQuestions;
 
 namespace backend.Controllers
 {

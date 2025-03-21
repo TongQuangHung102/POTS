@@ -43,12 +43,9 @@ namespace backend.DataAccess.DAO
                 await _dbContext.SaveChangesAsync();
             }
         }
-        public async Task<List<Test>> GetTestsByGradeIdAsync(int gradeId)
+        public async Task<List<Test>> GetTestBySubjectGradeIdAsync(int id)
         {
-            return await _dbContext.Tests
-                .Where(t => t.GradeId == gradeId)
-                .ToListAsync();
+            return await _dbContext.Tests.Where(t => t.SubjectGradeId == id).ToListAsync();
         }
-
     }
 }

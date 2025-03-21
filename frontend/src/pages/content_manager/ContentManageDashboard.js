@@ -4,14 +4,20 @@ import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale
 import { Chart } from 'react-chartjs-2';
 import { useNavigate } from 'react-router-dom';
 import { BiCube, BiSolidUserCheck } from "react-icons/bi";
+import { getSubjectGradesByGrade } from '../../services/SubjectGradeService';
 
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend, BarElement);
 
 const ContentManageDashboard = () => {
     const [dashboardData, setDashboardData] = useState(null);
-    const [isLoading, setIsLoading] = useState(true);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isData, setIsData] = useState(true);
     const [dataTotalStudent, setDataTotalStudent] = useState({});
     const [dataTime, setDataTime] = useState({});
+
+    const [subjects, setSubjects] = useState([]);
+    const [selectedSubject, setSelectedSubject] = useState(null);
+
 
     const [managedGrades, setManagedGrades] = useState(() => {
         const savedGrades = sessionStorage.getItem("managedGrades");
@@ -29,16 +35,37 @@ const ContentManageDashboard = () => {
         if (managedGrades.length > 0 && !selectedGrade) {
             setSelectedGrade(managedGrades[0]);
         }
-    }, [managedGrades]);
+        if (managedGrades.length === 0) {
+            setIsData(false);
+        }
+    }, [managedGrades, dashboardData]);
+
+    const fetchSubjectGrades = async (gradeId) => {
+       try {
+         const data = await getSubjectGradesByGrade(gradeId);
+         setSubjects(data);
+       } catch (error) {
+         console.error("Có lỗi khi lấy dữ liệu lớp", error);
+       }
+     };
+
+     useEffect(() => {
+        if (selectedGrade) {
+            fetchSubjectGrades(selectedGrade.id);
+        }
+    }, [selectedGrade]);
 
     useEffect(() => {
-        setIsLoading(true);
-        fetchData(selectedGrade.id);
-        setIsLoading(false);
-    }, []);
+        if(isData){
+            setIsLoading(true);
+            fetchData(selectedGrade.id, selectedSubject?.id ?? 1);
+            setIsLoading(false);
+        }
+        
+    }, [selectedGrade, selectedSubject, isData]);
 
-    const fetchData = async (gradeId) => {
-        fetch(`https://localhost:7259/api/Dashboard/content-manage-dashboard/${gradeId}`)
+    const fetchData = async (gradeId, subjectId) => {
+        fetch(`https://localhost:7259/api/Dashboard/content-manage-dashboard/${gradeId}/${subjectId}`)
             .then(res => res.json())
             .then(data => {
                 setDashboardData(data);
@@ -147,7 +174,7 @@ const ContentManageDashboard = () => {
     if (isLoading) {
         return <div className="loading-dashboard">Đang tải dữ liệu...</div>;
     }
-    if (!dashboardData) {
+    if (!dashboardData && isData) {
         return <div className="loading-dashboard">Không có dữ liệu hiển thị</div>;
     }
     return (
@@ -222,6 +249,19 @@ const ContentManageDashboard = () => {
                                             </select>
                                         ) : (
                                             <p>Không có khối nào để quản lý</p>
+                                        )}
+                                        <h5 className="mb-4">Chọn Môn Học</h5>
+                                        {subjects.length > 0 ? (
+                                            <select value={selectedSubject?.id} onChange={(e) => {
+                                                const subject = subjects.find(s => s.id === parseInt(e.target.value, 10));
+                                                setSelectedSubject(subject);
+                                            }}>
+                                                {subjects.map((subject) => (
+                                                    <option key={subject.id} value={subject.id}>{subject.name}</option>
+                                                ))}
+                                            </select>
+                                        ) : (
+                                            <p>Không có môn học nào</p>
                                         )}
                                     </div>
                                 </Card.Body>

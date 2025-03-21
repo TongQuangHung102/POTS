@@ -15,6 +15,9 @@ const StudentDashboard = () => {
   const [activityOptions, setActivityOptions] = useState({});
   const [scoreOptions, setScoreOptions] = useState({});
   const [rank, setRank] = useState();
+  const [subjectGradeId, setSubjectGradeId] = useState();
+
+  const [subjectGrades, setSubjectGrades] = useState([]);
 
   const userId = sessionStorage.getItem('userId');
   const gradeId = sessionStorage.getItem('gradeId')
@@ -22,96 +25,98 @@ const StudentDashboard = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    setIsLoading(true);
-    fetch(`https://localhost:7259/api/Dashboard/student-dashboard/${userId}`)
-      .then(res => res.json())
-      .then(data => {
-        setDashboardData(data);
-        setIsLoading(false);
-        console.log(data);
-
-        setActivityData({
-          labels: data.activity.labels,
-          datasets: [{
-            label: "Tổng thời gian luyện tập",
-            data: data.activity.data,
-            backgroundColor: '#0099FF',
-            borderRadius: 5
-          }]
-        });
-
-        setScoreData({
-          labels: data.scoreTime.labels,
-          datasets: [{
-            label: "Điểm trung bình",
-            data: data.scoreTime.scoreData,
-            borderColor: '#FF6666',
-            backgroundColor: 'rgba(255, 102, 102, 0.2)',
-            tension: 0.3, 
-            fill: true
-          }
-          ,
-          {
-            label: "Thời gian trung bình 1 câu(s)",
-            data: data.scoreTime.timeData, 
-            borderColor: '#0099FF', 
-            backgroundColor: 'rgba(0, 153, 255, 0.2)',
-            tension: 0.3,
-            fill: false
-          }]
-        });
-
-        setActivityOptions({
-          plugins: {
-            title: {
-              display: true, 
-              text: "Biểu đồ tổng thời gian luyện tập",
-              font: {
-                size: 13, 
-                weight: "bold" 
+    if (subjectGradeId) { // Chỉ fetch khi subjectGradeId đã có giá trị
+      setIsLoading(true);
+      fetch(`https://localhost:7259/api/Dashboard/student-dashboard/user/${userId}/subjectGrade/${subjectGradeId}`)
+        .then(res => res.json())
+        .then(data => {
+          setDashboardData(data);
+          setIsLoading(false);
+          console.log(subjectGradeId);
+  
+          setActivityData({
+            labels: data.activity.labels,
+            datasets: [{
+              label: "Tổng thời gian luyện tập",
+              data: data.activity.data,
+              backgroundColor: '#0099FF',
+              borderRadius: 5
+            }]
+          });
+  
+          setScoreData({
+            labels: data.scoreTime.labels,
+            datasets: [{
+              label: "Điểm trung bình",
+              data: data.scoreTime.scoreData,
+              borderColor: '#FF6666',
+              backgroundColor: 'rgba(255, 102, 102, 0.2)',
+              tension: 0.3,
+              fill: true
+            },
+            {
+              label: "Thời gian trung bình 1 câu(s)",
+              data: data.scoreTime.timeData,
+              borderColor: '#0099FF',
+              backgroundColor: 'rgba(0, 153, 255, 0.2)',
+              tension: 0.3,
+              fill: false
+            }]
+          });
+  
+          setActivityOptions({
+            plugins: {
+              title: {
+                display: true,
+                text: "Biểu đồ tổng thời gian luyện tập",
+                font: { size: 13, weight: "bold" },
               },
+              legend: { display: true, padding: 20 }
             },
-             legend: { display: true,padding: 20 } 
-            },
-          scales: {
-            y: {
-              beginAtZero: true,
-            }
-          }
-        });
-
-        setScoreOptions({
-          plugins: { 
-            title: {
-              display: true, 
-              text: "Biểu đồ điểm trung bình và thời gian làm bài", 
-              font: {
-                size: 13, 
-                weight: "bold" 
+            scales: { y: { beginAtZero: true } }
+          });
+  
+          setScoreOptions({
+            plugins: {
+              title: {
+                display: true,
+                text: "Biểu đồ điểm trung bình và thời gian làm bài",
+                font: { size: 13, weight: "bold" },
               },
+              legend: { display: true, position: "top", padding: 20 }
             },
-            legend: { 
-            display: true, 
-            position: "top",
-            padding: 20
-          }
-        },
-          scales: {
-            y: {
-              beginAtZero: true,
-            }
-          }
+            scales: { y: { beginAtZero: true } }
+          });
+  
+          setRank(data.percentiles[1]);
+        })
+        .catch(err => {
+          console.error("Lỗi:", err);
+          setIsLoading(false);
         });
-
-        setRank(
-          data.percentiles[1]
-        );
-      })
-      .catch(err => {
-        console.error("Lỗi:", err);
-        setIsLoading(false);
-      });
+    }
+  }, [subjectGradeId]); // Chạy khi subjectGradeId thay đổi
+  
+  const fetchSubjectGrades = async () => {
+    try {
+      setIsLoading(true);
+      const response = await fetch(`https://localhost:7259/api/SubjectGrade/get-subject-by-grade/${gradeId}`);
+      const data = await response.json();
+      setSubjectGrades(data);
+      if (data.length > 0) {
+        setSubjectGradeId(data[0].id);
+      }
+    } catch (error) {
+      console.error("Có lỗi khi lấy dữ liệu lớp", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+  
+  useEffect(() => {
+    fetchSubjectGrades();
   }, []);
+  
 
 
   const activityCardRef = useRef(null);
@@ -191,6 +196,26 @@ const StudentDashboard = () => {
             {/* Upcoming Submission Section */}
 
             <div className='row'>
+              <div className='col-md-4'>
+              <div className="upcoming-submission">
+                <div className="card-item">
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <h5 className="mb-4">Thống kê môn</h5>
+                  </div>
+                  {subjectGrades.length > 0 ? (
+                    <select value={subjectGradeId} onChange={(e) => setSubjectGradeId(Number(e.target.value))}>
+                      {subjectGrades.map((g) => (
+                        <option key={g.id} value={g.id}>
+                          {g.name}
+                        </option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p>Không có khối nào để quản lý</p>
+                  )}
+                </div>
+                </div>
+              </div>
               <div className='col-md-8'>
                 <div className="upcoming-submission">
                   <h5 className="mb-4">Thông tin khối</h5>
@@ -200,23 +225,13 @@ const StudentDashboard = () => {
                     </div>
                     <div className="flex-grow-1">
                       <h6 className="mb-1">{dashboardData.student.gradeName}</h6>
-                      <small className="text-muted d-block">Môn Toán</small>
                     </div>
                     <div className="text-end">
                       <div className="due-date">
                         <i className="bi bi-calendar me-1"></i>
-                        <button className='btn btn-primary' onClick={() => navigate("/student/course")}>Luyện tập</button>
+                        <button className='btn btn-primary' onClick={() => navigate(`/student/grade/${gradeId}`)}>Luyện tập</button>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-              <div className='col-md-4'>
-                <div className="upcoming-submission text-center ">
-                  <h5>Gói cơ bản</h5>
-                  <div>
-                    <small>Sử dụng phiên bản cao hơn để trải nghiệm thêm tính năng</small>
-                    <button className="btn btn-primary mt-2 d-block mx-auto">Nâng cấp</button>
                   </div>
                 </div>
               </div>

@@ -1,4 +1,8 @@
-﻿using backend.Dtos;
+﻿using backend.DataAccess.DAO;
+using backend.Dtos.AIQuestions;
+using backend.Dtos.Curriculum;
+using backend.Dtos.Dashboard;
+using backend.Dtos.Questions;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -26,54 +30,50 @@ namespace backend.Services
             _practiceRepository = practiceRepository;
         }
 
-        public async Task<IActionResult> GetAllQuestionsAsync(int? chapterId, int? lessonId, int? levelId,string searchTerm, bool? isVisible, int page, int pageSize)
+        public async Task<QuestionResponseDto> GetAllQuestionsAsync(int? chapterId, int? lessonId, int? levelId,string searchTerm, bool? isVisible, int page, int pageSize)
         {
-            try
-            {
+                var lesson = new Lesson();
                 var totalQuestions = await _questionRepository.GetTotalQuestionsAsync(chapterId, lessonId, levelId, searchTerm, isVisible);
                 var questions = await _questionRepository.GetAllQuestionsAsync(chapterId, lessonId, levelId, searchTerm, isVisible, page, pageSize);
-
-                var response = new
+                if (lessonId.HasValue)
                 {
+                    lesson = await _curriculumRepository.GetLessonByIdAsync(lessonId.Value);
+                }
+
+                var response = new QuestionResponseDto
+                {
+                    LessonName = lesson.LessonName,
                     TotalQuestions = totalQuestions,
                     Page = page,
                     PageSize = pageSize,
-                    Data = questions.Select(q => new
+                    Data = questions.Select(q => new QuestionDetailDto
                     {
-                        q.QuestionId,
-                        q.QuestionText,
-                        q.CreateAt,
-                        q.CorrectAnswer,
+                        QuestionId = q.QuestionId,
+                        QuestionText = q.QuestionText,
+                        CreateAt = q.CreateAt,
+                        CorrectAnswer = q.CorrectAnswer,
                         CorrectAnswerText = q.AnswerQuestions.FirstOrDefault(a => a.Number == q.CorrectAnswer)?.AnswerText,
-                        q.IsVisible,
-                        q.CreateByAI,
-                        Level = new
+                        IsVisible = q.IsVisible,
+                        CreateByAI = q.CreateByAI,
+                        Level = new LevelSimpleDto
                         {
-                            q.Level.LevelName,
-                            q.Level.LevelId
+                            LevelId = q.Level.LevelId,
+                            LevelName = q.Level.LevelName
                         },
-                        Lesson = new
+                        Lesson = new LessonNameDto
                         {
-                            q.Lesson.LessonName
+                            LessonName = q.Lesson.LessonName
                         },
-                        AnswerQuestions = q.AnswerQuestions.Select(a => new
+                        AnswerQuestions = q.AnswerQuestions.Select(a => new AnswerQuestionDto
                         {
-                            a.AnswerQuestionId,
-                            a.AnswerText,
-                            a.Number
+                            AnswerQuestionId = a.AnswerQuestionId,
+                            AnswerText = a.AnswerText,
+                            Number = a.Number
                         }).ToList()
-                    })
+                    }).ToList()
                 };
 
-                return new OkObjectResult(response);
-            }
-            catch (Exception ex)
-            {
-                return new ObjectResult(new { message = "Đã xảy ra lỗi khi lấy câu hỏi.", error = ex.Message })
-                {
-                    StatusCode = 500
-                };
-            }
+            return response;
         }
 
         public async Task<IActionResult> GetQuestionByIdAsync(int questionId)

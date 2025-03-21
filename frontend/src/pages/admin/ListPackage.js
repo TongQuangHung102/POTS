@@ -43,7 +43,6 @@ const ListPackage = () => {
                         <th>ID</th>
                         <th>Tên Gói</th>
                         <th>Giá</th>
-                        <th>Mô tả</th>
                         <th>Tính năng AI Analysis</th>
                         <th>Tính năng Advanced Statistics</th>
                         <th>Tính năng Basic Statistics</th>
@@ -59,7 +58,6 @@ const ListPackage = () => {
                                 <td>{pkg.planId}</td>
                                 <td>{pkg.planName}</td>
                                 <td>{pkg.price}</td>
-                                <td>{pkg.description}</td>
                                 <td>
                                     <input
                                         type='checkbox'

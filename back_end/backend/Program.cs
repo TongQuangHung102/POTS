@@ -70,6 +70,15 @@ builder.Services.AddScoped<IStudentTestRepository, StudentTestRepository>();
 builder.Services.AddScoped<StudentTestDAO>();
 builder.Services.AddScoped<AdminService>();
 builder.Services.AddScoped<ContentManageService>();
+builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<ReportDAO>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<ISubjectGradeRepository, SubjectGradeRepository>();
+builder.Services.AddScoped<SubjectGradeDAO>();
+builder.Services.AddScoped<SubjectGradeService>();
+builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
+builder.Services.AddScoped<SubjectDAO>();
+builder.Services.AddScoped<SubjectService>();
 builder.Services.AddHttpClient();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>

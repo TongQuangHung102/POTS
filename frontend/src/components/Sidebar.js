@@ -1,11 +1,12 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare, BiLogOut } from "react-icons/bi";
+import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare, BiLogOut, BiSolidReport  } from "react-icons/bi";
 import { useAuth } from "../hooks/useAuth";
 
 const Sidebar = () => {
   const { user } = useAuth();
   const roleId = user?.roleId;
+  const gradeId = user?.gradeId
 
   const roleMap = {
     1: "student",
@@ -21,6 +22,7 @@ const Sidebar = () => {
     admin: [
       { path: "/admin/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
       { path: "/admin/grades", icon: <BiAlignRight />, label: "Chương trình" },
+      { path: "/admin/reports", icon: <BiSolidReport />, label: "Báo cáo" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/admin/users", icon: <BiSolidUserDetail />, label: "Người dùng" },
       { path: "/admin/package", icon: <BiPackage />, label: "Gói" },
@@ -34,7 +36,7 @@ const Sidebar = () => {
     ],
     student: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
-      { path: "/student/course", icon: <BiAlignRight />, label: "Luyện tập" },
+      { path: `/student/grade/${gradeId}`, icon: <BiAlignRight />, label: "Luyện tập" },
       { path: "/student/package", icon: <BiPackage />, label: "Gói" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
@@ -60,6 +62,7 @@ const Sidebar = () => {
     sessionStorage.removeItem("userId");
     sessionStorage.removeItem("roleId");
     sessionStorage.removeItem("gradeId");
+    sessionStorage.removeItem("managedGrades");
     setUser(null);
 
     navigate("/login");

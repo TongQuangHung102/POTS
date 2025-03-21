@@ -1,5 +1,5 @@
 ﻿using backend.DataAccess.DAO;
-using backend.Dtos;
+using backend.Dtos.Users;
 using backend.Helpers;
 using backend.Models;
 using backend.Repositories;

@@ -32,17 +32,19 @@ namespace backend.DataAccess.DAO
                 .OrderByDescending(a => a.PracticeId)
                 .FirstOrDefaultAsync();
         }
-        public async Task<double> GetTotalPracticeTimeByDateAsync(int userId, DateTime date)
+        public async Task<double> GetTotalPracticeTimeByDateAsync(int subjectGradeId, int userId, DateTime date)
         {
             var totalMinutes = await _context.PracticeAttempts
-                .Where(p => p.UserId == userId && p.CreateAt.Date == date.Date)
-                .Select(p => p.TimePractice)
+
+  
+                .Where(p => p.UserId == userId && p.CreateAt.Date == date.Date && p.Lesson.Chapter.SubjectGradeId == subjectGradeId)
+                .Select(p => (double?)p.TimePractice)
                 .SumAsync();
 
-            return totalMinutes / 60;
+            return (totalMinutes ?? 0) / 60;
         }
 
-        public async Task<double> GetTotalPracticeTimeAllStudentByDateAsync(DateTime date, int? gradeId = null)
+        public async Task<double> GetTotalPracticeTimeAllStudentByDateAsync(DateTime date, int? gradeId = null, int? subjectGradeId = null)
         {
             var query = _context.PracticeAttempts
                 .Where(p => p.CreateAt.Date == date.Date) 
@@ -52,18 +54,24 @@ namespace backend.DataAccess.DAO
             {
                 query = query.Where(p => p.User.GradeId == gradeId.Value);
             }
+            if (subjectGradeId.HasValue)
+            {
+                query = query.Where(p => p.Lesson.Chapter.SubjectGradeId == subjectGradeId.Value);
+            }
 
-            var totalMinutes = await query.Select(p => p.TimePractice).SumAsync();
+            var totalMinutes = await query.Select(p => (double?)p.TimePractice).SumAsync();
 
-            return totalMinutes / 60; 
+            return (totalMinutes ?? 0) / 60;
         }
 
 
 
-        public async Task<double> GetAverageScoreByDateAsync(int userId, DateTime date)
+        public async Task<double> GetAverageScoreByDateAsync(int userId, DateTime date, int subjectGradeId)
         {
             var scores = await _context.PracticeAttempts
-                .Where(p => p.UserId == userId && p.CreateAt.Date == date.Date)
+
+ 
+                .Where(p => p.UserId == userId && p.CreateAt.Date == date.Date && p.Lesson.Chapter.SubjectGradeId == subjectGradeId)
                 .Select(p => p.CorrectAnswers)
                 .ToListAsync(); 
 
@@ -76,10 +84,11 @@ namespace backend.DataAccess.DAO
         }
 
 
-        public async Task<double> GetAverageTimeByDateAsync(int userId, DateTime date)
+        public async Task<double> GetAverageTimeByDateAsync(int userId, DateTime date, int subjectGradeId)
         {
             var time = await _context.PracticeAttempts
-                .Where(p => p.UserId == userId && p.CreateAt.Date == date.Date)
+
+                .Where(p => p.UserId == userId && p.CreateAt.Date == date.Date && p.Lesson.Chapter.SubjectGradeId == subjectGradeId)
                 .Select(p => p.TimePractice)
                 .ToListAsync();
 
@@ -91,28 +100,35 @@ namespace backend.DataAccess.DAO
             return time.Average() / 10;
         }
 
-        public async Task<int> GetTotalNumberPracticeAsync(int userId)
+        public async Task<int> GetTotalNumberPracticeAsync(int userId, int subjectGradeId)
         {
             return await _context.PracticeAttempts
-                .Where(p => p.UserId == userId)
+
+                .Where(p => p.UserId == userId && p.Lesson.Chapter.SubjectGradeId == subjectGradeId)
                 .CountAsync();
         }
 
-        public async Task<double> GetAveragePracticeTimeAsync(int userId)
+        public async Task<double> GetAveragePracticeTimeAsync(int userId, int subjectGradeId)
         {
-            return await _context.PracticeAttempts
-                .Where(u => u.UserId == userId)
-                .Select(p => p.TimePractice)
+            var averageTime = await _context.PracticeAttempts
+                .Where(p => p.UserId == userId && p.Lesson.Chapter.SubjectGradeId == subjectGradeId)
+                .Select(p => (double?)p.TimePractice) 
                 .AverageAsync();
+
+            return averageTime ?? 0;
         }
 
-        public async Task<double> GetAveragePracticeScoreAsync(int userId)
+
+        public async Task<double> GetAveragePracticeScoreAsync(int userId, int subjectGradeId)
         {
-            return await _context.PracticeAttempts
-                .Where(u => u.UserId == userId)
-                .Select(p => p.CorrectAnswers)
+            var averageScore = await _context.PracticeAttempts
+                .Where(p => p.UserId == userId && p.Lesson.Chapter.SubjectGradeId == subjectGradeId)
+                .Select(p => (double?)p.CorrectAnswers) 
                 .AverageAsync();
+
+            return averageScore ?? 0;
         }
+
 
         public async Task<List<(int UserId, double AverageScore, double TotalPracticeTime)>> GetStudentDataAsync(int gradeId)
         {

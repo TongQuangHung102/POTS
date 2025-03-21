@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.AIQuestions;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;

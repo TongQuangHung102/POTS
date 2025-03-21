@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import BackLink from "../../components/BackLink";
-import { fetchChapters } from "../../services/ChapterService";
+import { fetchChapters, addChapter } from "../../services/ChapterService";
 import './ListChapter.css';
 
 
 const ListChapter = () => {
-  const { gradeId } = useParams();
+  const { gradeId, subjectId } = useParams();
   const [chapters, setChapters] = useState([]);
   const [newChapterTitle, setNewChapterTitle] = useState('');
   const [showAddChapter, setShowAddChapter] = useState(false);
@@ -15,58 +15,44 @@ const ListChapter = () => {
   const [isEditing, setIsEditing] = useState(false);
   const [selectedChapter, setSelectedChapter] = useState(null);
   const [selectedSemester, setSelectedSemester] = useState(1);
+  const [subjectgradeName, setSubjectGradeName] = useState("");
+  const [subjectGradeId, setSubjectGradeId] = useState();
 
   const navigate = useNavigate();
   const roleId = sessionStorage.getItem('roleId');
   //get du lieu
   const loadChapters = async () => {
-    const data = await fetchChapters(gradeId);
-    setChapters(data);
+    const data = await fetchChapters(gradeId, subjectId);
+    setChapters(data.chapters);
+    setSubjectGradeName(data.gradeName + ' môn ' + data.subjectName);
+    setSubjectGradeId(data.subjectGradeId);
   };
-  
+
   useEffect(() => {
     loadChapters();
-  }, [gradeId]);
+  }, [gradeId, subjectId]);
 
   //add new chapter
   const handleAddChapter = async () => {
-    if (!newChapterTitle.trim()) return;
-
     try {
-      const response = await fetch('https://localhost:7259/api/Curriculum/add-chapters', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          gradeId: gradeId,
-          input: newChapterTitle,
-          semester: selectedSemester
-        })
-      });
+      const result = await addChapter(subjectGradeId, newChapterTitle, selectedSemester);
 
-      if (!response.ok) {
-        const errorResponse = await response.text();
-        const errorMessage = errorResponse ? errorResponse : 'Không thể thêm chương mới';
-        setTimeout(() => {
-          setErrorMessage('');
-        }, 3000);
-        throw new Error(errorMessage);
+      if (result.success) {
+        setSuccessMessage(result.message);
+        setNewChapterTitle('');
+        setShowAddChapter(false);
+        loadChapters();
+      } else {
+        setErrorMessage(result.message);
       }
-
-      loadChapters();
-      setNewChapterTitle('');
-      setShowAddChapter(false);
-      setErrorMessage('');
-      setSuccessMessage('Chương đã được thêm thành công!');
-
 
       setTimeout(() => {
         setSuccessMessage('');
+        setErrorMessage('');
       }, 3000);
     } catch (error) {
-      setErrorMessage(error.message);
       console.error("Có lỗi khi thêm chương mới", error);
+      setErrorMessage(error.message);
     }
   };
 
@@ -112,14 +98,10 @@ const ListChapter = () => {
     }
   };
 
-  const handelToAssign = (gradeId) => {
-    navigate(`/admin/${gradeId}/assignchapter`)
-  };
-
 
   return (
     <div className="chapter-list-container">
-      <h2>Danh Sách Chương</h2>
+      <h2>Danh Sách Chương của {subjectgradeName}</h2>
       <div className="group-header">
         <div>
           <BackLink />
@@ -183,7 +165,7 @@ const ListChapter = () => {
           </tr>
         </thead>
         <tbody>
-          {chapters.map((chapter) => (
+          {chapters.length > 0 ? (chapters.map((chapter) => (
             <tr key={chapter.chapterId}>
               <td>{chapter.order}</td>
               <td>{chapter.chapterName}</td>
@@ -192,19 +174,27 @@ const ListChapter = () => {
               <td>
                 <button>
                   {roleId === "3" ? (
-                    <Link to={`/admin/grades/${gradeId}/chapters/${chapter.chapterId}`}>
+                    <Link to={`/admin/grades/${gradeId}/subject/${subjectId}/chapters/${chapter.chapterId}`}>
                       Xem bài học
                     </Link>
                   ) : (
-                    <Link to={`/content_manage/grades/${gradeId}/chapters/${chapter.chapterId}`}>
-                      Xem bài học 
+                    <Link to={`/content_manage/grades/${gradeId}/subject/${subjectId}/chapters/${chapter.chapterId}`}>
+                      Xem bài học
                     </Link>
                   )}
                 </button>
                 <button onClick={() => handleEdit(chapter)}>Chỉnh sửa</button>
               </td>
             </tr>
-          ))}
+          ))
+        ) : (
+            <tr>
+              <td colSpan="5" style={{ textAlign: "center", fontStyle: "italic", color: "gray" }}>
+                Chưa có chương nào.
+              </td>
+            </tr>
+          )}
+
         </tbody>
       </table>
       {/* Form chỉnh sửa */}

@@ -15,7 +15,7 @@ const TestCategory = () => {
 
   //get du lieu
   useEffect(() => {
-    const fetchTestCategory= async () => {
+    const fetchTestCategory = async () => {
       try {
         const response = await fetch('https://localhost:7259/api/TestCategory/get-all-test-category');
         const data = await response.json();
@@ -131,7 +131,7 @@ const TestCategory = () => {
       <h2>Danh Sách Loại Bài Kiểm Tra</h2>
       <div className="group-header">
         <div>
-           <BackLink/>
+          <BackLink />
         </div>
         <button className="add-chapter" onClick={() => setShowAdd(true)}>Thêm mới</button>
       </div>
@@ -164,16 +164,25 @@ const TestCategory = () => {
           </tr>
         </thead>
         <tbody>
-          {testCategory.map((t) => (
-            <tr key={t.testCategoryId}>
-              <td>{t.testCategoryId}</td>
-              <td>{t.categoryName}</td>
-              <td>{t.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
-              <td>
-                <button onClick={() => handleEdit(t)}>Chỉnh sửa</button>
-              </td>
-            </tr>
-          ))}
+          {testCategory && testCategory.length > 0 ? (
+            testCategory.map((t) => (
+              <tr key={t.testCategoryId}>
+                <td>{t.testCategoryId}</td>
+                <td>{t.categoryName}</td>
+                <td>{t.isVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
+                <td>
+                  <button onClick={() => handleEdit(t)}>Chỉnh sửa</button>
+                </td>
+              </tr>
+            ))
+          ) : (
+            <tr>
+            <td colSpan="4" style={{ textAlign: "center", fontStyle: "italic", color: "gray" }}>
+              Chưa có loại bài kiểm tra nào.
+            </td>
+          </tr>
+          )}
+
         </tbody>
       </table>
       {/* Form chỉnh sửa */}
@@ -196,7 +205,7 @@ const TestCategory = () => {
               <select
                 value={selectedTestCategory?.isVisible}
                 onChange={(e) =>
-                    setSelectedTestCategory({
+                  setSelectedTestCategory({
                     ...selectedTestCategory,
                     isVisible: e.target.value === "true"
                   })

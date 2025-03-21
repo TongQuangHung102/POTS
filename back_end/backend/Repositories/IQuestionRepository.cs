@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Dashboard;
 using backend.Models;
 
 namespace backend.Repositories
