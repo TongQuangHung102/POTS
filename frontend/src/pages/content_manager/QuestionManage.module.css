@@ -14,7 +14,7 @@
 .toolbar {
   display: flex;
   align-items: center;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 10px;
   padding: 10px;
 }
@@ -296,6 +296,8 @@ select,label {
 }
 
 .isVisible {
+  text-align: center;
+  width: 100px;
   margin-right: 10px;
   color: rgb(255, 255, 255);
   background-color: #28a745;
@@ -304,10 +306,12 @@ select,label {
 }
 
 .inactive {
+  text-align: center;
+  width: 100px;
   margin-right: 10px;
   color: rgb(255, 255, 255);
   font-weight: normal;
-  background-color: rgb(126, 126, 126);
+  background-color: rgb(255, 0, 0);
   padding: 4px;
   border-radius: 20px;
 }
@@ -319,4 +323,42 @@ select,label {
 
 .radioInput{
   width: 50px !important;
+}
+
+.levelName{
+  text-align: center;
+  width: 100px;
+  background-color: rgb(244, 244, 244);
+  margin-right: 10px;
+  border-radius: 20px;
+  padding: 4px;
+  color: rgb(0, 0, 0);
+}
+
+.status {
+  font-weight: bold;
+  padding: 4px 8px;
+  border-radius: 4px;
+  display: inline-block;
+  margin-right: 40px;
+}
+
+.pending {
+  color: orange;
+  background-color: rgba(255, 165, 0, 0.2);
+}
+
+.reject {
+  color: rgb(255, 12, 12);
+  background-color: rgba(0, 128, 0, 0.2);
+}
+
+.resolved {
+  color: blue;
+  background-color: rgba(0, 0, 255, 0.2);
+}
+
+.unknown {
+  color: gray;
+  background-color: rgba(128, 128, 128, 0.2);
 }

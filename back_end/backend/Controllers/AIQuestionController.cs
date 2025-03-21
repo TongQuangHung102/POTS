@@ -1,7 +1,11 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.AIQuestions;
+using backend.Dtos.Curriculum;
+using backend.Dtos.Questions;
+using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 
 
 namespace backend.Controllers
@@ -63,10 +67,37 @@ namespace backend.Controllers
             }
 
             var (questions, totalPages) = await _service.GetAIQuestionsByFilters(lessonId, levelId, status, createdAt, pageNumber, pageSize);
+            var response = new 
+            {
+                TotalPage = totalPages,
+                Data = questions.Select(q => new 
+                {
+                    QuestionId = q.QuestionId,
+                    QuestionText = q.QuestionText,
+                    CreateAt = q.CreateAt,
+                    CorrectAnswer = q.CorrectAnswer,
+                    CorrectAnswerText = q.AnswerQuestions.FirstOrDefault(a => a.Number == q.CorrectAnswer)?.AnswerText,
+                    Status = q.Status,
+                    CreateByAI = q.CreateByAI,
+                    Level = new LevelSimpleDto
+                    {
+                        LevelId = q.Level.LevelId,
+                        LevelName = q.Level.LevelName
+                    },
+                    Lesson = new LessonNameDto
+                    {
+                        LessonName = q.Lesson.LessonName
+                    },
+                    AnswerQuestions = q.AnswerQuestions.Select(a => new AnswerQuestionDto
+                    {
+                        AnswerQuestionId = a.AnswerQuestionId,
+                        AnswerText = a.AnswerText,
+                        Number = a.Number
+                    }).ToList()
+                }).ToList()
+            };
 
-            return questions.Count > 0
-                ? Ok(new { questions, totalPages })
-                : NotFound("Không tìm thấy câu hỏi nào.");
+            return Ok(response);
         }
 
         [HttpPut("update-lesson-id")]

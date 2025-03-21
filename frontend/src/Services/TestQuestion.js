@@ -58,6 +58,7 @@ export const AddQuestionsToTest = async (testId, testQuestions) =>{
 
         const result = await response.json();
         alert("Thêm câu hỏi thành công!");
+        
         console.log("Server Response:", result);
 
     } catch (error) {

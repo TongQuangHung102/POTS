@@ -1,5 +1,6 @@
 ﻿using backend.DataAccess.DAO;
-using backend.Dtos;
+using backend.Dtos.Curriculum;
+using backend.Dtos.Dashboard;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -24,16 +25,21 @@ namespace backend.Services
             return chapters;
         }
 
-        public async Task AddChaptersAsync(int gradeId,int semester, string input)
+        public async Task<Chapter> GetChapterByIdAsync(int chapterId)
+        {
+            return await _curriculumRepository.GetChapterByIdAsync(chapterId);
+        }
+
+        public async Task AddChaptersAsync(int subjectgradeId, int semester, string input)
         {
             if (string.IsNullOrWhiteSpace(input))
             {
                 throw new ArgumentException("Không được bỏ trống");
             }
 
-            var chapters = ParseChapters(input, semester);
+            var chapters = ParseChapters(subjectgradeId, input, semester);
 
-            await ValidateDuplicateChaptersAsync(gradeId, chapters);
+            await ValidateDuplicateChaptersAsync(subjectgradeId, chapters);
 
             await _curriculumRepository.AddChaptersAsync(chapters);
         }
@@ -46,7 +52,7 @@ namespace backend.Services
                 throw new KeyNotFoundException();
             }
 
-            var duplicateChapter = await _curriculumRepository.GetAllChapterAsync(existingChapter.GradeId);
+            var duplicateChapter = await _curriculumRepository.GetAllChapterAsync(existingChapter.SubjectGradeId);
             if (duplicateChapter.Any(ch => (ch.Order == chapterDto.Order && ch.ChapterName == chapterDto.ChapterName) && ch.ChapterId != id))
             {
                 throw new InvalidOperationException("Một chương có cùng thứ tự hoặc tên đã tồn tại.");
@@ -60,7 +66,7 @@ namespace backend.Services
             await _curriculumRepository.UpdateChapterAsync(existingChapter);
         }
 
-        private static List<Chapter> ParseChapters(string input, int semester)
+        private static List<Chapter> ParseChapters(int subjectgradeId, string input, int semester)
         {
             var chapters = new List<Chapter>();
             var regex = new Regex(@"Chương\s(\d+):?\s(.+?)(?=\s*Chương\s|\s*$)", RegexOptions.Singleline);
@@ -97,7 +103,8 @@ namespace backend.Services
                     ChapterName = title,
                     IsVisible = true,
                     UserId = null,
-                    Semester = semester
+                    Semester = semester,
+                    SubjectGradeId = subjectgradeId
                 });
                 chapterNumbers.Add(chapterNumber);
             }
@@ -106,9 +113,9 @@ namespace backend.Services
         }
 
 
-        private async Task ValidateDuplicateChaptersAsync(int gradeId, List<Chapter> chapters)
+        private async Task ValidateDuplicateChaptersAsync(int subjectgradeId, List<Chapter> chapters)
         {
-            var existingChapters = await _curriculumRepository.GetAllChapterAsync(gradeId);
+            var existingChapters = await _curriculumRepository.GetAllChapterAsync(subjectgradeId);
 
             var duplicateChapters = chapters.Where(ch =>
                 existingChapters.Any(ec => ec.Order == ch.Order && ec.ChapterName == ch.ChapterName)
@@ -121,9 +128,9 @@ namespace backend.Services
             }
         }
 
-        public async Task<List<StudentChapterDto>> GetFilteredChaptersAsync(int grade, int studentId)
+        public async Task<List<StudentChapterDto>> GetFilteredChaptersAsync(int id, int studentId)
         {
-            var chapters = await _curriculumRepository.GetAllChapterAsync(grade);
+            var chapters = await _curriculumRepository.GetAllChapterAsync(id);
             var studentPerformances = await _studentPerformanceRepository.GetStudentPerformanceAsync(studentId);
 
             return chapters.Where(c => c.IsVisible == true).Select(chapter => new StudentChapterDto

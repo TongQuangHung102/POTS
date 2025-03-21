@@ -1,5 +1,5 @@
 ﻿using backend.DataAccess.DAO;
-using backend.Dtos;
+using backend.Dtos.Dashboard;
 using backend.Models;
 
 namespace backend.Repositories
@@ -50,9 +50,9 @@ namespace backend.Repositories
             return await _questionDAO.GetQuestionsPractice(count, lessonId, levelId);
         }
 
-        public async Task<int> CountQuestionInGrade(int gradeId)
+        public async Task<int> CountQuestionInGrade(int id)
         {
-            return await _questionDAO.CountQuestionInGrade(gradeId);
+            return await _questionDAO.CountQuestionInSubjectGrade(id);
         }
 
         public async Task<List<Question>> GetQuestionsByChapterAutoAsync(ChapterQuestionAutoRequest chapterRequest)

@@ -15,9 +15,10 @@ namespace backend.Models
         public DateTime CreatedAt { get; set; }
         public bool IsVisible { get; set; }
         public int Order { get; set; }
-        public int GradeId { get; set; }
-        [ForeignKey("GradeId")]
-        public virtual Grades Grade { get; set; }
+        public int SubjectGradeId { get; set; }
+
+        [ForeignKey("SubjectGradeId")]
+        public virtual SubjectGrade SubjectGrade { get; set; }
         public virtual ICollection<TestQuestion> TestQuestions { get; set; }
         public virtual ICollection<StudentTest> StudentTests { get; set; }
         public virtual ICollection<Prerequisite> Prerequisites { get; set; }

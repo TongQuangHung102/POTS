@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate  } from 'react-router-dom';
 import styles from './ManageQuestionTest.module.css';
 import { fetchChapters } from '../../services/ChapterService';
 import { fetchLessons } from '../../services/LessonService';
@@ -9,7 +9,8 @@ import BackLink from '../../components/BackLink';
 
 const ManageQuestionTest = () => {
 
-    const { testId, gradeId } = useParams();
+    const { testId, gradeId, subjectId } = useParams();
+    const navigate = useNavigate();
 
     const [testQuestions, setTestQuestions] = useState([]);
     const [initialQuestions, setInitialQuestions] = useState([]);
@@ -81,8 +82,9 @@ const ManageQuestionTest = () => {
                 setTestQuestions([]);
             }
             else {
-                setTestQuestions(data)
-                setInitialQuestions(data);
+                console.log(data);
+                setTestQuestions(data.data)
+                setInitialQuestions(data.data);
                 setIsEditing(true);
             }
 
@@ -93,8 +95,9 @@ const ManageQuestionTest = () => {
     //lay danh sach chapter, lesson, level
     useEffect(() => {
         const loadChapters = async () => {
-            const data = await fetchChapters(gradeId);
-            setChapters(data);
+            const data = await fetchChapters(gradeId, subjectId);
+            setChapters(data.chapters);
+
         };
         const loadLevels = async () => {
             const data = await fetchLevels();
@@ -108,7 +111,8 @@ const ManageQuestionTest = () => {
         if (!chapterId) return;
         const loadLessons = async () => {
             const data = await fetchLessons(chapterId);
-            setLessons(data);
+            setLessons(data.lessons);
+            console.log(data)
         };
         loadLessons();
     }, [chapterId]);
@@ -131,6 +135,7 @@ const ManageQuestionTest = () => {
 
     const addQuestionsToTest = async () => {
         await AddQuestionsToTest(testId, testQuestions)
+        navigate(0);
     };
 
     const updateTestQuestions = async () => {
@@ -269,7 +274,7 @@ const ManageQuestionTest = () => {
                                 <button className='btn btn-primary' onClick={updateTestQuestions} disabled={!isModified}>
                                     Lưu
                                 </button>) : (
-                                <button className={styles.addButton} onClick={addQuestionsToTest}>
+                                <button className="btn btn-primary" onClick={addQuestionsToTest}>
                                     Thêm vào bài kiểm tra
                                 </button>)}
 
@@ -283,11 +288,15 @@ const ManageQuestionTest = () => {
                     <div className={styles.toolbar}>
                         <select className={styles.commonInput} value={chapterId} onChange={(e) => setChapterId(e.target.value)}>
                             <option value="">Chọn Chương</option>
-                            {chapters?.filter((c) => c.isVisible).map((c) => (
-                                <option key={c.chapterId} value={c.chapterId}>
-                                    Chương {c.order}: {c.chapterName}
-                                </option>
-                            ))}
+                            {chapters && chapters.length > 0 ? (
+                                chapters.filter((c) => c.isVisible).map((c) => (
+                                    <option key={c.chapterId} value={c.chapterId}>
+                                        Chương {c.order}: {c.chapterName}
+                                    </option>
+                                ))
+                            ) : (
+                                <option disabled>Đang tải...</option>
+                            )}
                         </select>
 
                         <select className={styles.commonInput} value={lessonId} onChange={(e) => setLessonId(e.target.value)}>

@@ -14,8 +14,8 @@ namespace backend.Models
         public int? UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual User? User { get; set; }
-        public virtual ICollection<Chapter> Chapters { get; set; }
-        public virtual ICollection<Test> Tests { get; set; }
+
         public virtual ICollection<User> Users { get; set; }
+        public virtual ICollection<SubjectGrade> SubjectGrades { get; set; }
     }
 }

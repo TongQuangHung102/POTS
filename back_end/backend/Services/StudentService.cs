@@ -1,4 +1,5 @@
 ﻿using backend.Dtos;
+using backend.Dtos.Dashboard;
 using backend.Models;
 using backend.Repositories;
 
@@ -17,7 +18,7 @@ namespace backend.Services
             _userRepository = userRepository;
         }
 
-        public async Task<StudentDashboardDto> GetDashboardDataAsync(int userId)
+        public async Task<StudentDashboardDto> GetDashboardDataAsync(int userId, int subjectGradeId)
         {
             var today = DateTime.Today;
             var rate = "";
@@ -26,9 +27,9 @@ namespace backend.Services
             var student = await _userRepository.GetAllInfomationUser(userId);
 
 
-            var totalPractice = await _practiceRepository.GetTotalNumberPracticeAsync(userId);
-            var avg_score = await _practiceRepository.GetAveragePracticeScoreAsync(userId);
-            var avg_time = await _practiceRepository.GetAveragePracticeTimeAsync (userId);
+            var totalPractice = await _practiceRepository.GetTotalNumberPracticeAsync(subjectGradeId, userId);
+            var avg_score = await _practiceRepository.GetAveragePracticeScoreAsync(subjectGradeId, userId);
+            var avg_time = await _practiceRepository.GetAveragePracticeTimeAsync(subjectGradeId, userId);
 
             if (avg_score < 5) rate = "Yếu";
             if (avg_score >= 5 && avg_score < 6.5) rate = "Trung bình";
@@ -45,7 +46,7 @@ namespace backend.Services
             {
                 var date = today.AddDays(-i);
                 activityLabelsTime.Add(date.ToString("dd/MM"));
-                var practiceTime = await _practiceRepository.GetTotalPracticeTimeByDateAsync(userId, date);
+                var practiceTime = await _practiceRepository.GetTotalPracticeTimeByDateAsync(subjectGradeId, userId,  date);
                 activityValuesTime.Add(practiceTime);
             }
 
@@ -53,8 +54,8 @@ namespace backend.Services
             {
                 var date = today.AddDays(-i);
                 activityLabelsScore.Add(date.ToString("dd/MM"));
-                var practiceScore = await _practiceRepository.GetAverageScoreByDateAsync(userId, date);
-                var practiceTime = await _practiceRepository.GetAverageTimeByDateAsync(userId, date);
+                var practiceScore = await _practiceRepository.GetAverageScoreByDateAsync(subjectGradeId,userId, date);
+                var practiceTime = await _practiceRepository.GetAverageTimeByDateAsync(subjectGradeId, userId, date);
                 activityValuesScore.Add(practiceScore);
                 activityValuesTime2.Add(practiceTime);
 

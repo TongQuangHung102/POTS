@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Dashboard;
 using backend.Models;
 using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
@@ -23,7 +23,7 @@ namespace backend.DataAccess.DAO
             var query = _context.Questions
                 .Include(q => q.Level)
                 .Include(q => q.Lesson)
-                    .ThenInclude(l => l.Chapter)
+                .ThenInclude(l => l.Chapter)
                 .Include(q => q.AnswerQuestions)
                 .Include(q => q.ContestQuestions)
                 .Include(q => q.TestQuestions)
@@ -145,10 +145,10 @@ namespace backend.DataAccess.DAO
                 .ToListAsync();
         }
 
-        public async Task<int> CountQuestionInGrade(int gradeId)
+        public async Task<int> CountQuestionInSubjectGrade(int id)
         {
             return await _context.Questions
-                .Where(q => q.Lesson.Chapter.Grade.GradeId == gradeId) 
+                .Where(q => q.Lesson.Chapter.SubjectGrade.GradeId == id) 
                 .CountAsync();
         }
 

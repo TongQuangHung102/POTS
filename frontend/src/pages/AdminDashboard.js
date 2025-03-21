@@ -3,7 +3,7 @@ import { Card, Row, Col, Table } from 'react-bootstrap';
 import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend, BarElement } from 'chart.js';
 import { Chart } from 'react-chartjs-2';
 import { BiCube, BiSolidUserCheck } from "react-icons/bi";
-
+import { fetchGrades } from '../services/GradeService';
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend, BarElement);
 
 const AdminDashboard = () => {
@@ -12,9 +12,12 @@ const AdminDashboard = () => {
   const [dataTotalStudent, setDataTotalStudent] = useState({});
   const [dataTime, setDataTime] = useState({});
 
+  const [grades, setGrades] = useState([]);
+  const [gradeId, setGradeId] = useState(null)
+
   useEffect(() => {
     setIsLoading(true);
-    fetch(`https://localhost:7259/api/Dashboard/admin-dashboard`)
+    fetch(`https://localhost:7259/api/Dashboard/admin-dashboard${gradeId ? `?gradeId=${gradeId}` : ''}`)
       .then(res => res.json())
       .then(data => {
         setDashboardData(data);
@@ -33,7 +36,7 @@ const AdminDashboard = () => {
             tension: 0.4
           }]
         });
-    
+
         setDataTime({
           labels: data.activityTime.labels,
           datasets: [{
@@ -45,8 +48,16 @@ const AdminDashboard = () => {
           }]
         })
       });
-  }, []);
+  }, [gradeId]);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await fetchGrades(); // Chờ dữ liệu trả về
+      if (data) setGrades(data); // Cập nhật state nếu có dữ liệu
+    };
+
+    fetchData(); // Gọi hàm async
+  }, []);
 
   const progressConfig = {
     type: 'line',
@@ -178,7 +189,28 @@ const AdminDashboard = () => {
         </Col>
         <Col md={12}>
           <Row>
-            <Col md={7}>
+            <Col md={2}>
+              <Card>
+                <Card.Body>
+                  <div className="card-item">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <h5 className="mb-4">Khối</h5>
+                    </div>
+                    <div>
+                      <select value={gradeId ?? ""} onChange={e => setGradeId(e.target.value || null)}>
+                        <option value=''>Tất cả lớp</option>
+                        {grades.map(cls => (
+                          <option key={cls.gradeId} value={cls.gradeId}>
+                            {cls.gradeName}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                  </div>
+                </Card.Body>
+              </Card>
+            </Col>
+            <Col md={6}>
               <Card>
                 <Card.Body>
                   <div className="card-item">
@@ -214,7 +246,7 @@ const AdminDashboard = () => {
                 </Card.Body>
               </Card>
             </Col>
-            <Col md={5}>
+            <Col md={4}>
               <Card>
                 <Card.Body>
                   <div className="card-item">

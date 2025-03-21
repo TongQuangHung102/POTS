@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Subscriptions;
 using backend.Models;
 using backend.Repositories;
 

@@ -17,24 +17,24 @@ namespace backend.Repositories
             await _attemptDAO.AddPracticeAttemp(practiceAttempt);
         }
 
-        public async Task<double> GetAveragePracticeScoreAsync(int userId)
+        public async Task<double> GetAveragePracticeScoreAsync(int subjectGradeId, int userId)
         {
-            return await _attemptDAO.GetAveragePracticeScoreAsync(userId);
+            return await _attemptDAO.GetAveragePracticeScoreAsync(userId, subjectGradeId);
         }
 
-        public async Task<double> GetAveragePracticeTimeAsync(int userId)
+        public async Task<double> GetAveragePracticeTimeAsync(int subjectGradeId, int userId)
         {
-            return await _attemptDAO.GetAveragePracticeTimeAsync(userId);
+            return await _attemptDAO.GetAveragePracticeTimeAsync(userId, subjectGradeId);
         }
 
-        public async Task<double> GetAverageScoreByDateAsync(int userId, DateTime date)
+        public async Task<double> GetAverageScoreByDateAsync(int subjectGradeId, int userId, DateTime date)
         {
-            return await _attemptDAO.GetAverageScoreByDateAsync(userId, date);
+            return await _attemptDAO.GetAverageScoreByDateAsync(userId, date, subjectGradeId);
         }
 
-        public async Task<double> GetAverageTimeByDateAsync(int userId, DateTime date)
+        public async Task<double> GetAverageTimeByDateAsync(int subjectGradeId, int userId, DateTime date)
         {
-            return await _attemptDAO.GetAverageTimeByDateAsync(userId, date);
+            return await _attemptDAO.GetAverageTimeByDateAsync(userId, date, subjectGradeId);
         }
 
         public async Task<PracticeAttempt> GetLastAttempt(int userId, int lessonId)
@@ -47,19 +47,19 @@ namespace backend.Repositories
             return await _attemptDAO.GetStudentDataAsync(gradeId);
         }
 
-        public async Task<int> GetTotalNumberPracticeAsync(int userId)
+        public async Task<int> GetTotalNumberPracticeAsync(int subjectGradeId, int userId)
         {
-            return await _attemptDAO.GetTotalNumberPracticeAsync(userId);
+            return await _attemptDAO.GetTotalNumberPracticeAsync(userId, subjectGradeId);
         }
 
-        public async Task<double> GetTotalPracticeTimeAllStudentByDateAsync(DateTime date, int? gradeId = null)
+        public async Task<double> GetTotalPracticeTimeAllStudentByDateAsync(DateTime date, int? gradeId = null, int? subjectGradeId = null)
         {
-            return await _attemptDAO.GetTotalPracticeTimeAllStudentByDateAsync(date);
+            return await _attemptDAO.GetTotalPracticeTimeAllStudentByDateAsync(date, gradeId, subjectGradeId);
         }
 
-        public async Task<double> GetTotalPracticeTimeByDateAsync(int userId, DateTime date)
+        public async Task<double> GetTotalPracticeTimeByDateAsync(int subjectGradeId, int userId, DateTime date)
         {
-            return await _attemptDAO.GetTotalPracticeTimeByDateAsync(userId, date);
+            return await _attemptDAO.GetTotalPracticeTimeByDateAsync(subjectGradeId,userId, date);
         }
 
         public async Task<List<PracticeAttempt>> GetUserAttemptsAsync(int userId, int lessonId)

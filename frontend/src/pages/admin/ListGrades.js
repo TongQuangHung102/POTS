@@ -110,6 +110,10 @@ const ListGrades = () => {
     navigate('/admin/test_category')
   }
 
+  const handleToSubjects = () =>{
+    navigate('/admin/grades/subject')
+  }
+
   const handleSave = async () => {
     try {
       const response = await fetch(`https://localhost:7259/api/Grade/update-grade/${selectedGrade.gradeId}`, {
@@ -157,6 +161,7 @@ const ListGrades = () => {
         <div>
           <button className="add-chapter" onClick={() => setShowAddGrade(true)}>Thêm lớp mới</button>
           <button className="add-chapter" onClick={() => handleToCategoryTest()}>Quản lý bài kiểm tra</button>
+          <button className="add-chapter" onClick={() => handleToSubjects()}>Quản lý môn học</button>
         </div>
 
       </div>
@@ -165,7 +170,7 @@ const ListGrades = () => {
           <div className="add-chapter-form">
             <input
               type="text"
-              placeholder="Nhập tên chương mới"
+              placeholder="Nhập tên lớp mới"
               value={newGrades}
               onChange={(e) => setNewGrades(e.target.value)}
             />
@@ -203,7 +208,7 @@ const ListGrades = () => {
               <td>{grade.gradeIsVisible ? <span style={{ color: "green" }}>Hoạt động</span> : <span style={{ color: "red" }}>Không hoạt động</span>}</td>
               <td>
                 <button>
-                  <Link to={`/admin/grades/${grade.gradeId}`}>Chương trình</Link>
+                  <Link to={`/admin/grades/${grade.gradeId}`}>Môn học</Link>
                 </button>
 
                 <button onClick={() => handleEdit(grade)}>Chỉnh sửa</button>
@@ -259,10 +264,19 @@ const ListGrades = () => {
                 onChange={(e) =>
                   setSelectedGrade({
                     ...selectedGrade,
-                    userId: parseInt(e.target.value, 10)
+                    userId: parseInt(e.target.value)
                   })
                 }
+                onClick={() => {
+                  if (contentManagers.length === 1) {
+                    setSelectedGrade({
+                      ...selectedGrade,
+                      userId: contentManagers[0].userId
+                    });
+                  }
+                }}
               >
+                <option value={0}>Không có</option>
                 {contentManagers.map((user) => (
                   <option key={user.userId} value={user.userId}>
                     {user.userName}

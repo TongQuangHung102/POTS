@@ -4,6 +4,7 @@ import styles from "./Quiz.module.css";
 import { fetchTestQuestions } from "../../services/TestQuestion";
 import { fetchPracticeQuestions, submitPracticeResult, submitTestResult } from "../../services/PracticeService";
 
+
 import BackLink from "../../components/BackLink";
 import QuizResult from "./QuizResult";
 import { useAuth } from "../../hooks/useAuth";
@@ -16,6 +17,7 @@ const Quiz = () => {
     const [showScore, setShowScore] = useState(false);
     const [score, setScore] = useState(0);
     const [sampleQuestion, setsampleQuestion] = useState('');
+    const [selectedQuestion, setSelectedQuestion] = useState(null);
 
     const [byAI, setByAI] = useState(true);
 
@@ -28,6 +30,9 @@ const Quiz = () => {
     const [totalTime, setTotalTime] = useState(0);
     const [startTime, setStartTime] = useState(new Date().toISOString());
 
+    const [isReport, setIsReport] = useState(false);
+    const [reportReason, setReportReason] = useState("");
+
 
     const { user, loading } = useAuth();
     const location = useLocation();
@@ -38,31 +43,31 @@ const Quiz = () => {
 
 
     useEffect(() => {
-        if (mode === "test" && duration > 0) {
+        if (mode === "test") {
             setTimeLeft(duration * 60);
+            setStartTime(new Date().toISOString());
         } else if (mode !== "test") {
             setElapsedTime(0);
         }
-    }, [duration, mode]);
+    }, [duration]);
 
     useEffect(() => {
-        if (timeLeft > 0) {
+        if (mode === "test" && timeLeft > 0) {
             const timer = setInterval(() => {
                 setTimeLeft(prevTime => {
                     if (prevTime - 1 <= 0) {
                         clearInterval(timer);
-                        handleSubmit(); 
+                        handleSubmit();
                         return 0;
                     }
                     return prevTime - 1;
                 });
             }, 1000);
             return () => clearInterval(timer);
-        } else if (timeLeft === 0 && mode === "test") {
-            handleSubmit(); 
         }
+
     }, [timeLeft]);
-    
+
 
     useEffect(() => {
         if (mode !== "test" || timeLeft <= 0) {
@@ -82,10 +87,7 @@ const Quiz = () => {
     };
 
     const restartQuiz = () => {
-        setUserAnswers(Array(questions.length).fill(null));
-        setShowScore(false);
-        setElapsedTime(0);
-        setTimeLeft(duration * 60);
+        window.location.reload();
     };
 
     useEffect(() => {
@@ -100,7 +102,6 @@ const Quiz = () => {
             let result;
             if (mode === "test") {
                 result = await fetchTestQuestions(testId);
-                console.log(result);
             } else {
                 result = await fetchPracticeQuestions(user.userId, lessonId);
             }
@@ -118,8 +119,8 @@ const Quiz = () => {
                     setsampleQuestion(result.data.questions[0].questionText);
                     setUserAnswers(Array(result.data.questions.length).fill(null));
                 }
-                if (mode === "test" && result.data.length > 0) {
-                    setDuration(result.data[0].test.durationInMinutes);
+                if (mode === "test") {
+                    setDuration(result.test.durationInMinutes);
                     setStartTime(new Date().toISOString());
                 }
             }
@@ -139,6 +140,7 @@ const Quiz = () => {
     };
 
     const handleSubmit = async () => {
+
         let totalScore = 0;
         userAnswers.forEach((answer, index) => {
             if (answer !== null && questions[index].correctAnswer === (answer + 1)) {
@@ -146,7 +148,7 @@ const Quiz = () => {
             }
         });
 
-        const endTime = new Date().toISOString(); 
+        const endTime = new Date().toISOString();
 
         if (mode === "test") {
             setTotalTime(duration * 60 - timeLeft);
@@ -187,8 +189,45 @@ const Quiz = () => {
                 console.error("Lỗi khi gửi kết quả bài kiểm tra:", error);
             }
         }
+        setTimeLeft(0);
 
     };
+
+    const handleReport = (question) => {
+        setSelectedQuestion(question);
+        setIsReport(true);
+    };
+
+    const handleClose = () => {
+        setSelectedQuestion(null);
+        setIsReport(false);
+      };
+
+      const handleReportSubmit = async () => {
+        if (!reportReason.trim()) {
+            alert("Vui lòng nhập lý do báo cáo!");
+            return;
+        }
+
+        try {
+            await fetch("https://localhost:7259/api/Report/add-report", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    questionId: selectedQuestion.questionId, 
+                    reason: reportReason,
+                    userId: user.userId, 
+                }),
+            });
+
+            alert("Báo cáo đã được gửi!");
+            setIsReport(false);
+            setReportReason("");
+        } catch (error) {
+            console.error("Lỗi khi gửi báo cáo:", error);
+        }
+    };
+
     if (isLoading) return <div className={styles.loading}>
         <p>Đang tải câu hỏi...</p>
     </div>
@@ -255,9 +294,9 @@ const Quiz = () => {
                         <QuizResult
                             questions={questions}
                             userAnswers={userAnswers}
-                            score={score}
-                            onRestart={() => window.location.reload()}
                             isPremium={isPremium}
+                            mode={mode}
+                            onReport={(question) => handleReport(question)}
                         />
                     ) : (
                         <div className={styles.upgradeContainer}>
@@ -287,6 +326,31 @@ const Quiz = () => {
                     ))
                 )}
             </div>
+
+            {isReport && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+                        <h3>Báo cáo câu hỏi</h3>
+
+                        <label>
+                            Lý do báo cáo:
+                            <textarea
+                                value={reportReason}
+                                onChange={(e) => setReportReason(e.target.value)}
+                                placeholder="Nhập lý do báo cáo..."
+                                className={styles.textarea}
+                            />
+                        </label>
+
+                        <div className="button-group">
+                            <button onClick={handleReportSubmit} >Gửi báo cáo</button>
+                            <button onClick={handleClose}>Đóng</button>
+                        </div>
+
+                    </div>
+                </div>
+            )}
+
 
         </div>
     );
