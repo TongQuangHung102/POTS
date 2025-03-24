@@ -37,17 +37,74 @@ namespace backend.Controllers
         [HttpGet("get-question-by/{questionId}")]
         public async Task<IActionResult> GetQuestionById(int questionId)
         {
-            return await _questionService.GetQuestionByIdAsync(questionId);
+            var question = await _questionService.GetQuestionByIdAsync(questionId);
+            var response = new
+            {
+                question.QuestionId,
+                question.QuestionText,
+                question.CreateAt,
+                question.CorrectAnswer,
+                question.IsVisible,
+                question.CreateByAI,
+                Level = new
+                {
+                    question.Level.LevelName
+                },
+                Lesson = new
+                {
+                    question.Lesson.LessonName
+                },
+                AnswerQuestions = question.AnswerQuestions.Select(a => new
+                {
+                    a.AnswerQuestionId,
+                    a.AnswerText,
+                    a.Number
+                }).ToList()
+            };
+
+            return Ok(response);
         }
         [HttpPut("edit-question/{questionId}")]
         public async Task<IActionResult> UpdateQuestion(int questionId, [FromBody] QuestionDto questionDto)
         {
-            return await _questionService.UpdateQuestionAsync(questionId, questionDto);
+            try
+            {
+                await _questionService.UpdateQuestionAsync(questionId, questionDto);
+                return Ok(new { message = "Cập nhật câu hỏi và danh sách câu trả lời thành công." });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { message = ex.Message });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi khi cập nhật câu hỏi.", error = ex.Message });
+            }
         }
         [HttpPost("add-question")]
         public async Task<IActionResult> AddQuestion([FromBody] CreateQuestionDto questionDto)
         {
-            return await _questionService.AddQuestionAsync(questionDto);
+            try
+            {
+                await _questionService.AddQuestionAsync(questionDto);
+                return Ok(new { message = "Câu hỏi và câu trả lời đã được thêm thành công." });
+            }
+            catch (ArgumentNullException ex)
+            {
+                return BadRequest(new { message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Đã xảy ra lỗi khi thêm câu hỏi.", error = ex.Message });
+            }
         }
 
         [HttpPost("gen-question-practice")]

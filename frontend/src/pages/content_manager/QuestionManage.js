@@ -6,7 +6,6 @@ import BackLink from '../../components/BackLink';
 const QuestionManage = () => {
     // State chứa danh sách câu hỏi từ API
     const { lessonId,subjectId, gradeId, chapterId } = useParams();
-    const location = useLocation();
     const [lessonName, setLessonName] = useState('');
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -89,13 +88,14 @@ const QuestionManage = () => {
             setQuestions(formattedQuestions);
         } catch (error) {
             setError(error.message);
+        }finally {
+            setLoading(false);
         }
     };
 
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             fetchQuestions();
-            setLoading(false);
         }, 500);
 
         return () => clearTimeout(delayDebounce);
@@ -115,6 +115,20 @@ const QuestionManage = () => {
     };
 
     const handleSave = async () => {
+        if (!editingQuestion.question.trim()) {
+            setErrorMessage("Câu hỏi không được để trống.");
+            return;
+        }
+        
+        if (editingQuestion.options.some(opt => !opt.text.trim())) {
+            setErrorMessage("Tất cả câu trả lời phải được điền.");
+            return;
+        }
+    
+        if (!editingQuestion.correctAnswer) {
+            setErrorMessage("Hãy chọn một đáp án đúng.");
+            return;
+        }
         try {
             const requestBody = {
                 questionText: editingQuestion.question,
@@ -146,8 +160,7 @@ const QuestionManage = () => {
 
             setSuccessMessage(result.message);
             alert("Cập nhật thành công!");
-            fetchQuestions();
-
+            await fetchQuestions();
             setIsEditing(false);
         } catch (error) {
             setErrorMessage(error.message)

@@ -84,7 +84,16 @@ namespace backend.DataAccess.DAO
             _context.Chapters.UpdateRange(chapters);
             await _context.SaveChangesAsync();
         }
-        
+        public async Task<List<Chapter>> GetChaptersWithQuestionsBySubjectGradeAsync(int subjectGradeId)
+        {
+            return await _context.Chapters
+                .Where(c => c.SubjectGradeId == subjectGradeId)
+                .Include(c => c.Lessons)
+                    .ThenInclude(l => l.Questions)
+                .ToListAsync();
+        }
+
+
 
 
     }

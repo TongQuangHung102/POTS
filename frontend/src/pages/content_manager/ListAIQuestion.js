@@ -244,7 +244,7 @@ const ListAIQuestion = () => {
     return (
         <div className={styles.questionManager}>
             <h2>Danh sách câu hỏi AI {lessonName}</h2>
-            <BackLink/>
+            <BackLink />
             <div className={styles.groupbtn}>
                 <button onClick={() => setShowModal(true)}>
                     Thêm câu hỏi bằng AI
@@ -253,9 +253,9 @@ const ListAIQuestion = () => {
             <div className={styles.toolbar}>
                 <select className={styles.commonInput} value={status} onChange={(e) => setStatus(e.target.value)}>
                     <option value="">Chọn trạng thái</option>
-                    <option value="Pending">Chờ duyệt</option>
+                    <option value="Pending">Chờ kiểm tra</option>
                     <option value="Approved">Đã duyệt</option>
-                    {/* <option value="Rejected">Bị từ chối</option> */}
+                    <option value="Reject">Bị từ chối</option>
                 </select>
 
                 <select className={styles.commonInput} value={levelId} onChange={(e) => setLevelId(e.target.value)}>
@@ -278,15 +278,13 @@ const ListAIQuestion = () => {
             <div className={styles.questionList}>
                 {aiQuestions.map(q => (
                     <div key={q.id} className={styles.questionItem}>
-                        <div className={styles.questionHeader}>
+                        <div className={styles.questionHeader} onClick={() => toggleQuestion(q.id)}>
                             <span className={styles.questionText}>{q.id}. {q.question}</span>
 
                             <div className={styles.questionActions}>
                                 <span className={styles.levelName}>{q.levelName}</span>
-                                <span className={`${q.status === "Approved" ? styles.isVisible : styles.inactive}`}> {q.status === "Approved" ? "Đã duyệt" : q.status === "Pending" ? "Chờ duyệt" : q.status}</span>
-                                <button className={styles.editButton} onClick={() => approveQuestion(q.id, q.status)} disabled={q.status === "Approved"}>Duyệt</button>
-                                <button className={styles.editButton} onClick={() => handleEdit(q)}>Chỉnh sửa</button>
-                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`} onClick={() => toggleQuestion(q.id)}>▼</span>
+                                <span className={`${q.status === "Approved" ? styles.isVisible : styles.inactive}`}> {q.status === "Approved" ? "Đã duyệt" : q.status === "Pending" ? "Chờ kiểm tra" : q.status}</span>
+                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`} >▼</span>
                             </div>
                         </div>
 
@@ -308,6 +306,11 @@ const ListAIQuestion = () => {
                                             </div>
                                         ))}
                                     </div>
+                                    {q.status !== "Approved" && (<div>
+                                        <button className='btn btn-success m-1' onClick={() => approveQuestion(q.id, q.status)} disabled={q.status === "Approved"}>Duyệt</button>
+                                        <button className='btn btn-primary m-1' onClick={() => handleEdit(q)}>Chỉnh sửa</button>
+                                    </div>)}
+                                    
                                 </div>
                             </div>
                         )}

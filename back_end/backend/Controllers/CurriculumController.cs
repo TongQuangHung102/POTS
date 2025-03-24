@@ -53,6 +53,25 @@ namespace backend.Controllers
             }
         }
 
+        [HttpGet("get-chapter-and-num-question-by-grade/{gradeId}/subject/{subjectId}")]
+        public async Task<IActionResult> GetAllChapterAndNumQuestion(int gradeId, int subjectId)
+        {
+            try
+            {
+                var chapters = await _chapterService.GetChaptersWithQuestionLevelsAsync(gradeId, subjectId);
+                if (chapters == null || chapters.Count == 0)
+                {
+                    return NoContent();
+                }
+
+                return Ok(chapters);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi máy chủ nội bộ", error = ex.Message });
+            }
+        }
+
         [HttpGet("get-student-chapter/{gradeId}/subject/{subjectId}/student/{studentId}")]
         public async Task<ActionResult<List<ChapterDto>>> GetStudentChapter(int gradeId,int subjectId, int studentId)
         {

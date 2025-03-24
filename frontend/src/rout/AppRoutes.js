@@ -36,6 +36,9 @@ import ListSubjectGrades from '../pages/admin/ListSubjectGrade';
 import ChooseSubject from '../pages/student/ChooseSubject';
 import ListSubject from '../pages/admin/ListSubject';
 import ListReport from '../pages/admin/ListReport';
+import ParentDashboard from '../pages/parent/ParentDashboard';
+import ParentLayout from '../pages/parent/ParentLayout';
+import UserProfile from '../pages/UserProfile';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
@@ -54,6 +57,9 @@ const AppRoutes = () => {
             <Route path='/choose-role' element={<ChooseRole />}></Route>
             <Route path='/choose-grade' element={<ChooseGrade />}></Route>
             <Route path='/forgot-password' element={<ForgotPasswordForm />}></Route>
+            <Route path='/profile' element={<UserProfile />}></Route>
+
+
             
             
 
@@ -110,6 +116,12 @@ const AppRoutes = () => {
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/list_tests' element={<ListTest />}></Route> 
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/test/:testId/questions' element={<ManageQuestionTest />}></Route> 
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/chapters/:chapterId/lessons/:lessonId/list-aiquestion' element={<ListAIQuestion />} />
+            </Route>
+
+            <Route path='/parent' element={<ParentLayout />}> 
+                <Route index element={<Navigate to="/parent/dashboard" replace />} />  
+                <Route path='/parent/dashboard' element={<ParentDashboard />}></Route>
+                <Route path='/parent/profile' element={<UserProfile />}></Route>
             </Route>
             {/* Nếu chưa đăng nhập, điều hướng đến login */}
             {!user && (

@@ -20,5 +20,7 @@ namespace backend.Repositories
 
         Task<Lesson> GetLessonWithQuestionsAIByIdAsync(int id);
 
+        Task<List<Chapter>> GetChaptersWithQuestionsBySubjectGradeAsync(int subjectGradeId);
+
     }
 }
