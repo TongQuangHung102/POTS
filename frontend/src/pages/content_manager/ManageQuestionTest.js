@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate  } from 'react-router-dom';
 import styles from './ManageQuestionTest.module.css';
-import { fetchChapters } from '../../services/ChapterService';
+import { fetchChaptersWithNumQuestion } from '../../services/ChapterService';
 import { fetchLessons } from '../../services/LessonService';
 import { fetchLevels } from '../../services/LevelService';
 import { fetchTestQuestions, GenerateTest, UpdateTestQuestions, AddQuestionsToTest } from '../../services/TestQuestion'
@@ -95,8 +95,8 @@ const ManageQuestionTest = () => {
     //lay danh sach chapter, lesson, level
     useEffect(() => {
         const loadChapters = async () => {
-            const data = await fetchChapters(gradeId, subjectId);
-            setChapters(data.chapters);
+            const data = await fetchChaptersWithNumQuestion(gradeId, subjectId);
+            setChapters(data);
 
         };
         const loadLevels = async () => {
@@ -411,15 +411,19 @@ const ManageQuestionTest = () => {
                         </div>
 
                         <div className={styles.selectedChapters}>
-                            {selectedChapters.map((chapterId) => (
+                            {selectedChapters.map((chapterId) => {
+                                const chapter = chapters.find((c) => c.chapterId === chapterId);
+                             return (
                                 <div key={chapterId} className={styles.chapterRow}>
                                     <span className={styles.chapterName}>
                                         {getChapterInfo(chapterId)}
                                     </span>
                                     <div className={styles.levelInputs}>
-                                        {levels.map((level) => (
+                                        {levels.map((level) => { 
+                                            const questionCount = chapter?.questionLevelCounts[level.levelId] || 0;
+                                            return (
                                             <div key={level.levelId} className={styles.levelGroup}>
-                                                <label>{level.levelName}</label>
+                                                <label>{level.levelName}({questionCount})</label>
                                                 <input
                                                     type="number"
                                                     min="0"
@@ -428,13 +432,13 @@ const ManageQuestionTest = () => {
                                                     }
                                                 />
                                             </div>
-                                        ))}
+                                        )})}
                                     </div>
                                     <button className={styles.removeButton} onClick={() => handleRemoveChapter(chapterId)}>
                                         ❌
                                     </button>
                                 </div>
-                            ))}
+                            )})}
                         </div>
 
                         {/* Nút xác nhận & đóng */}

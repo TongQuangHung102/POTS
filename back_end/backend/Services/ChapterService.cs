@@ -12,12 +12,15 @@ namespace backend.Services
     {
         private readonly ICurriculumRepository _curriculumRepository;
         private readonly IStudentPerformanceRepository _studentPerformanceRepository;
+        private readonly ISubjectGradeRepository _subjectGradeRepository;
 
-        public ChapterService(ICurriculumRepository curriculumRepository, IStudentPerformanceRepository studentPerformanceRepository)
+        public ChapterService(ICurriculumRepository curriculumRepository, IStudentPerformanceRepository studentPerformanceRepository, ISubjectGradeRepository subjectGradeRepository)
         {
             _curriculumRepository = curriculumRepository;
             _studentPerformanceRepository = studentPerformanceRepository;
+            _subjectGradeRepository = subjectGradeRepository;
         }
+
         public async Task<List<Chapter>> GetAllChaptersAsync(int gradeId)
         {
             var chapters = await _curriculumRepository.GetAllChapterAsync(gradeId);
@@ -53,7 +56,7 @@ namespace backend.Services
             }
 
             var duplicateChapter = await _curriculumRepository.GetAllChapterAsync(existingChapter.SubjectGradeId);
-            if (duplicateChapter.Any(ch => (ch.Order == chapterDto.Order && ch.ChapterName == chapterDto.ChapterName) && ch.ChapterId != id))
+            if (duplicateChapter.Any(ch => (ch.Order == chapterDto.Order || ch.ChapterName == chapterDto.ChapterName) && ch.ChapterId != id))
             {
                 throw new InvalidOperationException("Một chương có cùng thứ tự hoặc tên đã tồn tại.");
             }
@@ -154,5 +157,36 @@ namespace backend.Services
                 }).ToList()
             }).ToList();
         }
+        public async Task<List<ChapterWithQuestionLevelsDto>> GetChaptersWithQuestionLevelsAsync(int gradeId, int subjectId)
+        {
+            var subjectGrade = await _subjectGradeRepository.GetByGradeAndSubjectAsync(gradeId, subjectId);
+            if (subjectGrade == null)
+            {
+                return new List<ChapterWithQuestionLevelsDto>(); 
+            }
+
+            var chapters = await _curriculumRepository.GetChaptersWithQuestionsBySubjectGradeAsync(subjectGrade.Id);
+            if (chapters == null || chapters.Count == 0)
+            {
+                return new List<ChapterWithQuestionLevelsDto>();
+            }
+
+            return chapters.Select(c => new ChapterWithQuestionLevelsDto
+            {
+                ChapterId = c.ChapterId,
+                ChapterName = c.ChapterName,
+                Order = c.Order,
+                Semester = c.Semester,
+                IsVisible = c.IsVisible,
+                QuestionLevelCounts = c.Lessons != null
+                    ? c.Lessons
+                        .Where(l => l.Questions != null)
+                        .SelectMany(l => l.Questions)
+                        .GroupBy(q => q.LevelId)
+                        .ToDictionary(g => g.Key, g => g.Count())
+                    : new Dictionary<int, int>()
+            }).ToList();
+        }
+
     }
 }

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styles from '../content_manager/QuestionManage.module.css';
 import BackLink from '../../components/BackLink';
-import { updateReport } from '../../services/ReportService'; 
+import { updateReport } from '../../services/ReportService';
 
 const ListReport = () => {
     // State chứa danh sách câu hỏi từ API
@@ -49,10 +49,10 @@ const ListReport = () => {
             setReports(data.data);
         } catch (error) {
             setError(error.message);
-        }finally {
+        } finally {
             setLoading(false);
         }
-        
+
     };
 
     useEffect(() => {
@@ -78,7 +78,7 @@ const ListReport = () => {
 
         if (result.success) {
             alert(result.message);
-            fetchReport(); 
+            fetchReport();
             setIsEditing(false);
         } else {
             setErrorMessage(result.message);
@@ -93,24 +93,30 @@ const ListReport = () => {
 
     const getStatusClass = (status) => {
         switch (status) {
-          case "Pending":
-            return styles.pending;
-          case "Reject":
-            return styles.reject;
-          case "Resolved":
-            return styles.resolved;
-          default:
-            return styles.unknown;
+            case "Pending":
+                return styles.pending;
+            case "Reject":
+                return styles.reject;
+            case "Resolved":
+                return styles.resolved;
+            default:
+                return styles.unknown;
         }
-      };
+    };
 
-      const handleEdit = (question) => {
+    const handleEdit = (question) => {
         setEditingReport(question);
         setIsEditing(true);
     };
 
     const handleReject = async (report) => {
         const updatedReport = { ...report, status: 'Reject' };
+        await handleSave(updatedReport);
+    };
+
+    const handleResolved = async () => {
+        const updatedReport = { ...editingReport, status: 'Resolved' };
+        console.log(updatedReport);
         await handleSave(updatedReport);
     };
 
@@ -130,9 +136,9 @@ const ListReport = () => {
             <div className={styles.toolbar}>
                 <select className={styles.commonInput} value={status} onChange={(e) => setStatus(e.target.value)}>
                     <option value="">Chọn Trạng Thái</option>
-                    <option value="Pending">Pending</option>
-                    <option value="Rejected">Rejected</option>
-                    <option value="Resolved">Resolved</option>
+                    <option value="Pending">Chờ giải quyết</option>
+                    <option value="Reject">Từ chối</option>
+                    <option value="Resolved">Đã giải quyết</option>
                 </select>
             </div>
 
@@ -143,14 +149,12 @@ const ListReport = () => {
             {/* Danh sách câu hỏi */}
             <div className={styles.questionList}>
                 {reports.map(q => (
-                    <div key={q.reportId} className={styles.questionItem}>
+                    <div key={q.reportId} className={styles.questionItem} onClick={() => toggleQuestion(q.reportId)}>
                         <div className={styles.questionHeader}>
                             <span className={styles.questionText}>{q.reportId}: {q.reason}</span>
                             <div className={styles.questionActions}>
                                 <span className={`${styles.status} ${getStatusClass(q.status)}`}> {statusMap[q.status] || "Không xác định"}</span>
-                                <button className={styles.editButton} onClick={() => handleReject(q)}>Từ Chối</button>
-                                <button className={styles.editButton} onClick={() => handleEdit(q)}>Chỉnh sửa</button>
-                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`} onClick={() => toggleQuestion(q.reportId)}>▼</span>
+                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`} >▼</span>
                             </div>
                         </div>
 
@@ -172,6 +176,13 @@ const ListReport = () => {
                                             </div>
                                         ))}
                                     </div>
+                                    {q.status === 'Pending' && (
+                                        <div>
+                                            <button className='btn btn-danger me-2 mt-2' onClick={() => handleReject(q)}>Từ Chối</button>
+                                            <button className='btn btn-primary mt-2' onClick={() => handleEdit(q)}>Chỉnh sửa</button>
+                                        </div>
+                                    )}
+
                                 </div>
                             </div>
                         )}
@@ -239,7 +250,7 @@ const ListReport = () => {
                                     <input className={styles.radioInput}
                                         type="radio"
                                         name="correctAnswer"
-                                        value={option.id}
+                                        value={option.number}
                                         checked={editingReport.correctAnswer === option.number}
                                         onChange={(e) =>
                                             setEditingReport({ ...editingReport, correctAnswer: Number(e.target.value) })
@@ -250,7 +261,7 @@ const ListReport = () => {
                         </label>
 
                         <div className="button-group">
-                            <button onClick={handleSave}>Lưu</button>
+                            <button onClick={handleResolved}>Lưu</button>
                             <button onClick={handleClose}>Đóng</button>
                         </div>
                         {errorMessage && <p className="error-message">{errorMessage}</p>}

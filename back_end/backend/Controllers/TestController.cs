@@ -55,17 +55,33 @@ namespace backend.Controllers
         [HttpPost("add-new-test")]
         public async Task<ActionResult> AddTest([FromBody] TestDto testDto)
         {
-            if (testDto == null)
-                return BadRequest("Dữ liệu không hợp lệ.");
-
-            await _testService.AddTest(testDto);
-            return Ok("Thêm bài kiểm tra thành công!");
+            try
+            {
+                await _testService.AddTest(testDto);
+                return Ok(new { Message = "Thêm mới thành công!" });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Lỗi khi thêm mới.", Error = ex.Message });
+            }
         }
 
         [HttpPut("edit-test/{id}")]
         public async Task<IActionResult> UpdateTest(int id, [FromBody] TestDto testDto)
         {
-           return await _testService.UpdateTest(id, testDto);
+            try
+            {
+                await _testService.UpdateTest(id, testDto);
+                return Ok(new { Message = "Cập nhật thành công!" });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = "Lỗi khi cập nhật.", Error = ex.Message });
+            }
         }
         [HttpGet("get-test-by-grade/{gradeId}")]
         public async Task<ActionResult<List<TestDto>>> GetTestsBySubjectGradeId(int id)

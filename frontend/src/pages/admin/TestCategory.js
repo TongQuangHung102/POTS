@@ -45,8 +45,8 @@ const TestCategory = () => {
       });
 
       if (!response.ok) {
-        const errorResponse = await response.text();
-        const errorMessage = errorResponse ? errorResponse : 'Không thể thêm loại bài mới';
+        const errorResponse = await response.json();
+        const errorMessage = errorResponse ? errorResponse.message : 'Không thể thêm loại bài mới';
         setTimeout(() => {
           setErrorMessage('');
         }, 3000);

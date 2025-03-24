@@ -30,6 +30,7 @@ namespace backend.Controllers
                     correct = r.Question.CorrectAnswer,
                     status = r.Status,
                     questionText = r.Question.QuestionText,
+                    questionId = r.QuestionId,
                     correctAnswer = r.Question.CorrectAnswer,
                     answerQuestions = r.Question.AnswerQuestions.Select(a => new
                     {

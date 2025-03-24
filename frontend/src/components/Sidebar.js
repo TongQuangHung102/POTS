@@ -28,11 +28,10 @@ const Sidebar = () => {
       { path: "/admin/package", icon: <BiPackage />, label: "Gói" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
-    Parent: [
-      { path: "/", icon: <BiSolidDashboard />, label: "Dashboard" },
-      { path: "/teacher/classes", icon: <BiAlignRight />, label: "Lớp học" },
-      { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
-      { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
+    parent: [
+      { path: "/parent/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
+      { path: "/admin/package", icon: <BiPackage />, label: "Gói" },
+      { path: "/parent/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
     student: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },

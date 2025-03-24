@@ -11,6 +11,14 @@
   font-weight: bold;
 }
 
+.stats-select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 10px;
+  height: 40px;
+  margin: 0 !important;
+}
+
 .activity-chart {
   height: 22vw;
   margin: 0px !important;
@@ -74,6 +82,44 @@
   font-size: 18px;
   font-weight: bold;
   color: #333;
+}
+
+.student-list table {
+  width: 100%;
+  border-collapse: separate; 
+  border-spacing: 5px 10px;
+
+}
+
+.student-list th, td {
+  border: none !important;
+  border-radius: 20px;
+}
+
+.student-list th, .student-list td {
+  border: 1px solid #ddd;
+  padding: 1px;
+
+}
+
+.student-list tr {
+  background-color: #fafafa;
+}
+
+.upcoming-submission-parent{
+  height: 200px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
+.package-using{
+  text-align: center;
+}
+
+.package-using h5{
+  color: #57489b;
+  font-size: 25px;
 }
 
 @media (max-width: 768px) {
