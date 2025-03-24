@@ -17,6 +17,7 @@ const ListChapter = () => {
   const [selectedSemester, setSelectedSemester] = useState(1);
   const [subjectgradeName, setSubjectGradeName] = useState("");
   const [subjectGradeId, setSubjectGradeId] = useState();
+  const [chapterNameError, setChapterNameError] = useState("");
 
   const navigate = useNavigate();
   const roleId = sessionStorage.getItem('roleId');
@@ -68,6 +69,11 @@ const ListChapter = () => {
   };
 
   const handleSave = async () => {
+    if (!selectedChapter?.chapterName.trim()) {
+      setChapterNameError("Tên chương không được để trống.");
+      return;
+    }
+
     try {
       const response = await fetch(`https://localhost:7259/api/Curriculum/edit-chapter/${selectedChapter.chapterId}`, {
         method: "PUT",
@@ -217,9 +223,16 @@ const ListChapter = () => {
               <input
                 type="text"
                 value={selectedChapter?.chapterName}
-                onChange={(e) =>
-                  setSelectedChapter({ ...selectedChapter, chapterName: e.target.value })
-                }
+                onChange={(e) => {
+                  const value = e.target.value;
+                  setSelectedChapter({ ...selectedChapter, chapterName: value });
+                  
+                  if (value.trim() === "") {
+                    setChapterNameError("Tên chương không được để trống.");
+                  } else {
+                    setChapterNameError("");
+                  }
+                }}
               />
             </label>
             <label>Học kỳ:</label>
@@ -263,6 +276,7 @@ const ListChapter = () => {
               <button onClick={handleClose}>Đóng</button>
             </div>
             {errorMessage && <p className="error-message">{errorMessage}</p>}
+            {chapterNameError && <p className="error-message">{chapterNameError}</p>}
           </div>
         </div>
 

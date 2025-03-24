@@ -9,9 +9,9 @@ export const updateReport = async (report) => {
                 correctAnswer: report.correctAnswer,
                 questionText: report.questionText,
                 answerQuestions: report.answerQuestions.map(a => ({
-                    answerQuestionId: a.qId,
+                    answerQuestionId: a.id,
                     answerText: a.text,
-                    number: a.id
+                    number: a.number
                 }))
             },
         };

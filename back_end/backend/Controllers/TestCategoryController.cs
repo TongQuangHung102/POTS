@@ -16,30 +16,71 @@ namespace backend.Controllers
         }
 
         [HttpGet("get-all-test-category")]
-        public async Task<ActionResult<List<TestCategory>>> GetCategories()
+        public async Task<IActionResult> GetAllCategories()
         {
-            return Ok(await _testCategoryService.GetAllCategories());
+            try
+            {
+                var categories = await _testCategoryService.GetAllCategoriesAsync();
+                return Ok(categories);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
         }
 
         [HttpGet("get-test-category-by-id/{id}")]
-        public async Task<ActionResult<TestCategory>> GetCategory(int id)
+        public async Task<IActionResult> GetCategoryById(int id)
         {
-            var category = await _testCategoryService.GetCategoryById(id);
-            if (category == null)
-                return NotFound();
-
-            return Ok(category);
+            try
+            {
+                var category = await _testCategoryService.GetCategoryByIdAsync(id);
+                if (category == null) return NotFound(new { Message = "Danh mục không tồn tại." });
+                return Ok(category);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
         }
 
         [HttpPost("add-new-test-category")]
         public async Task<IActionResult> AddCategory([FromBody] TestCategory category)
         {
-           return await _testCategoryService.AddCategory(category);
+            try
+            {
+                var result = await _testCategoryService.AddCategoryAsync(category);
+                return result ? Ok(new { Message = "Thêm danh mục thành công." }) : BadRequest(new { Message = "Không thể thêm danh mục." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
         }
         [HttpPut("update-test-category/{id}")]
         public async Task<IActionResult> UpdateCategory(int id, [FromBody] TestCategory category)
         {
-           return await _testCategoryService.UpdateCategory(id, category);
+            try
+            {
+                var result = await _testCategoryService.UpdateCategoryAsync(id, category);
+                return result ? Ok(new { Message = "Cập nhật danh mục thành công." }) : NotFound(new { Message = "Không tìm thấy danh mục." });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { Message = ex.Message });
+            }
+            catch (KeyNotFoundException ex)
+            {
+                return NotFound(new { Message = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { Message = ex.Message });
+            }
         }
 
     }

@@ -75,5 +75,10 @@ namespace backend.Repositories
         {
             return await _curriculumDAO.GetLessonWithQuestionsAIByIdAsync(id);
         }
+
+        public async Task<List<Chapter>> GetChaptersWithQuestionsBySubjectGradeAsync(int subjectGradeId)
+        {
+            return await _curriculumDAO.GetChaptersWithQuestionsBySubjectGradeAsync(subjectGradeId);
+        }
     }
 }

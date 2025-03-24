@@ -76,94 +76,61 @@ namespace backend.Services
             return response;
         }
 
-        public async Task<IActionResult> GetQuestionByIdAsync(int questionId)
+        public async Task<Question> GetQuestionByIdAsync(int questionId)
         {
             var question = await _questionRepository.GetQuestionByIdAsync(questionId);
-
             if (question == null)
             {
-                return new NotFoundObjectResult(new { message = "Không tìm thấy câu hỏi." });
+                throw new KeyNotFoundException("Không tìm thấy câu hỏi.");
             }
 
-            var response = new
-            {
-                question.QuestionId,
-                question.QuestionText,
-                question.CreateAt,
-                question.CorrectAnswer,
-                question.IsVisible,
-                question.CreateByAI,
-                Level = new
-                {
-                    question.Level.LevelName
-                },
-                Lesson = new
-                {
-                    question.Lesson.LessonName
-                },
-                AnswerQuestions = question.AnswerQuestions.Select(a => new
-                {
-                    a.AnswerQuestionId,
-                    a.AnswerText,
-                    a.Number
-                }).ToList() 
-            };
-
-            return new OkObjectResult(response);
+            return question;
         }
 
-        public async Task<IActionResult> UpdateQuestionAsync(int questionId, QuestionDto questionDto)
+
+        public async Task UpdateQuestionAsync(int questionId, QuestionDto questionDto)
         {
-            try
+            if (questionDto == null)
             {
-                var existingQuestion = await _questionRepository.GetQuestionByIdAsync(questionId);
-                if (existingQuestion == null)
-                {
-                    return new NotFoundObjectResult(new { message = "Không tìm thấy câu hỏi." });
-                }
-
-           
-                if (questionDto.AnswerQuestions == null || questionDto.AnswerQuestions.Count != existingQuestion.AnswerQuestions.Count)
-                {
-                    return new BadRequestObjectResult(new { message = "Không thể thêm hoặc xóa câu trả lời. Vui lòng cung cấp đúng số lượng câu trả lời hiện có." });
-                }
-
- 
-                existingQuestion.QuestionText = questionDto.QuestionText;
-                existingQuestion.LevelId = questionDto.LevelId;
-                existingQuestion.CorrectAnswer = questionDto.CorrectAnswer;
-                existingQuestion.IsVisible = questionDto.IsVisible;
-
-                foreach (var answerDto in questionDto.AnswerQuestions)
-                {
-                    var existingAnswer = existingQuestion.AnswerQuestions
-                        .FirstOrDefault(a => a.AnswerQuestionId == answerDto.AnswerQuestionId);
-
-                    if (existingAnswer != null)
-                    {
-                        existingAnswer.AnswerText = answerDto.AnswerText;
-                    }
-                    else
-                    {
-                        return new BadRequestObjectResult(new { message = "Không thể thêm câu trả lời mới khi cập nhật." });
-                    }
-                }
-
-                await _questionRepository.UpdateQuestionAsync(existingQuestion);
-
-                return new OkObjectResult(new { message = "Cập nhật câu hỏi và danh sách câu trả lời thành công." });
+                throw new ArgumentNullException(nameof(questionDto), "Dữ liệu câu hỏi không hợp lệ.");
             }
-            catch (Exception ex)
+
+            var existingQuestion = await _questionRepository.GetQuestionByIdAsync(questionId);
+            if (existingQuestion == null)
             {
-                return new ObjectResult(new { message = "Đã xảy ra lỗi khi cập nhật câu hỏi.", error = ex.Message })
-                {
-                    StatusCode = 500
-                };
+                throw new KeyNotFoundException("Không tìm thấy câu hỏi.");
             }
+
+            if (questionDto.AnswerQuestions == null || questionDto.AnswerQuestions.Count != existingQuestion.AnswerQuestions.Count)
+            {
+                throw new InvalidOperationException("Không thể thêm hoặc xóa câu trả lời. Vui lòng cung cấp đúng số lượng câu trả lời hiện có.");
+            }
+
+            existingQuestion.QuestionText = questionDto.QuestionText;
+            existingQuestion.LevelId = questionDto.LevelId;
+            existingQuestion.CorrectAnswer = questionDto.CorrectAnswer;
+            existingQuestion.IsVisible = questionDto.IsVisible;
+
+            foreach (var answerDto in questionDto.AnswerQuestions)
+            {
+                var existingAnswer = existingQuestion.AnswerQuestions
+                    .FirstOrDefault(a => a.AnswerQuestionId == answerDto.AnswerQuestionId);
+
+                if (existingAnswer != null)
+                {
+                    existingAnswer.AnswerText = answerDto.AnswerText;
+                }
+                else
+                {
+                    throw new InvalidOperationException("Không thể thêm câu trả lời mới khi cập nhật.");
+                }
+            }
+
+            await _questionRepository.UpdateQuestionAsync(existingQuestion);
         }
 
 
-        public async Task<IActionResult> AddQuestionAsync(CreateQuestionDto questionDto)
+        public async Task AddQuestionAsync(CreateQuestionDto questionDto)
         {
             try
             {
@@ -180,27 +147,21 @@ namespace backend.Services
 
                 var questionId = await _questionRepository.AddQuestionAsync(newQuestion);
 
-  
                 if (questionDto.AnswerQuestions != null && questionDto.AnswerQuestions.Any())
                 {
-                    var answers = questionDto.AnswerQuestions.Select((a, index) => new AnswerQuestion
+                    var answers = questionDto.AnswerQuestions.Select(a => new AnswerQuestion
                     {
                         QuestionId = questionId,
                         AnswerText = a.AnswerText,
-                        Number = a.Number 
+                        Number = a.Number
                     }).ToList();
 
                     await _questionRepository.AddAnswerQuestionsAsync(answers);
                 }
-
-                return new OkObjectResult(new { message = "Câu hỏi và câu trả lời đã được thêm thành công." });
             }
             catch (Exception ex)
             {
-                return new ObjectResult(new { message = "Đã xảy ra lỗi khi thêm câu hỏi.", error = ex.Message })
-                {
-                    StatusCode = 500
-                };
+                throw new Exception("Lỗi khi thêm câu hỏi.", ex);
             }
         }
 

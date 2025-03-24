@@ -44,6 +44,7 @@ namespace backend.Models
         public DbSet<Report> Reports { get; set; }
         public DbSet<Subject> Subjects { get; set; }
         public DbSet<SubjectGrade> SubjectGrades { get; set; }
+        public DbSet<UserParentStudent> UserParentStudents { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

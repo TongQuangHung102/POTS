@@ -46,65 +46,38 @@ namespace backend.Services
             };
         }
 
-        public async Task<IActionResult> AddTest(TestDto testDto)
+        public async Task AddTest(TestDto testDto)
         {
-            try
+            var test = new Test
             {
-                var test = new Test
-                {
-                    TestName = testDto.TestName,
-                    Description = testDto.Description,
-                    DurationInMinutes = testDto.DurationInMinutes,
-                    MaxScore = testDto.MaxScore,
-                    IsVisible = testDto.IsVisible,
-                    Order = testDto.Order,
-                    CreatedAt = testDto.CreatedAt,
-                    SubjectGradeId = testDto.SubjectGradeId
-                };
+                TestName = testDto.TestName,
+                Description = testDto.Description,
+                DurationInMinutes = testDto.DurationInMinutes,
+                MaxScore = testDto.MaxScore,
+                IsVisible = testDto.IsVisible,
+                Order = testDto.Order,
+                CreatedAt = testDto.CreatedAt,
+                SubjectGradeId = testDto.SubjectGradeId
+            };
 
-                await _testRepository.AddAsync(test);
-                return new OkObjectResult(new
-                {
-                    Message = "Thêm mới thành công!"
-                });
-            }
-            catch (Exception ex)
-            {
-                return new ObjectResult(new { Message = "Lỗi khi thêm mới.", Error = ex.Message })
-                {
-                    StatusCode = 500
-                };
-            }
-
+            await _testRepository.AddAsync(test);
         }
 
-        public async Task<IActionResult> UpdateTest(int id, TestDto testDto)
+        public async Task UpdateTest(int id, TestDto testDto)
         {
-            try
-            {
-                var existingTest = await _testRepository.GetByIdAsync(id);
-                if (existingTest == null)
-                    throw new ArgumentNullException("Không tìm thấy bài kiểm tra.");
+            var existingTest = await _testRepository.GetByIdAsync(id);
+            if (existingTest == null)
+                throw new KeyNotFoundException("Không tìm thấy bài kiểm tra.");
 
-                existingTest.TestName = testDto.TestName;
-                existingTest.Description = testDto.Description;
-                existingTest.DurationInMinutes = testDto.DurationInMinutes;
-                existingTest.MaxScore = testDto.MaxScore;
-                existingTest.IsVisible = testDto.IsVisible;
-                existingTest.Order = testDto.Order;
-                existingTest.SubjectGradeId = testDto.SubjectGradeId;
+            existingTest.TestName = testDto.TestName;
+            existingTest.Description = testDto.Description;
+            existingTest.DurationInMinutes = testDto.DurationInMinutes;
+            existingTest.MaxScore = testDto.MaxScore;
+            existingTest.IsVisible = testDto.IsVisible;
+            existingTest.Order = testDto.Order;
+            existingTest.SubjectGradeId = testDto.SubjectGradeId;
 
-                await _testRepository.UpdateAsync(existingTest);
-                return new OkObjectResult(new { Message = "Cập nhật thành công!" });
-            }
-            catch (Exception ex)
-            {
-                return new ObjectResult(new { Message = "Lỗi khi thêm mới.", Error = ex.Message })
-                {
-                    StatusCode = 500
-                };
-            }
-
+            await _testRepository.UpdateAsync(existingTest);
         }
         public async Task<List<TestDto>> GetTestsBySubjectGradeId(int id)
         {

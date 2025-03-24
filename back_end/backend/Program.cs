@@ -79,6 +79,9 @@ builder.Services.AddScoped<SubjectGradeService>();
 builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
 builder.Services.AddScoped<SubjectDAO>();
 builder.Services.AddScoped<SubjectService>();
+builder.Services.AddScoped<IUserParentStudentRepository, UserParentStudentRepository>();
+builder.Services.AddScoped<UserParentStudentDAO>();
+builder.Services.AddScoped<UserParentStudentService>();
 builder.Services.AddHttpClient();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
