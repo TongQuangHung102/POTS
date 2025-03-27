@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-
-
-
+import './UsersList.css';
 const UsersList = () => {
     const [users, setUsers] = useState([]);
     const [roles, setRoles] = useState([]);
     const [errorMessage, setErrorMessage] = useState('');
     const [page, setPage] = useState(1);
-    const [pageSize, setPageSizee] = useState(10);
+    const [pageSize, setPageSize] = useState(10);
     const [role, setRole] = useState('');
     const [email, setEmail] = useState('');
+    const [selectedUser, setSelectedUser] = useState(null);
+    const [isModalOpen, setIsModalOpen] = useState(false);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -21,7 +21,7 @@ const UsersList = () => {
                 if (role) {
                     const selectedRole = roles.find(r => r.roleName === role);
                     if (selectedRole) {
-                        params.roleId = selectedRole.roleId; // Sử dụng roleId nếu API yêu cầu
+                        params.roleId = selectedRole.roleId;
                     }
                 }
                 if (email) params.email = email;
@@ -53,9 +53,9 @@ const UsersList = () => {
             if (!user) return;
 
             const payload = {
-                userName: user.userName,
-                email: user.email,
-                role: user.role || 1, // Nếu role bị null, đặt giá trị mặc định
+                userName: updatedFields.userName || user.userName,
+                email: updatedFields.email || user.email,
+                role: updatedFields.roleId || user.roleId,
                 isActive: updatedFields.isActive ?? user.isActive,
             };
 
@@ -67,10 +67,22 @@ const UsersList = () => {
             await axios.put(`https://localhost:7259/api/User/edit-user/${userId}`, payload, {
                 headers: { 'Content-Type': 'application/json' }
             });
+
             setUsers(users.map(user => user.userId === userId ? { ...user, ...updatedFields, role: payload.role } : user));
+            setIsModalOpen(false); // Đóng modal sau khi lưu
         } catch (error) {
             setErrorMessage(`Lỗi khi cập nhật người dùng: ${error.response?.data?.message || error.message}`);
         }
+    };
+
+    const openModal = (user) => {
+        setSelectedUser(user);  // Lưu thông tin người dùng đang được chỉnh sửa
+        setIsModalOpen(true);    // Mở modal
+    };
+
+    const closeModal = () => {
+        setIsModalOpen(false);  // Đóng modal
+        setSelectedUser(null);   // Xóa thông tin người dùng đang chỉnh sửa
     };
 
     return (
@@ -94,13 +106,11 @@ const UsersList = () => {
                         <option key={role.roleId} value={role.roleName}>{role.roleName}</option>
                     ))}
                 </select>
-
             </div>
             <div>
                 <button className="add-user-btn" onClick={() => navigate('/admin/add-user')}>
                     ➕ Thêm User
                 </button>
-
             </div>
             <table className="users-table">
                 <thead>
@@ -110,6 +120,7 @@ const UsersList = () => {
                         <th>Email</th>
                         <th>Trạng thái</th>
                         <th>Vai trò</th>
+                        <th>Hành động</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -123,26 +134,73 @@ const UsersList = () => {
                                     <span className={user.isActive ? "active" : "inactive"}>
                                         {user.isActive ? '🟢 Đang hoạt động' : '🔴 Đã bị khóa'}
                                     </span>
-                                    <button onClick={() => handleUpdateUser(user.userId, { isActive: !user.isActive })}>
-                                        {user.isActive ? '🔒 Khóa người dùng' : '✅ Mở khóa người dùng'}
-                                    </button>
                                 </td>
+                                <td>{user.roleName}</td>
                                 <td>
-                                    <select value={user.roleName || ''} onChange={(e) => handleUpdateUser(user.userId, { roleName: e.target.value })}>
-                                        {roles.map(role => (
-                                            <option key={role.roleId} value={role.roleName}>{role.roleName}</option>
-                                        ))}
-                                    </select>
+                                    <button onClick={() => openModal(user)}>
+                                        Chỉnh sửa
+                                    </button>
                                 </td>
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            <td colSpan="5">Không có dữ liệu</td>
+                            <td colSpan="6">Không có dữ liệu</td>
                         </tr>
                     )}
                 </tbody>
             </table>
+
+            {isModalOpen && selectedUser && (
+                <div className="modal">
+                    <div className="modal-content">
+                        <span className="close-btn" onClick={closeModal}>×</span>
+                        <h3>Chỉnh sửa thông tin người dùng</h3>
+                        <form onSubmit={(e) => { e.preventDefault(); handleUpdateUser(selectedUser.userId, selectedUser); }}>
+                            <div>
+                                <label>Tên người dùng</label>
+                                <input
+                                    type="text"
+                                    value={selectedUser.userName}
+                                    onChange={(e) => setSelectedUser({ ...selectedUser, userName: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label>Email</label>
+                                <input
+                                    type="email"
+                                    value={selectedUser.email}
+                                    onChange={(e) => setSelectedUser({ ...selectedUser, email: e.target.value })}
+                                />
+                            </div>
+                            <div>
+                                <label>Vai trò</label>
+                                <select
+                                    value={selectedUser.roleName}
+                                    onChange={(e) => setSelectedUser({ ...selectedUser, roleName: e.target.value })}
+                                >
+                                    {roles.map(role => (
+                                        <option key={role.roleId} value={role.roleName}>{role.roleName}</option>
+                                    ))}
+                                </select>
+                            </div>
+                            <div>
+                                <label>Trạng thái</label>
+                                <select
+                                    value={selectedUser.isActive}
+                                    onChange={(e) => setSelectedUser({ ...selectedUser, isActive: e.target.value === 'true' })}
+                                >
+                                    <option value={true}>Đang hoạt động</option>
+                                    <option value={false}>Đã bị khóa</option>
+                                </select>
+                            </div>
+                            <div>
+                                <button type="submit">Lưu thay đổi</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

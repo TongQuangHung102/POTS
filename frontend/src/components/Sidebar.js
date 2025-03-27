@@ -22,7 +22,6 @@ const Sidebar = () => {
     admin: [
       { path: "/admin/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
       { path: "/admin/grades", icon: <BiAlignRight />, label: "Chương trình" },
-      { path: "/admin/reports", icon: <BiSolidReport />, label: "Báo cáo" },
       { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
       { path: "/admin/users", icon: <BiSolidUserDetail />, label: "Người dùng" },
       { path: "/admin/package", icon: <BiPackage />, label: "Gói" },
@@ -36,13 +35,12 @@ const Sidebar = () => {
     student: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
       { path: `/student/grade/${gradeId}`, icon: <BiAlignRight />, label: "Luyện tập" },
-      { path: "/student/package", icon: <BiPackage />, label: "Gói" },
-      { path: "/competitions", icon: <BiSolidHourglass />, label: "Cuộc thi" },
-      { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
+      { path: "/student/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
     content_manager: [
       { path: "/content_manage/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
       { path: "/content_manage/grades", icon: <BiAlignRight />, label: "Quản lý khối" },
+      { path: "/content_manage/report", icon: <BiSolidReport />, label: "Báo cáo" },
       { path: "/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
     guest: [

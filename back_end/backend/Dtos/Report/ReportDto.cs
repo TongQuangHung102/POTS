@@ -1,4 +1,5 @@
 ﻿using backend.Dtos.Questions;
+using backend.Models;
 
 namespace backend.Dtos.Report
 {
@@ -6,7 +7,7 @@ namespace backend.Dtos.Report
     {
         public int QuestionId { get; set; }
         public int UserId { get; set; }
-        public string Reason { get; set; }
+        public ReportReason Reason { get; set; }
     }
     public class ReportEditDto
     {

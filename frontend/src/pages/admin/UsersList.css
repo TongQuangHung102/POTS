@@ -1,288 +1,239 @@
 
-.users-container {
+ /* Cấu trúc chính */
+ .users-container {
+ 
+    margin: 0 auto;
     padding: 20px;
+    font-family: Arial, sans-serif;
     margin-left: var(--sidebar-width);
 }
 
-    .title {
-        text-align: center;
-        font-size: 24px;
-        margin-bottom: 20px;
-    }
-
-    .search-filter {
-        display: flex;
-        justify-content: space-between;
-        margin-bottom: 20px;
-    }
-
-    .add-button {
-        display: block;
-        margin: 10px 0;
-        padding: 10px;
-        background-color: #007bff;
-        color: white;
-        border: none;
-        border-radius: 5px;
-        cursor: pointer;
-    }
-
-    .add-button:hover {
-        background-color: #0056b3;
-    }
-
-    .users-table {
-        width: 100%;
-        border-collapse: collapse;
-    }
-
-    .users-table th, .users-table td {
-        border: 1px solid #ddd;
-        padding: 10px;
-        text-align: center;
-    }
-
-    .users-table th {
-        background-color: #f8f9fa;
-    }
-
-    .edit-btn, .delete-btn {
-        padding: 5px 10px;
-        border: none;
-        border-radius: 3px;
-        cursor: pointer;
-    }
-
-    .edit-btn {
-        background-color: #ffc107;
-        color: #000;
-    }
-
-    .delete-btn {
-        background-color: #dc3545;
-        color: #fff;
-    }
-
-    .pagination {
-        display: flex;
-        justify-content: center;
-        margin-top: 20px;
-    }
-
-    .pagination button {
-        padding: 8px 12px;
-        margin: 0 5px;
-        border: none;
-        background-color: #007bff;
-        color: white;
-        border-radius: 3px;
-        cursor: pointer;
-    }
-
-    .pagination button:disabled {
-        background-color: #ccc;
-    }
-
-body {
-    font-family: 'Arial', sans-serif;
-    margin: 20px;
-    background-color: #f8f9fa;
-    line-height: 1.6;
-}
-
-h2 {
-    text-align: center;
+/* Tiêu đề */
+.title {
+    font-size: 2rem;
+    font-weight: bold;
     color: #333;
-    font-size: 24px;
     margin-bottom: 20px;
 }
 
-/* Bảng danh sách user */
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-    background: #ffffff;
-    border-radius: 10px;
-    overflow: hidden;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-th, td {
-    padding: 14px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
-}
-
-th {
-    background-color: #007bff;
-    color: white;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-}
-
-tr:nth-child(even) {
-    background-color: #f9f9f9;
-}
-
-tr:hover {
-    background-color: #f1f1f1;
-    transition: background-color 0.3s ease;
-}
-
-/* Nút bấm */
-button {
-    padding: 10px 15px;
-    border: none;
-    cursor: pointer;
+/* Thông báo lỗi */
+.error {
+    color: red;
+    background-color: #f8d7da;
+    padding: 10px;
     border-radius: 5px;
-    font-size: 14px;
-    transition: 0.3s ease;
+    margin-bottom: 20px;
 }
 
-button:hover {
-    opacity: 0.85;
+/* Tìm kiếm và bộ lọc */
+.search-filter {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.search-filter input,
+.search-filter select {
+    padding: 8px;
+    font-size: 1rem;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    min-width: 150px;
+}
+
+.search-filter input:focus,
+.search-filter select:focus {
+    border-color: #007bff;
+    outline: none;
 }
 
 /* Nút thêm người dùng */
-.add-button {
+.add-user-btn {
+    padding: 10px 20px;
+    font-size: 1rem;
     background-color: #28a745;
     color: white;
-    margin-bottom: 15px;
-    display: inline-block;
-    padding: 12px 18px;
-    font-size: 16px;
+    border: none;
     border-radius: 5px;
-    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-bottom: 20px;
 }
 
-.add-button:hover {
+.add-user-btn:hover {
     background-color: #218838;
 }
 
-/* Nút chỉnh sửa và xóa */
-.edit-btn, .delete-btn {
-    padding: 8px 12px;
-    color: white;
-    border-radius: 5px;
-    font-size: 14px;
-    transition: 0.3s ease;
-}
-
-.edit-btn {
-    background-color: #ffc107;
-}
-
-.delete-btn {
-    background-color: #dc3545;
-    margin-left: 10px;
-}
-
-.edit-btn:hover {
-    background-color: #e0a800;
-}
-
-.delete-btn:hover {
-    background-color: #c82333;
-}
-
-/* Form chỉnh sửa & thêm user */
-form {
-    margin: 20px auto;
-    padding: 30px;
-    background: #ffffff;
-    border-radius: 10px;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-}
-
-form div {
-    margin-bottom: 20px;
-}
-
-form label {
-    font-weight: bold;
-    display: block;
-    color: #333;
-    margin-bottom: 5px;
-}
-
-form input {
+/* Bảng người dùng */
+.users-table {
     width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.users-table th,
+.users-table td {
     padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+    font-size: 1rem;
+}
+
+.users-table th {
+    background-color: #f8f9fa;
+    color: #333;
+    font-weight: bold;
+}
+
+.users-table td {
+    background-color: #fff;
+}
+
+.users-table tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+/* Cột hành động */
+.users-table input[type="text"],
+.users-table input[type="email"],
+.users-table select {
+    width: 100%;
+    padding: 8px;
     border: 1px solid #ddd;
     border-radius: 5px;
-    font-size: 14px;
-    color: #333;
-    margin-top: 5px;
+    font-size: 1rem;
+    background-color: #f8f9fa;
 }
 
-form input:focus {
-    outline: none;
+.users-table input[type="text"]:focus,
+.users-table input[type="email"]:focus,
+.users-table select:focus {
     border-color: #007bff;
-    box-shadow: 0 0 8px rgba(0, 123, 255, 0.5);
+    outline: none;
 }
 
-.submit-btn {
+/* Trạng thái người dùng */
+.active {
+    color: green;
+    font-weight: bold;
+}
+
+.inactive {
+    color: red;
+    font-weight: bold;
+}
+
+/* Nút chỉnh sửa trong bảng */
+.users-table button {
+    padding: 6px 12px;
+    font-size: 1rem;
     background-color: #007bff;
     color: white;
-    width: 100%;
-    padding: 12px;
-    border-radius: 5px;
-    font-size: 16px;
     border: none;
+    border-radius: 5px;
     cursor: pointer;
+    transition: background-color 0.3s ease;
 }
 
-.submit-btn:hover {
+.users-table button:hover {
     background-color: #0056b3;
 }
 
-/* Thêm khoảng cách cho các nút phân trang */
-.pagination {
+/* Modal */
+.modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
     display: flex;
     justify-content: center;
-    margin-top: 20px;
+    align-items: center;
+    z-index: 1000;
 }
 
-.pagination button {
-    padding: 10px 15px;
-    margin: 0 5px;
-    font-size: 16px;
-    color: white;
+.modal-content {
+    background-color: white;
+    padding: 30px;
+    border-radius: 10px;
+    max-width: 600px;
+    width: 100%;
+    position: relative;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.modal-content h3 {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    font-weight: bold;
+}
+
+.modal-content input,
+.modal-content select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 1rem;
+}
+
+.modal-content button {
+    padding: 10px 20px;
     background-color: #007bff;
+    color: white;
     border: none;
     border-radius: 5px;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: background-color 0.3s ease;
+    width: 100%;
 }
 
-.pagination button:hover {
+.modal-content button:hover {
     background-color: #0056b3;
 }
 
-.pagination button:disabled {
-    background-color: #cccccc;
-    cursor: not-allowed;
+.close-btn {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 24px;
+    cursor: pointer;
+    color: #333;
 }
 
-.search-filter {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 20px;
-}
+/* Cải thiện giao diện trên thiết bị di động */
+@media screen and (max-width: 768px) {
+    .search-filter {
+        flex-direction: column;
+        gap: 10px;
+    }
 
-.search-filter input, .search-filter select {
-    padding: 8px 12px;
-    font-size: 14px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-}
+    .search-filter input,
+    .search-filter select {
+        width: 100%;
+    }
 
-.search-filter input {
-    width: 60%;
-}
+    .add-user-btn {
+        width: 100%;
+        margin-top: 20px;
+    }
 
-.search-filter select {
-    width: 35%;
-}
+    .users-table th,
+    .users-table td {
+        padding: 10px;
+    }
 
+    .users-table input[type="text"],
+    .users-table input[type="email"],
+    .users-table select {
+        width: 100%;
+    }
+
+    .users-table button {
+        width: 100%;
+    }
+}
