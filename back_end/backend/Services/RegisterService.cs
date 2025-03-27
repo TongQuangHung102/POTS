@@ -19,16 +19,15 @@ namespace backend.Services
             _passwordEncryption = passwordEncryption;
         }
 
-        public async Task<IActionResult> Register(RegisterDto model)
+        public async Task RegisterAsync(RegisterDto model)
         {
             var existingUser = await _authRepository.GetUserByEmail(model.Email);
-
             if (existingUser != null)
             {
-                return new BadRequestObjectResult(new { message = "Email đã tồn tại, vui lòng dùng email khác" });
+                throw new Exception("Email đã tồn tại, vui lòng dùng email khác");
             }
-            string hashedPassword = _passwordEncryption.HashPassword(model.Password);
 
+            var hashedPassword = _passwordEncryption.HashPassword(model.Password);
             var user = new User
             {
                 UserName = model.UserName,
@@ -41,22 +40,20 @@ namespace backend.Services
                 TokenExpiry = DateTime.UtcNow.AddHours(24)
             };
 
-
             await _authRepository.AddUser(user);
             await _sendMailService.SendConfirmationEmailAsync(user.Email, user.EmailVerificationToken);
-            return new OkObjectResult(new { message = "Đăng ký thành công, vui lòng kiểm tra email để xác thực tài khoản." });
         }
-        public async Task<IActionResult> ConfirmEmailAsync(string token)
+        public async Task<string> ConfirmEmailAsync(string token)
         {
             var user = await _authRepository.GetUserByToken(token);
             if (user == null)
             {
-                return new RedirectResult($"{_frontendUrl}?status=invalid_token");
+                return $"{_frontendUrl}?status=invalid_token";
             }
 
             if (user.TokenExpiry < DateTime.UtcNow)
             {
-                return new RedirectResult($"{_frontendUrl}?status=token_expired");
+                return $"{_frontendUrl}?status=token_expired";
             }
 
             user.IsActive = true;
@@ -64,7 +61,7 @@ namespace backend.Services
             user.TokenExpiry = null;
             await _authRepository.UpdateUser(user);
 
-            return new RedirectResult($"{_frontendUrl}?status=success");
+            return $"{_frontendUrl}?status=success";
         }
 
     }

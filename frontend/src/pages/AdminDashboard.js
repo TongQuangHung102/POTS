@@ -4,6 +4,7 @@ import { Chart as ChartJS, LineElement, PointElement, CategoryScale, LinearScale
 import { Chart } from 'react-chartjs-2';
 import { BiCube, BiSolidUserCheck } from "react-icons/bi";
 import { fetchGrades } from '../services/GradeService';
+
 ChartJS.register(LineElement, PointElement, CategoryScale, LinearScale, Title, Tooltip, Legend, BarElement);
 
 const AdminDashboard = () => {

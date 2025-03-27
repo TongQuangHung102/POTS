@@ -233,12 +233,11 @@ const QuestionManage = () => {
             <div className={styles.questionList}>
                 {questions.map(q => (
                     <div key={q.id} className={styles.questionItem}>
-                        <div className={styles.questionHeader}>
+                        <div className={styles.questionHeader} onClick={() => toggleQuestion(q.id)}>
                             <span className={styles.questionText}>{q.question}</span>
                             <div className={styles.questionActions}>
                                 <span className={`${q.isVisible ? styles.isVisible : styles.inactive}`}> {q.isVisible ? "Hiển Thị" : "Ẩn"}</span>
-                                <button className={styles.editButton} onClick={() => handleEdit(q)}>Chỉnh sửa</button>
-                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`} onClick={() => toggleQuestion(q.id)}>▼</span>
+                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`}>▼</span>
                             </div>
                         </div>
 
@@ -260,6 +259,7 @@ const QuestionManage = () => {
                                             </div>
                                         ))}
                                     </div>
+                                    <button className='btn btn-success m-1' onClick={() => handleEdit(q)}>Chỉnh sửa</button>
                                 </div>
                             </div>
                         )}

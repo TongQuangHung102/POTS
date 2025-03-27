@@ -113,6 +113,13 @@
   padding: 20px;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
 }
+
+.upcoming-submission-report{
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+}
 .package-using{
   text-align: center;
 }
@@ -120,6 +127,11 @@
 .package-using h5{
   color: #57489b;
   font-size: 25px;
+}
+
+.notification{
+  display: flex;
+  justify-content: flex-end;
 }
 
 @media (max-width: 768px) {

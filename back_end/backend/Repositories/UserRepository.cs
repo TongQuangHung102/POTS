@@ -60,5 +60,15 @@ namespace backend.Repositories
         {
             return await _userDAO.GetTotalStudentByDate(date, gradeId);
         }
+
+        public async Task<int> CreateUserAndGetUserIdAsync(User user)
+        {
+            return await _userDAO.CreateUserAndGetUserIdAsync(user);
+        }
+
+        public async Task<List<User>> GetInactiveStudentsFor3DaysAsync(DateTime threeDaysAgo)
+        {
+            return await _userDAO.GetInactiveStudentsFor3DaysAsync(threeDaysAgo);
+        }
     }
 }

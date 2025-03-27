@@ -22,7 +22,7 @@ namespace backend.Controllers
             var subjects = await _subjectGradeService.GetAllSubjectByGradeAsync(id);
             var results = subjects.Select(x => new
             {
-                id = x.SubjectId,
+                id = x.Id,
                 name =  x.Subject.SubjectName,
                 grade = x.Grade.GradeName,
                 gradeId = x.GradeId,
