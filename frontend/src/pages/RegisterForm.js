@@ -46,6 +46,10 @@ const RegisterForm = () => {
       return;
     }
 
+    if (formData.password.length >= 20) {
+      setError('Mật khẩu phải ít hơn 20 ký tự');
+      return;
+    }
     if (formData.password !== formData.confirmPassword) {
       setError('Mật khẩu xác nhận không khớp');
       return;

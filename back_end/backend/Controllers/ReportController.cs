@@ -1,4 +1,5 @@
 ﻿using backend.Dtos.Report;
+using backend.Helpers;
 using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Mvc;
@@ -17,15 +18,16 @@ namespace backend.Controllers
         }
 
         [HttpGet("get-all-report")]
-        public async Task<IActionResult> GetAllReports([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] string? status = null)
+        public async Task<IActionResult> GetAllReports([FromQuery] int pageNumber, [FromQuery] int pageSize, [FromQuery] int subjectGradeId, [FromQuery] string? status = null)
         {
-            var reports = await _reportService.GetAllReportsAsync(pageNumber, pageSize, status);
-            var total = await _reportService.GetTotalReportsAsync(status);
+            var reports = await _reportService.GetAllReportsAsync(pageNumber, pageSize, subjectGradeId, status);
+            var total = await _reportService.GetTotalReportsAsync(subjectGradeId, status);
             var reportResponse = new {
                 data = reports.Select(r => new
                 {
                     reportId = r.ReportId,
-                    reason = r.Reason,
+                    reason = EnumHelper.GetEnumDescription(r.Reason),
+                    count = r.ReportCount,
                     createdAt = r.CreatedAt,
                     correct = r.Question.CorrectAnswer,
                     status = r.Status,
@@ -56,11 +58,21 @@ namespace backend.Controllers
         [HttpPost("add-report")]
         public async Task<IActionResult> AddReport([FromBody] ReportDto report)
         {
-            if (report == null) return BadRequest();
-
-            await _reportService.AddReportAsync(report);
-            return Ok();
+            try
+            {
+                await _reportService.AddReportAsync(report);
+                return Ok(new { message = "Gửi báo cáo thành công!" });
+            }
+            catch (InvalidOperationException ex)
+            {
+                return BadRequest(new { message = ex.Message }); 
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Đã xảy ra lỗi máy chủ!", details = ex.Message });
+            }
         }
+
 
         [HttpPut("update-report")]
         public async Task<IActionResult> UpdateReport([FromBody] ReportEditDto dto)
@@ -86,6 +98,29 @@ namespace backend.Controllers
             {
                 return StatusCode(500, new { error = "Đã xảy ra lỗi máy chủ!", details = ex.Message });
             }
+        }
+
+        [HttpGet("reasons-report")]
+        public IActionResult GetReportReasons()
+        {
+            var reasons = Enum.GetValues(typeof(ReportReason))
+                              .Cast<ReportReason>()
+                              .Select(r => new { Id = (int)r, Name = EnumHelper.GetEnumDescription(r) })
+                              .ToList();
+
+            return Ok(reasons);
+        }
+
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> GetReportDashboard([FromQuery] int subjectGradeId)
+        {
+            if (subjectGradeId <= 0)
+            {
+                return BadRequest("subjectGradeId không hợp lệ.");
+            }
+
+            var dashboardData = await _reportService.GetReportDashboardAsync(subjectGradeId);
+            return Ok(dashboardData);
         }
 
     }

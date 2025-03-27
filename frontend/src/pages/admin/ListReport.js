@@ -3,6 +3,8 @@ import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styles from '../content_manager/QuestionManage.module.css';
 import BackLink from '../../components/BackLink';
 import { updateReport } from '../../services/ReportService';
+import useManagedGrades from '../../hooks/useManagedGrades';
+import { getSubjectGradesByGrade } from '../../services/SubjectGradeService';
 
 const ListReport = () => {
     // State chứa danh sách câu hỏi từ API
@@ -16,7 +18,10 @@ const ListReport = () => {
     const [editingReport, setEditingReport] = useState(null);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
+    const [subjectGradeId, setSubjectGradeId] = useState(null);
+    const [subjects, setSubjects] = useState([]);
 
+    const { managedGrades, setManagedGrades, selectedGrade, setSelectedGrade, isData } = useManagedGrades();
 
     // State cho phân trang
     const [currentPage, setCurrentPage] = useState(1);
@@ -26,14 +31,32 @@ const ListReport = () => {
 
     const navigate = useNavigate();
 
+    const fetchSubjectGrades = async (gradeId) => {
+        try {
+            const data = await getSubjectGradesByGrade(gradeId);
+            setSubjects(data);
+            if (data.length > 0) {
+                setSubjectGradeId(data[0].id);
+            }
+        } catch (error) {
+            console.error("Có lỗi khi lấy dữ liệu lớp", error);
+        }
+    };
+
+    //lay mon hoc dua tren gradeId
+    useEffect(() => {
+        if (selectedGrade) {
+            fetchSubjectGrades(selectedGrade.id);
+        }
+    }, [selectedGrade]);
+
 
     const fetchReport = async () => {
-        console.log('aaaaaaaaaaaaaaaaa');
         setLoading(true);
         setError(null);
 
         try {
-            let apiUrl = `https://localhost:7259/api/Report/get-all-report?pageNumber=${currentPage}&pageSize=${questionsPerPage}`;
+            let apiUrl = `https://localhost:7259/api/Report/get-all-report?pageNumber=${currentPage}&pageSize=${questionsPerPage}&subjectGradeId=${subjectGradeId}`;
 
             const queryParams = [];
 
@@ -58,11 +81,10 @@ const ListReport = () => {
     useEffect(() => {
         const delayDebounce = setTimeout(() => {
             fetchReport();
-            setLoading(false);
         }, 500);
 
         return () => clearTimeout(delayDebounce);
-    }, [status]);
+    }, [status, subjectGradeId]);
 
     const toggleQuestion = (id) => {
         setReports(
@@ -87,8 +109,8 @@ const ListReport = () => {
 
     const statusMap = {
         Pending: "Chưa xem xét",
-        Reject: "Từ chối",
-        Resolved: "Đã giải quyết"
+        Reject: "Không hợp lệ",
+        Resolved: "Hợp lệ"
     };
 
     const getStatusClass = (status) => {
@@ -125,33 +147,57 @@ const ListReport = () => {
         setIsEditing(null);
     };
 
-    if (loading) return <div className={styles.loading}>
-        <p>Đang tải câu hỏi...</p>
-    </div>
+    const handleGradeChange = (event) => {
+        const gradeId = parseInt(event.target.value, 10);
+        const grade = managedGrades.find(g => g.id === gradeId);
+        setSelectedGrade(grade);
+    };
 
     return (
         <div className={styles.questionManager}>
             <h2>Quản Lý Báo Cáo</h2>
             <BackLink></BackLink>
             <div className={styles.toolbar}>
+                {managedGrades.length > 0 ? (
+                    <select className={styles.commonInput} value={selectedGrade?.id} onChange={handleGradeChange}>
+                        {managedGrades.map((grade) => (
+                            <option key={grade.id} value={grade.id}>
+                                {grade.name}
+                            </option>
+                        ))}
+                    </select>
+                ) : (
+                    <p>Không có khối nào để quản lý</p>
+                )}
+                {subjects.length > 0 ? (
+                    <select className={styles.commonInput} value={subjectGradeId} onChange={(e) => {
+                        setSubjectGradeId(e.target.value);
+                    }}>
+                        {subjects.map((subject) => (
+                            <option key={subject.id} value={subject.id}>{subject.name}</option>
+                        ))}
+                    </select>
+                ) : (
+                    <p>Không có môn học nào</p>
+                )}
                 <select className={styles.commonInput} value={status} onChange={(e) => setStatus(e.target.value)}>
                     <option value="">Chọn Trạng Thái</option>
                     <option value="Pending">Chờ giải quyết</option>
-                    <option value="Reject">Từ chối</option>
-                    <option value="Resolved">Đã giải quyết</option>
+                    <option value="Reject">Không hợp lệ</option>
+                    <option value="Resolved">Hợp lệ</option>
                 </select>
             </div>
 
             {/* Hiển thị trạng thái tải dữ liệu */}
-            {loading && <p>Đang tải câu hỏi...</p>}
+            {loading && <p style={{ textAlign: "center", fontStyle: "italic", color: "gray" }}>Đang tải câu hỏi...</p>}
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
             {/* Danh sách câu hỏi */}
-            <div className={styles.questionList}>
+            {reports.length > 0 ? (<div className={styles.questionList}>
                 {reports.map(q => (
                     <div key={q.reportId} className={styles.questionItem} onClick={() => toggleQuestion(q.reportId)}>
                         <div className={styles.questionHeader}>
-                            <span className={styles.questionText}>{q.reportId}: {q.reason}</span>
+                            <span className={styles.questionText}>(Câu hỏi ID : {q.questionId}) {q.reason} ({q.count})</span>
                             <div className={styles.questionActions}>
                                 <span className={`${styles.status} ${getStatusClass(q.status)}`}> {statusMap[q.status] || "Không xác định"}</span>
                                 <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`} >▼</span>
@@ -188,7 +234,10 @@ const ListReport = () => {
                         )}
                     </div>
                 ))}
-            </div>
+            </div>) : (
+                <p style={{ textAlign: "center", fontStyle: "italic", color: "gray" }}>Chưa có báo cáo nào</p>
+            )}
+            
 
             {/* Phân trang */}
             <div className={styles.pagination}>

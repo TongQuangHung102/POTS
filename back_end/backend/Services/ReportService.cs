@@ -1,6 +1,7 @@
 ﻿using backend.DataAccess.DAO;
 using backend.Dtos.Questions;
 using backend.Dtos.Report;
+using backend.Helpers;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
@@ -19,14 +20,14 @@ namespace backend.Services
             _questionRepository = questionRepository;
         }
 
-        public async Task<List<Report>> GetAllReportsAsync(int pageNumber, int pageSize, string? status = null)
+        public async Task<List<Report>> GetAllReportsAsync(int pageNumber, int pageSize,int subjectGradeId, string? status = null)
         {
-            return await _reportRepository.GetAllReportsAsync(pageNumber, pageSize, status);
+            return await _reportRepository.GetAllReportsAsync(pageNumber, pageSize, subjectGradeId, status);
         }
 
-        public async Task<int> GetTotalReportsAsync(string? status = null)
+        public async Task<int> GetTotalReportsAsync(int subjectGradeId, string? status = null)
         {
-            return await _reportRepository.GetTotalReportsAsync(status);
+            return await _reportRepository.GetTotalReportsAsync(subjectGradeId, status);
         }
 
         public async Task<Report> GetReportByIdAsync(int reportId)
@@ -36,17 +37,48 @@ namespace backend.Services
 
         public async Task AddReportAsync(ReportDto dto)
         {
-            var report = new Report
+            try
             {
-                Reason = dto.Reason,
-                QuestionId = dto.QuestionId,
-                UserId = dto.UserId,
-                CreatedAt = DateTime.UtcNow,
-                Status = "Chờ kiểm tra"
-            };
+                var reasonEnum = (ReportReason)dto.Reason;
 
-            await _reportRepository.AddReportAsync(report);
+                var existingReport = await _reportRepository.GetReportByQuestionAndReason(dto.QuestionId, (int)reasonEnum);
+
+                if (existingReport != null)
+                {
+                    if (existingReport.UserId == dto.UserId)
+                    {
+                        throw new InvalidOperationException("Bạn đã báo cáo câu hỏi này!");
+                    }
+                    else
+                    {
+                        existingReport.ReportCount += 1;
+                        await _reportRepository.UpdateReport(existingReport);
+                        return;
+                    }
+                }
+
+                var report = new Report
+                {
+                    Reason = reasonEnum,
+                    QuestionId = dto.QuestionId,
+                    UserId = dto.UserId,
+                    CreatedAt = DateTime.UtcNow,
+                    Status = "Pending",
+                    ReportCount = 1
+                };
+
+                await _reportRepository.AddReportAsync(report);
+            }
+            catch (InvalidOperationException ex)
+            {
+                throw new Exception(ex.Message);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Đã xảy ra lỗi trong quá trình xử lý yêu cầu. Vui lòng thử lại sau.");
+            }
         }
+
 
         public async Task UpdateReport(ReportEditDto dto)
         {
@@ -89,5 +121,39 @@ namespace backend.Services
             await _reportRepository.UpdateReport(report);
 
         }
+
+        public async Task<ReportDashboard> GetReportDashboardAsync(int subjectGradeId)
+        {
+            int totalReport = await _reportRepository.GetTotalReportCount(subjectGradeId);
+            int validReport = await _reportRepository.GetTotalReportCountByStatus("Resolved", subjectGradeId);
+            int inValidReport = await _reportRepository.GetTotalReportCountByStatus("Reject", subjectGradeId);
+            int pendingReport = await _reportRepository.GetTotalReportCountByStatus("Pending", subjectGradeId);
+
+            var(labels, data) = await _reportRepository.GetReportStatisticsByReason(subjectGradeId);
+            var listReport = await _reportRepository.GetTop5PendingReports(subjectGradeId);
+
+            var dataDashboard = new ReportDashboard
+            {
+                TotalReport = totalReport,
+                ValidReport = validReport,
+                InValidReport = inValidReport,
+                PendingReport = pendingReport,
+                TotalReportByReason = new TotalReportByReasonDto
+                {
+                    Data = data,
+                    Labels = labels
+                },
+                ReportInDashboards = listReport.Select(r => new ReportInDashboard
+                {
+                    Id = r.ReportId,
+                    QuestionId = r.QuestionId,
+                    Reason = EnumHelper.GetEnumDescription((ReportReason)r.Reason),
+                    ReportCount = r.ReportCount,
+                    Status = r.Status
+                }).ToList(),
+            };
+            return dataDashboard;
+        }
+
     }
 }

@@ -9,8 +9,8 @@ namespace backend.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int ReportId { get; set; }
         public int QuestionId { get; set; } 
-        public int UserId { get; set; }  
-        public string Reason { get; set; }  
+        public int UserId { get; set; }
+        public ReportReason Reason { get; set; }
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow; 
         public string Status { get; set; } 
 
@@ -19,5 +19,6 @@ namespace backend.Models
 
         [ForeignKey("UserId")]
         public virtual User User { get; set; }
+        public int ReportCount { get; set; }
     }
 }

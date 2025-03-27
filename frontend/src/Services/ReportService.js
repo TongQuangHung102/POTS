@@ -32,3 +32,23 @@ export const updateReport = async (report) => {
         return { success: false, message: error.message };
     }
 };
+
+export const getReportReasons = async () => {
+    try {
+        const response = await fetch(`https://localhost:7259/api/Report/reasons-report`, {
+            method: "GET",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error(`Error: ${response.status}`);
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Failed to fetch report reasons:", error);
+        return [];
+    }
+};

@@ -40,6 +40,8 @@ import ListReport from '../pages/admin/ListReport';
 import ParentDashboard from '../pages/parent/ParentDashboard';
 import ParentLayout from '../pages/parent/ParentLayout';
 import UserProfile from '../pages/UserProfile';
+import Report from '../pages/content_manager/Report';
+import HomePage from '../pages/HomePage';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
@@ -59,7 +61,7 @@ const AppRoutes = () => {
             <Route path='/choose-grade' element={<ChooseGrade />}></Route>
             <Route path='/forgot-password' element={<ForgotPasswordForm />}></Route>
             <Route path='/profile' element={<UserProfile />}></Route>
-
+            <Route path='/home-page' element={<HomePage />}></Route>
 
 
 
@@ -73,7 +75,6 @@ const AppRoutes = () => {
                 <Route path="/admin/grades/:gradeId/subject/:subjectId" element={<ListChapter />} />
                 <Route path="/admin/grades/:gradeId/subject/:subjectId/chapters/:chapterId" element={<ListLesson />} />
                 <Route path='/admin/package' element={<ListPackage />} />
-                <Route path='/admin/reports' element={<ListReport />} />
                 <Route
                     path='/admin/package/:planId'
                     element={<PackageDetail />}
@@ -103,7 +104,7 @@ const AppRoutes = () => {
                 <Route path="/student/test" element={<Test />} />
                 <Route path='/student/grade/:gradeId/subject/:subjectId/course/practice/:lessonId' element={<Quiz />}></Route>
                 <Route path='/student/grade/:gradeId/subject/:subjectId/course/test/:testId' element={<Quiz />}></Route>
-
+                <Route path='/student/profile' element={<UserProfile />}></Route>
             </Route>
 
             <Route path='/content_manage' element={<ContentManageLayout />}>
@@ -118,6 +119,8 @@ const AppRoutes = () => {
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/list_tests' element={<ListTest />}></Route>
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/test/:testId/questions' element={<ManageQuestionTest />}></Route>
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/chapters/:chapterId/lessons/:lessonId/list-aiquestion' element={<ListAIQuestion />} />
+                <Route path='/content_manage/report/list' element={<ListReport />} />
+                <Route path='/content_manage/report' element={<Report />} />
             </Route>
 
             <Route path='/parent' element={<ParentLayout />}>

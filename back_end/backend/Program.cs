@@ -11,6 +11,7 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Google;
 using backend.Helpers;
+using backend.BackgroundTasks;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -82,6 +83,12 @@ builder.Services.AddScoped<SubjectService>();
 builder.Services.AddScoped<IUserParentStudentRepository, UserParentStudentRepository>();
 builder.Services.AddScoped<UserParentStudentDAO>();
 builder.Services.AddScoped<UserParentStudentService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<NotificationDAO>();
+builder.Services.AddScoped<NotificationService>();
+
+builder.Services.AddHostedService<CheckInactiveStudentsService>();
+
 builder.Services.AddHttpClient();
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
