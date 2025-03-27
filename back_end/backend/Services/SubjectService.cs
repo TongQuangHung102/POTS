@@ -20,6 +20,10 @@ namespace backend.Services
 
         public async Task AddNewSubjectAsync(SubjectDto dto)
         {
+            if (string.IsNullOrWhiteSpace(dto.SubjectName))
+            {
+                throw new ArgumentException("Tên môn học không được để trống.");
+            }
             var existingSubject = await _subjectRepository.GetSubjectByName(dto.SubjectName);
 
             if (existingSubject != null)
@@ -38,7 +42,7 @@ namespace backend.Services
             var subject = await _subjectRepository.GetSubjectByIdAsync(dto.SubjectId);
             if (subject == null)
             {
-                throw new ArgumentException($"Không tìm thấy môn học với ID {dto.SubjectId}");
+                throw new ArgumentException($"Không tìm thấy môn học với ID: {dto.SubjectId}");
             } 
 
             subject.IsVisible = dto.IsVisible;
