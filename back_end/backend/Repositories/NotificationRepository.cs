@@ -22,9 +22,9 @@ namespace backend.Repositories
             return await _notificationDAO.GetNotificationsByUserIdAsync(userId);
         }
 
-        public async Task MarkAsReadAsync(int notificationId)
+        public async Task MarkAsReadAsync(int userId)
         {
-            await _notificationDAO.MarkAsReadAsync(notificationId);
+            await _notificationDAO.MarkAllAsReadAsync(userId);
         }
     }
 }

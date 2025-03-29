@@ -1,5 +1,6 @@
 
 import styles from "./NotificationDropdown.module.css"; 
+import { formatDateTime } from "../utils/timeUtils";
 
 const NotificationDropdown = ({ notifications }) => {
 
@@ -13,7 +14,7 @@ const NotificationDropdown = ({ notifications }) => {
               key={noti.id}
               className={noti.isRead ? styles.read : styles.unread}
             >
-              <strong>{noti.title}:</strong> {noti.content}
+              <strong>{noti.title}:</strong> {noti.content} <p>{formatDateTime(noti.date)}</p>
             </li>
           ))
         ) : (

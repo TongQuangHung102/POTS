@@ -46,6 +46,8 @@ namespace backend.Models
         public DbSet<SubjectGrade> SubjectGrades { get; set; }
         public DbSet<UserParentStudent> UserParentStudents { get; set; }
         public DbSet<Notification> Notifications { get; set; }
+        public DbSet<PracticeQuestion> PracticeQuestions { get; set; }
+        public DbSet<AnswerPracticeQuestion> AnswerPracticeQuestions { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -93,9 +95,9 @@ namespace backend.Models
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<StudentAnswer>()
-                .HasOne(sa => sa.PracticeAttempts) 
-                .WithMany() 
-                .HasForeignKey(sa => sa.AttemptId)
+                .HasOne(sa => sa.PracticeAttempt)
+                .WithMany(pa => pa.StudentAnswers)
+                .HasForeignKey(sa => sa.PracticeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Chapter>()

@@ -28,7 +28,7 @@ namespace backend.BackgroundTasks
                     Console.WriteLine($"Lỗi trong Background Service: {ex.Message}");
                 }
 
-                await Task.Delay(TimeSpan.FromMinutes(3), stoppingToken);
+                await Task.Delay(TimeSpan.FromMinutes(1), stoppingToken);
             }
         }
     }

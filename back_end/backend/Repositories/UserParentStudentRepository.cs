@@ -32,9 +32,9 @@ namespace backend.Repositories
             return await _userParentStudentDAO.GetByParentIdAndStudentId(parentId, studentId);
         }
 
-        public async Task<int?> GetParentIdByStudentIdAsync(int studentId)
+        public async Task<User> GetParentByStudentIdAsync(int studentId)
         {
-            return await _userParentStudentDAO.GetParentIdByStudentIdAsync(studentId);
+            return await _userParentStudentDAO.GetParentByStudentIdAsync(studentId);
         }
 
         public async Task UpdateParentStudentAsync(UserParentStudent request)

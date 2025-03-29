@@ -22,7 +22,7 @@
     padding: 0;
     margin: 10px 0;
     max-height: 300px; 
-  overflow-y: auto; 
+    overflow-y: auto; 
   }
   
   .notificationDropdown ul li {
@@ -41,5 +41,10 @@
   /* Đã đọc (nhạt hơn) */
   .read {
     font-weight: normal;
+    color: #929292;
+  }
+
+  .notificationDropdown p{
+    font-size: 12px;
     color: #929292;
   }

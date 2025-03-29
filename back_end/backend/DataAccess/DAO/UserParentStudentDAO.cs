@@ -51,14 +51,14 @@ namespace backend.DataAccess.DAO
             }
         }
 
-        public async Task<int?> GetParentIdByStudentIdAsync(int studentId)
+        public async Task<User> GetParentByStudentIdAsync(int studentId)
         {
-            var relationship = await _dbContext.UserParentStudents
+            var parent = await _dbContext.UserParentStudents
                 .Where(ups => ups.StudentId == studentId)
-                .Select(ups => ups.ParentId)
+                .Select(ups => ups.Parent)
                 .FirstOrDefaultAsync();
 
-            return relationship == 0 ? null : relationship;
+            return parent;
         }
 
     }
