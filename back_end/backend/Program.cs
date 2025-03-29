@@ -12,6 +12,8 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Google;
 using backend.Helpers;
 using backend.BackgroundTasks;
+using backend.Hubs;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,25 +88,39 @@ builder.Services.AddScoped<UserParentStudentService>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<NotificationDAO>();
 builder.Services.AddScoped<NotificationService>();
+builder.Services.AddScoped<StudentPerformanceDAO>();
+builder.Services.AddScoped<IStudentPerformanceRepository, StudentPerformanceRepository>();
+builder.Services.AddScoped<PracticeQuestionService>();
+builder.Services.AddScoped<PracticeQuestionDAO>();
+builder.Services.AddScoped<IPracticeQuestionRepository, PracticeQuestionRepository>();
+builder.Services.AddScoped<StudentAnswersService>();
+builder.Services.AddScoped<StudentAnswerDAO>();
+builder.Services.AddScoped<IStudentAnswerRepository, StudentAnswerRepository>();
 
 builder.Services.AddHostedService<CheckInactiveStudentsService>();
 
 builder.Services.AddHttpClient();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
         options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
     });
-builder.Services.AddScoped<StudentPerformanceDAO>();
-builder.Services.AddScoped<IStudentPerformanceRepository, StudentPerformanceRepository>();
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:3000") 
+        policy => policy
+            .WithOrigins("http://localhost:3000") 
+            .AllowAnyMethod()
+            .AllowAnyHeader()
             .AllowCredentials()
-                          .AllowAnyHeader()
-                          .AllowAnyMethod());
+    );
 });
+
 
 var key = Encoding.ASCII.GetBytes("UltraSecureKey_ForJWTAuth!987654321@2025$");
 builder.Services.AddAuthentication(options =>
@@ -119,7 +135,22 @@ builder.Services.AddAuthentication(options =>
         ValidateIssuerSigningKey = true,
         IssuerSigningKey = new SymmetricSecurityKey(key),
         ValidateIssuer = false,
-        ValidateAudience = false
+        ValidateAudience = false,
+
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken)
+                && path.StartsWithSegments("/hubs/spreadhub"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
     };
 });
 
@@ -147,11 +178,15 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowSpecificOrigin");
 
+app.UseWebSockets();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/notificationHub").RequireAuthorization();
 
 app.Run();
 

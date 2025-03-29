@@ -134,6 +134,18 @@
   justify-content: flex-end;
 }
 
+.new-notification{
+  animation: blink 4s infinite;
+  color: #ff0000;
+  padding: 2px 5px 2px 2px;
+}
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
 @media (max-width: 768px) {
   .main-content {
     padding: 15px;

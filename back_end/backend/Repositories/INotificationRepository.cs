@@ -6,7 +6,7 @@ namespace backend.Repositories
     {
         Task AddNotificationAsync(Notification notification);
         Task<List<Notification>> GetNotificationsByUserIdAsync(int userId);
-        Task MarkAsReadAsync(int notificationId);
+        Task MarkAsReadAsync(int userId);
 
     }
 }

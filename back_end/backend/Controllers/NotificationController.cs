@@ -26,7 +26,8 @@ namespace backend.Controllers
                     title = n.Title,
                     content = n.Content,
                     isRead = n.IsRead,
-                    type = n.Type
+                    type = n.Type,
+                    date = n.CreatedAt
                 });
                 return Ok(noti);
             }
@@ -34,6 +35,13 @@ namespace backend.Controllers
             {
                 return StatusCode(500, new { message = "Đã xảy ra lỗi.", error = ex.Message });
             }
+        }
+
+        [HttpPut("mark-all-as-read")]
+        public async Task<IActionResult> MarkAllAsRead([FromQuery] int userId)
+        {
+            await _notificationService.MarkAllAsRead(userId);
+            return Ok(new { message = "Thành công" });
         }
     }
 }

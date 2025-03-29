@@ -8,7 +8,8 @@ import '../../pages/StudentDashboard.css';
 import { getStudentsByUserId } from '../../services/ParentService';
 import { formatDateTime } from '../../utils/timeUtils';
 import NotificationDropdown from '../../components/Notification';
-import { getNotifications } from '../../services/NotificationService';
+import { getNotifications, markAllAsRead } from '../../services/NotificationService';
+import { initSignalR, stopSignalR } from '../../services/SignalRService'
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip);
 
 const ParentDashboard = () => {
@@ -31,8 +32,19 @@ const ParentDashboard = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [notifications, setNotifications] = useState([]);
+  const [hasUnreadNotification, setHasUnreadNotification] = useState(false);
+  const [newNotification, setNewNotification] = useState(0);
+  const isFirstRender = useRef(true);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    initSignalR(setNewNotification); // 🚀 Kết nối SignalR và truyền state setter vào đây!
+
+    return () => {
+        stopSignalR(); // 🛑 Ngắt kết nối SignalR khi component unmount
+    };
+}, []);
 
   useEffect(() => {
     if (subjectGradeId) { // Chỉ fetch khi subjectGradeId đã có giá trị
@@ -105,7 +117,7 @@ const ParentDashboard = () => {
           setIsLoading(false);
         });
     }
-  }, [subjectGradeId,selectedStudent ]); // Chạy khi subjectGradeId thay đổi
+  }, [subjectGradeId, selectedStudent]); // Chạy khi subjectGradeId thay đổi
 
   const fetchSubjectGrades = async () => {
     try {
@@ -139,14 +151,16 @@ const ParentDashboard = () => {
     const fetchNotifications = async () => {
       try {
         const data = await getNotifications(userId);
+        const hasUnread = data.some(noti => !noti.isRead);
+        setHasUnreadNotification(hasUnread);
         setNotifications(data);
       } catch (error) {
         console.error("Lỗi khi tải thông báo:", error);
       }
     };
-  
+
     fetchNotifications();
-  }, [userId]);
+  }, [newNotification]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -162,6 +176,25 @@ const ParentDashboard = () => {
       setIsLoading(false);
     }
   }, [selectedStudent]);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (isOpen) return;
+
+    const markRead = async () => {
+      await markAllAsRead(userId);
+      setNotifications(prev =>
+        prev.map(n => ({ ...n, isRead: true }))
+      );
+      setHasUnreadNotification(false);
+    };
+
+    markRead();
+  }, [isOpen]);
 
 
 
@@ -204,7 +237,8 @@ const ParentDashboard = () => {
           </div>
           <div class="col-md-6">
             <div className='notification'>
-              <BiMessageRoundedDetail size={30} style={{ cursor: "pointer" }} onClick={() => setIsOpen(!isOpen)}/>
+              {hasUnreadNotification && (<p className='new-notification'>Bạn có thông báo mới!</p>)}
+              <BiMessageRoundedDetail size={30} style={{ cursor: "pointer" }} onClick={() => setIsOpen(!isOpen)} />
             </div>
           </div>
         </div>
@@ -322,7 +356,7 @@ const ParentDashboard = () => {
           </div>
         </div>
 
-        {isOpen && <NotificationDropdown notifications={notifications}/>}
+        {isOpen && <NotificationDropdown notifications={notifications} />}
       </div>
     </div>
   );

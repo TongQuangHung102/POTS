@@ -5,7 +5,7 @@ namespace backend.Repositories
     public interface IPracticeRepository
     {
         Task<List<PracticeAttempt>> GetUserAttemptsAsync(int userId, int lessonId);
-         Task AddPracticeAttemp(PracticeAttempt practiceAttempt);
+        Task<int> AddPracticeAttempt(PracticeAttempt practiceAttempt);
         Task<PracticeAttempt> GetLastAttempt(int userId, int lessonId);
         Task<double> GetTotalPracticeTimeByDateAsync(int subjectGradeId, int userId, DateTime date);
         Task<double> GetAverageScoreByDateAsync(int subjectGradeId, int userId, DateTime date);

@@ -9,6 +9,6 @@ namespace backend.Repositories
         Task UpdateParentStudentAsync(UserParentStudent request);
         Task<UserParentStudent> GetByParentIdAndStudentId(int parentId, int studentId);
         Task DeleteParentStudentAsync(int parentId, int studentId);
-        Task<int?> GetParentIdByStudentIdAsync(int studentId);
+        Task<User> GetParentByStudentIdAsync(int studentId);
     }
 }

@@ -16,7 +16,7 @@ namespace backend.Controllers
         }
 
         [HttpPost("add-practice-attempt")]
-        public async Task<IActionResult> AddGrade([FromBody] PracticeAttemptDto dto)
+        public async Task<IActionResult> AddPracticeAttempt([FromBody] PracticeAttemptDto dto)
         {
             try
             {
