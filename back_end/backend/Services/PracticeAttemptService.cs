@@ -3,6 +3,7 @@ using backend.Dtos.PracticeAndTest;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services
 {
@@ -10,11 +11,13 @@ namespace backend.Services
     {
         private readonly IPracticeRepository _practiceRepository;
         private readonly IStudentPerformanceRepository _studentPerformanceRepository;
+        private readonly IStudentAnswerRepository _studentAnswerRepository;
 
-        public PracticeAttemptService(IPracticeRepository practiceRepository, IStudentPerformanceRepository studentPerformanceRepository)
+        public PracticeAttemptService(IPracticeRepository practiceRepository, IStudentPerformanceRepository studentPerformanceRepository, IStudentAnswerRepository studentAnswerRepository)
         {
             _practiceRepository = practiceRepository;
             _studentPerformanceRepository = studentPerformanceRepository;
+            _studentAnswerRepository = studentAnswerRepository;
         }
 
         public async Task AddPraticeAttempt(PracticeAttemptDto practiceAttemptDto)
@@ -29,8 +32,20 @@ namespace backend.Services
                 LessonId = practiceAttemptDto.LessonId,
                 SampleQuestion = practiceAttemptDto.SampleQuestion
             };
-            await _practiceRepository.AddPracticeAttemp(practiceAttempt);
+            var practiceId = await _practiceRepository.AddPracticeAttempt(practiceAttempt);
             await UpdateStudentPerformanceAsync(practiceAttemptDto.UserId, practiceAttemptDto.LessonId);
+
+            foreach (var answer in practiceAttemptDto.Answers)
+            {
+                var studentAnswer = new StudentAnswer
+                {
+                    QuestionId = answer.QuestionId,
+                    SelectedAnswer = answer.SelectedAnswer,
+                    PracticeId = practiceId
+                };
+
+                await _studentAnswerRepository.CreateAsync(studentAnswer);
+            }
         }
 
         private async Task UpdateStudentPerformanceAsync(int userId, int lessonId)

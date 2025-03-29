@@ -98,7 +98,6 @@ const Quiz = () => {
 
         setIsLoading(true);
 
-
         const fetchQuestions = async () => {
             let result;
             if (mode === "test") {
@@ -134,11 +133,13 @@ const Quiz = () => {
     }, [loading, isLoading]);
 
     useEffect(() => {
-        const fetchReasons = async () => {
-            const data = await getReportReasons();
-            setReasons(data);
-        };
-        fetchReasons();
+        if(mode === "test"){
+            const fetchReasons = async () => {
+                const data = await getReportReasons();
+                setReasons(data);
+            };
+            fetchReasons();
+        }
     }, []);
 
 
@@ -149,11 +150,19 @@ const Quiz = () => {
     };
 
     const handleSubmit = async () => {
-
         let totalScore = 0;
+        let studentAnswers = [];
+        
         userAnswers.forEach((answer, index) => {
-            if (answer !== null && questions[index].correctAnswer === (answer + 1)) {
-                totalScore += 1;
+            if (answer !== null) {
+                let isCorrect = questions[index].correctAnswer === (answer + 1);
+                if (isCorrect) {
+                    totalScore += 1;
+                }
+                studentAnswers.push({
+                    questionId: questions[index].questionId,
+                    selectedAnswer: answer + 1,
+                });
             }
         });
 
@@ -168,16 +177,18 @@ const Quiz = () => {
         setScore(totalScore);
         setShowScore(true);
 
-        if (mode !== "test") {
+        if (mode !== "test" && byAI) {
             const data = {
                 correctAnswers: totalScore,
                 level: 2,
                 timePractice: elapsedTime,
                 userId: user.userId,
                 lessonId: lessonId,
-                sampleQuestion: sampleQuestion
+                sampleQuestion: sampleQuestion,
+                answers: studentAnswers,
             };
             try {
+                console.log(data);
                 await submitPracticeResult(data);
                 console.log("Gửi kết quả thành công:", data);
             } catch (error) {

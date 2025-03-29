@@ -27,7 +27,6 @@ namespace backend.DataAccess.DAO
                 .Include(q => q.AnswerQuestions)
                 .Include(q => q.ContestQuestions)
                 .Include(q => q.TestQuestions)
-                .Include(q => q.StudentAnswers)
                 .AsQueryable();
 
             if (chapterId.HasValue)

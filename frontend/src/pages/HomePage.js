@@ -95,15 +95,10 @@ const HomePage = () => {
       </section>
 
       <section className={styles.body3}>
-        <h1>Contact</h1>
+        <h2>Trải nghiệm các tính năng với giá cực tốt</h2>
         <div className={styles.bodyContact}>
           <div className={styles.contactForm}>
-            <h3>CONTACT FORM</h3>
-            <input type="text" placeholder="Name" />
-            <input type="text" placeholder="Email" />
-            <input type="text" placeholder="Subject" />
-            <input type="text" placeholder="Your Message" />
-            <button>SEND MESSAGE</button>
+          <img src="./images/work3.jpg" alt="Giao diện 1" />
           </div>
           <div className={styles.contactAddress}>
             <h3>CONTACT ADDRESS</h3>

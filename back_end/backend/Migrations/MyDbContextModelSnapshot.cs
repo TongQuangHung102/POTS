@@ -59,7 +59,32 @@ namespace backend.Migrations
 
                     b.HasIndex("LevelId");
 
-                    b.ToTable("AIQuestions");
+                    b.ToTable("AIQuestions", (string)null);
+                });
+
+            modelBuilder.Entity("backend.Models.AnswerPracticeQuestion", b =>
+                {
+                    b.Property<int>("AnswerQuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnswerQuestionId"), 1L, 1);
+
+                    b.Property<string>("AnswerText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Number")
+                        .HasColumnType("int");
+
+                    b.Property<int>("QuestionId")
+                        .HasColumnType("int");
+
+                    b.HasKey("AnswerQuestionId");
+
+                    b.HasIndex("QuestionId");
+
+                    b.ToTable("AnswerPracticeQuestions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.AnswerQuestion", b =>
@@ -90,7 +115,7 @@ namespace backend.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("AnswerQuestions");
+                    b.ToTable("AnswerQuestions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Chapter", b =>
@@ -126,7 +151,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Chapters");
+                    b.ToTable("Chapters", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.CompetitionResult", b =>
@@ -150,7 +175,7 @@ namespace backend.Migrations
 
                     b.HasIndex("ContestId");
 
-                    b.ToTable("CompetitionResults");
+                    b.ToTable("CompetitionResults", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Contest", b =>
@@ -187,7 +212,7 @@ namespace backend.Migrations
 
                     b.HasKey("ContestId");
 
-                    b.ToTable("Contests");
+                    b.ToTable("Contests", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.ContestParticipant", b =>
@@ -213,7 +238,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("ContestParticipants");
+                    b.ToTable("ContestParticipants", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.ContestQuestion", b =>
@@ -236,7 +261,7 @@ namespace backend.Migrations
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("ContestQuestions");
+                    b.ToTable("ContestQuestions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Grades", b =>
@@ -265,7 +290,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Grades");
+                    b.ToTable("Grades", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Lesson", b =>
@@ -293,7 +318,7 @@ namespace backend.Migrations
 
                     b.HasIndex("ChapterId");
 
-                    b.ToTable("Lessons");
+                    b.ToTable("Lessons", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Level", b =>
@@ -317,7 +342,7 @@ namespace backend.Migrations
 
                     b.HasKey("LevelId");
 
-                    b.ToTable("Levels");
+                    b.ToTable("Levels", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Notification", b =>
@@ -356,7 +381,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Payment", b =>
@@ -400,7 +425,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.PracticeAttempt", b =>
@@ -440,7 +465,35 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("PracticeAttempts");
+                    b.ToTable("PracticeAttempts", (string)null);
+                });
+
+            modelBuilder.Entity("backend.Models.PracticeQuestion", b =>
+                {
+                    b.Property<int>("QuestionId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("QuestionId"), 1L, 1);
+
+                    b.Property<int>("CorrectAnswer")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("CreateAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int>("LessonId")
+                        .HasColumnType("int");
+
+                    b.Property<string>("QuestionText")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("QuestionId");
+
+                    b.HasIndex("LessonId");
+
+                    b.ToTable("PracticeQuestions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Prerequisite", b =>
@@ -457,7 +510,7 @@ namespace backend.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("Prerequisite");
+                    b.ToTable("Prerequisite", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Question", b =>
@@ -496,7 +549,7 @@ namespace backend.Migrations
 
                     b.HasIndex("LevelId");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Report", b =>
@@ -532,7 +585,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Reports");
+                    b.ToTable("Reports", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Role", b =>
@@ -549,7 +602,7 @@ namespace backend.Migrations
 
                     b.HasKey("RoleId");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.StudentAnswer", b =>
@@ -560,10 +613,10 @@ namespace backend.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("AnswerId"), 1L, 1);
 
-                    b.Property<int>("AttemptId")
+                    b.Property<int?>("PracticeAttemptPracticeId")
                         .HasColumnType("int");
 
-                    b.Property<int?>("PracticeAttemptPracticeId")
+                    b.Property<int>("PracticeId")
                         .HasColumnType("int");
 
                     b.Property<int>("QuestionId")
@@ -574,13 +627,13 @@ namespace backend.Migrations
 
                     b.HasKey("AnswerId");
 
-                    b.HasIndex("AttemptId");
-
                     b.HasIndex("PracticeAttemptPracticeId");
+
+                    b.HasIndex("PracticeId");
 
                     b.HasIndex("QuestionId");
 
-                    b.ToTable("StudentAnswers");
+                    b.ToTable("StudentAnswers", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.StudentPerformance", b =>
@@ -609,7 +662,7 @@ namespace backend.Migrations
 
                     b.HasIndex("LevelId");
 
-                    b.ToTable("StudentPerformances");
+                    b.ToTable("StudentPerformances", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.StudentProgress", b =>
@@ -633,7 +686,7 @@ namespace backend.Migrations
 
                     b.HasIndex("LessonId");
 
-                    b.ToTable("StudentProgresses");
+                    b.ToTable("StudentProgresses", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.StudentTest", b =>
@@ -665,7 +718,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("StudentTests");
+                    b.ToTable("StudentTests", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Subject", b =>
@@ -685,7 +738,7 @@ namespace backend.Migrations
 
                     b.HasKey("SubjectId");
 
-                    b.ToTable("Subjects");
+                    b.ToTable("Subjects", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.SubjectGrade", b =>
@@ -708,7 +761,7 @@ namespace backend.Migrations
 
                     b.HasIndex("SubjectId");
 
-                    b.ToTable("SubjectGrades");
+                    b.ToTable("SubjectGrades", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.SubscriptionPlan", b =>
@@ -759,7 +812,7 @@ namespace backend.Migrations
 
                     b.HasKey("PlanId");
 
-                    b.ToTable("SubscriptionPlans");
+                    b.ToTable("SubscriptionPlans", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.Test", b =>
@@ -800,7 +853,7 @@ namespace backend.Migrations
 
                     b.HasIndex("SubjectGradeId");
 
-                    b.ToTable("Tests");
+                    b.ToTable("Tests", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.TestCategory", b =>
@@ -820,7 +873,7 @@ namespace backend.Migrations
 
                     b.HasKey("TestCategoryId");
 
-                    b.ToTable("TestCategories");
+                    b.ToTable("TestCategories", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.TestQuestion", b =>
@@ -843,7 +896,7 @@ namespace backend.Migrations
 
                     b.HasIndex("TestId");
 
-                    b.ToTable("TestQuestions");
+                    b.ToTable("TestQuestions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.TestSubmission", b =>
@@ -869,7 +922,7 @@ namespace backend.Migrations
 
                     b.HasIndex("StudentTestId");
 
-                    b.ToTable("TestSubmissions");
+                    b.ToTable("TestSubmissions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.User", b =>
@@ -921,7 +974,7 @@ namespace backend.Migrations
 
                     b.HasIndex("Role");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.UserParentStudent", b =>
@@ -954,7 +1007,7 @@ namespace backend.Migrations
 
                     b.HasIndex("StudentId");
 
-                    b.ToTable("UserParentStudents");
+                    b.ToTable("UserParentStudents", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.UserSubscription", b =>
@@ -993,7 +1046,7 @@ namespace backend.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("UserSubscriptions");
+                    b.ToTable("UserSubscriptions", (string)null);
                 });
 
             modelBuilder.Entity("backend.Models.AIQuestion", b =>
@@ -1013,6 +1066,17 @@ namespace backend.Migrations
                     b.Navigation("Lesson");
 
                     b.Navigation("Level");
+                });
+
+            modelBuilder.Entity("backend.Models.AnswerPracticeQuestion", b =>
+                {
+                    b.HasOne("backend.Models.PracticeQuestion", "PracticeQuestion")
+                        .WithMany("AnswerPracticeQuestions")
+                        .HasForeignKey("QuestionId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PracticeQuestion");
                 });
 
             modelBuilder.Entity("backend.Models.AnswerQuestion", b =>
@@ -1179,6 +1243,17 @@ namespace backend.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("backend.Models.PracticeQuestion", b =>
+                {
+                    b.HasOne("backend.Models.Lesson", "Lesson")
+                        .WithMany()
+                        .HasForeignKey("LessonId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Lesson");
+                });
+
             modelBuilder.Entity("backend.Models.Prerequisite", b =>
                 {
                     b.HasOne("backend.Models.Chapter", "Chapter")
@@ -1238,25 +1313,22 @@ namespace backend.Migrations
 
             modelBuilder.Entity("backend.Models.StudentAnswer", b =>
                 {
-                    b.HasOne("backend.Models.PracticeAttempt", "PracticeAttempts")
+     
+                    b.HasOne("backend.Models.PracticeAttempt", "PracticeAttempt")
                         .WithMany()
-                        .HasForeignKey("AttemptId")
+                        .HasForeignKey("PracticeId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("backend.Models.PracticeAttempt", null)
-                        .WithMany("StudentAnswers")
-                        .HasForeignKey("PracticeAttemptPracticeId");
-
-                    b.HasOne("backend.Models.Question", "Question")
+                    b.HasOne("backend.Models.PracticeQuestion", "PracticeQuestion")
                         .WithMany("StudentAnswers")
                         .HasForeignKey("QuestionId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("PracticeAttempts");
+                    b.Navigation("PracticeAttempt");
 
-                    b.Navigation("Question");
+                    b.Navigation("PracticeQuestion");
                 });
 
             modelBuilder.Entity("backend.Models.StudentPerformance", b =>
@@ -1501,6 +1573,13 @@ namespace backend.Migrations
                     b.Navigation("StudentAnswers");
                 });
 
+            modelBuilder.Entity("backend.Models.PracticeQuestion", b =>
+                {
+                    b.Navigation("AnswerPracticeQuestions");
+
+                    b.Navigation("StudentAnswers");
+                });
+
             modelBuilder.Entity("backend.Models.Question", b =>
                 {
                     b.Navigation("AnswerQuestions");
@@ -1508,8 +1587,6 @@ namespace backend.Migrations
                     b.Navigation("ContestQuestions");
 
                     b.Navigation("Reports");
-
-                    b.Navigation("StudentAnswers");
 
                     b.Navigation("TestQuestions");
 

@@ -20,20 +20,29 @@ namespace backend.DataAccess.DAO
 
         public async Task<List<Notification>> GetNotificationsByUserIdAsync(int userId)
         {
+            DateTime tenDaysAgo = DateTime.UtcNow.AddDays(-10);
             return await _dbContext.Notifications
-                .Where(n => n.UserId == userId)
+                .Where(n => n.UserId == userId && n.CreatedAt >= tenDaysAgo)
                 .OrderByDescending(n => n.CreatedAt)
                 .ToListAsync();
         }
 
-        public async Task MarkAsReadAsync(int notificationId)
+        public async Task MarkAllAsReadAsync(int userId)
         {
-            var notification = await _dbContext.Notifications.FindAsync(notificationId);
-            if (notification != null)
+            var unreadNotifications = await _dbContext.Notifications
+                .Where(n => n.UserId == userId && !n.IsRead)
+                .ToListAsync();
+
+            if (unreadNotifications.Any())
             {
-                notification.IsRead = true;
+                foreach (var notification in unreadNotifications)
+                {
+                    notification.IsRead = true;
+                }
+
                 await _dbContext.SaveChangesAsync();
             }
         }
+
     }
 }
