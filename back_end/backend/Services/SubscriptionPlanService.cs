@@ -18,7 +18,7 @@ namespace backend.Services
             var existingPlan = await _spRepository.GetByNameAsync(plan.PlanName);
             if (existingPlan != null)
             {
-                throw new Exception("Tên gói đăng ký đã tồn tại. Vui lòng chọn tên khác.");
+                throw new InvalidOperationException("Tên gói đăng ký đã tồn tại. Vui lòng chọn tên khác.");
             }
             await _spRepository.AddSubscriptionPlanAsync(plan);
         }

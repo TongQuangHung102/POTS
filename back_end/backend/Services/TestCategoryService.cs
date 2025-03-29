@@ -29,6 +29,8 @@ namespace backend.Services
 
         public async Task<TestCategory?> GetCategoryByIdAsync(int id)
         {
+            if (id <= 0)
+                throw new ArgumentException("ID phải lớn hơn 0.", nameof(id));
             try
             {
                 return await _testCategoryRepository.GetByIdAsync(id);
@@ -41,7 +43,11 @@ namespace backend.Services
 
         public async Task<bool> AddCategoryAsync(TestCategory category)
         {
-            if (category == null) throw new ArgumentNullException(nameof(category), "Danh mục không được null.");
+            if (category == null)
+                throw new ArgumentNullException(nameof(category), "Danh mục không được null.");
+
+            if (string.IsNullOrWhiteSpace(category.CategoryName))
+                throw new ArgumentNullException(nameof(category.CategoryName), "Tên danh mục không được rỗng hoặc chỉ chứa khoảng trắng.");
 
             var existingCategories = await _testCategoryRepository.GetAllAsync();
             if (existingCategories.Any(c => c.CategoryName == category.CategoryName))
@@ -61,25 +67,25 @@ namespace backend.Services
         }
 
 
+
         public async Task<bool> UpdateCategoryAsync(int id, TestCategory category)
         {
-            try
-            {
-                if (category == null) throw new ArgumentNullException(nameof(category), "Danh mục không được null.");
+            if (category == null)
+                throw new ArgumentNullException(nameof(category), "Danh mục không được null.");
 
-                var existingCategory = await _testCategoryRepository.GetByIdAsync(id);
-                if (existingCategory == null) throw new KeyNotFoundException($"Không tìm thấy danh mục có ID: {id}");
+            if (id <= 0)
+                throw new ArgumentException("ID phải lớn hơn 0.", nameof(id));
 
-                existingCategory.CategoryName = category.CategoryName;
-                existingCategory.IsVisible = category.IsVisible;
+            var existingCategory = await _testCategoryRepository.GetByIdAsync(id);
+            if (existingCategory == null)
+                throw new KeyNotFoundException($"Không tìm thấy danh mục có ID: {id}");
 
-                await _testCategoryRepository.UpdateTestCategoryAsync(existingCategory);
-                return true;
-            }
-            catch (Exception ex)
-            {
-                throw new Exception($"Lỗi khi cập nhật danh mục có ID: {id}", ex);
-            }
+            existingCategory.CategoryName = category.CategoryName;
+            existingCategory.IsVisible = category.IsVisible;
+
+            await _testCategoryRepository.UpdateTestCategoryAsync(existingCategory);
+            return true;
         }
+
     }
 }
