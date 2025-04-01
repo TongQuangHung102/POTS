@@ -7,9 +7,6 @@
     height: 19vw !important;
     position: relative;
 }
-.card-item {
-    height: 250px;
-}
 
 .sidebar {
     width: var(--sidebar-width);

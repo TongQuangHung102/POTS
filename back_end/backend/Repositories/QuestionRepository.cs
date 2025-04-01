@@ -59,5 +59,15 @@ namespace backend.Repositories
         {
             return await _questionDAO.GetQuestionsByChapterAutoAsync(chapterRequest); 
         }
+
+        public async Task MarkQuestionsAsUsed(List<int> questionIds)
+        {
+            await _questionDAO.MarkQuestionsAsUsed(questionIds);
+        }
+
+        public async Task<int> CountQuestionsUsedByWeek(int subjectGradeId, int weekOffset)
+        {
+            return await _questionDAO.CountQuestionsUsedByWeek(subjectGradeId, weekOffset);
+        }
     }
 }

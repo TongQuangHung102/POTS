@@ -171,6 +171,8 @@ namespace backend.Services
         {
             int levelId = 0;
             bool byAi = true;
+            var qIds = new List<int>();
+
             try
             {
                 var attempt = await _practiceRepository.GetLastAttempt(questionRequest.userId, questionRequest.lessonId);
@@ -252,8 +254,17 @@ namespace backend.Services
                 }
                 else
                 {
-                    var q = await _questionRepository.GetQuestionsFirstTimePractice(5, questionRequest.lessonId);
-                    return (q, byAi);
+                    var qs = await _questionRepository.GetQuestionsFirstTimePractice(10, questionRequest.lessonId);
+
+                    foreach (var question in qs)
+                    {
+                        if (!question.IsUsed)
+                        {
+                            qIds.Add(question.QuestionId);
+                        }
+                    }
+                    await _questionRepository.MarkQuestionsAsUsed(qIds);
+                    return (qs, byAi);
                 }
             }
             catch (HttpRequestException ex)
@@ -267,7 +278,17 @@ namespace backend.Services
             }
 
             byAi = false;
-            return (await _questionRepository.GetQuestionsPractice(5, questionRequest.lessonId, levelId), byAi);
+            var q = await _questionRepository.GetQuestionsPractice(5, questionRequest.lessonId, levelId);
+
+            foreach (var question in q)
+            {
+                if (!question.IsUsed)
+                {
+                    qIds.Add(question.QuestionId);
+                }
+            }
+            await _questionRepository.MarkQuestionsAsUsed(qIds);
+            return (q, byAi);
         }
 
         public async Task<List<Question>> GenerateTestQuestionsAsync(GenerateTestRequest request)
@@ -278,6 +299,7 @@ namespace backend.Services
             }
 
             var questions = new List<Question>();
+            var qIds = new List<int>();
 
             foreach (var chapterRequest in request.Chapters)
             {
@@ -290,9 +312,16 @@ namespace backend.Services
                 throw new Exception("Không tìm thấy câu hỏi phù hợp.");
             }
 
+            foreach (var question in questions)
+            {
+                if (!question.IsUsed)
+                {
+                    qIds.Add(question.QuestionId);
+                }
+            }
+            await _questionRepository.MarkQuestionsAsUsed(qIds);
+
             return questions;
         }
-
-
     }
 }

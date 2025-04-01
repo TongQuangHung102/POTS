@@ -132,5 +132,19 @@ namespace backend.Controllers
                 return BadRequest(new { error = ex.Message });
             }
         }
+
+        [HttpPost("change-grade")]
+        public async Task<IActionResult> ChangeGrade([FromBody] ChangeGradeDto changeGrade)
+        {
+            try
+            {
+                await _userService.ChangeGradeAsync(changeGrade);
+                return Ok(new { message = "Đã thay đổi lớp thành công." });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Có lỗi xảy ra khi thay đổi lớp.", error = ex.Message });
+            }
+        }
     }
 }

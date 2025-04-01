@@ -130,7 +130,15 @@
   }
   
   .formGroup {
+
     flex: 1;
+
+  }
+
+  .formGroupBtn{
+    display: flex;
+    flex: 1;
+    align-items: center;
   }
   
   .formGroup label {

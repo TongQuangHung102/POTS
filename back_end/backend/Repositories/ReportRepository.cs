@@ -17,6 +17,11 @@ namespace backend.Repositories
             await _reportDAO.AddReportAsync(report);
         }
 
+        public Task<int> CountReportsByWeek(int subjectGradeId, int weekOffset)
+        {
+            return _reportDAO.CountReportsByWeek(subjectGradeId, weekOffset);
+        }
+
         public async Task<List<Report>> GetAllReportsAsync(int pageNumber, int pageSize, int subjectGradeId, string? status = null)
         {
            return await _reportDAO.GetAllReportsAsync(pageNumber, pageSize,subjectGradeId, status);

@@ -5,6 +5,7 @@
         public int TotalStudent { get; set; }
         public int NewStudent { get; set; }
         public int TotalQuestion { get; set; }
+        public int TotalParent { get; set; }
         public List<ContentManageAssign> ContentManageAssigns { get; set; }
         public List<SubscriptionPlanDashboardDto> SubscriptionPlanDashboards { get; set; }
         public TotalStudentDto TotalStudentDto { get; set; }

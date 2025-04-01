@@ -1,8 +1,11 @@
+.dashboard-container{
+  background-color: white !important;
+}
 .stats-card {
   padding: 20px;
   border-radius: 12px;
   background-color: #ffffff;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   height: 100px;
 }
 
@@ -44,7 +47,7 @@
   background-color: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .submission-icon {
@@ -66,12 +69,12 @@
 .card {
   border-radius: 12px;
   border: none !important;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
   margin-bottom: 20px;
 }
 
 .card-body {
   padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .loading-dashboard{
@@ -111,14 +114,14 @@
   background-color: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 .upcoming-submission-report{
   background-color: #fff;
   border-radius: 12px;
   padding: 20px;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 .package-using{
   text-align: center;
@@ -139,6 +142,8 @@
   color: #ff0000;
   padding: 2px 5px 2px 2px;
 }
+
+
 
 @keyframes blink {
   0% { opacity: 1; }

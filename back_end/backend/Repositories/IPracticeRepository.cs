@@ -15,5 +15,9 @@ namespace backend.Repositories
         Task<double> GetAveragePracticeScoreAsync(int subjectGradeId, int userId);
         Task<List<(int UserId, double AverageScore, double TotalPracticeTime)>> GetStudentDataAsync(int gradeId);
         Task<double> GetTotalPracticeTimeAllStudentByDateAsync(DateTime date, int? gradeId = null, int? subjectGradeId = null);
+        Task<(List<PracticeAttempt> Attempts, int TotalCount)> GetPracticeAttemptsByLessonAndUserAsync(
+            int lessonId, int userId, int pageNumber, int pageSize);
+
+        Task<PracticeAttempt> GetPracticeAttemptDetailAsync(int practiceId);
     }
 }

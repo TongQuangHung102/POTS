@@ -2,7 +2,7 @@ import React from "react";
 import styles from "./Quiz.module.css";
 import { BiInfoCircle } from "react-icons/bi";
 
-const QuizResult = ({ questions, userAnswers, mode, onReport, isPremium }) => {
+const QuizResult = ({ questions, userAnswers, isQuestionBank, onReport, isPremium }) => {
     return (
         <div className={styles.scoreCard}>
             <h2 className={styles.scoreTitle}>Kết quả làm bài</h2>
@@ -13,7 +13,7 @@ const QuizResult = ({ questions, userAnswers, mode, onReport, isPremium }) => {
                         <div key={questionIndex} className={styles.resultCard}>
                             <div className={styles.questionContainer}>
                                 <p className={styles.questionText}>{question.questionText}</p>
-                                {mode === "test" && (
+                                {isQuestionBank && (
                                     <button 
                                         className={styles.reportButton} 
                                         onClick={() => onReport(question)}

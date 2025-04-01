@@ -10,5 +10,6 @@ namespace backend.Repositories
         Task<UserParentStudent> GetByParentIdAndStudentId(int parentId, int studentId);
         Task DeleteParentStudentAsync(int parentId, int studentId);
         Task<User> GetParentByStudentIdAsync(int studentId);
+        Task<int> GetParentCountAsync(int? gradeId);
     }
 }

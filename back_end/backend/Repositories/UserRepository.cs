@@ -70,5 +70,10 @@ namespace backend.Repositories
         {
             return await _userDAO.GetInactiveStudentsFor3DaysAsync(threeDaysAgo);
         }
+
+        public async Task<bool> CanChangeGradeAsync(int userId)
+        {
+            return await _userDAO.CanChangeGradeAsync(userId);
+        }
     }
 }

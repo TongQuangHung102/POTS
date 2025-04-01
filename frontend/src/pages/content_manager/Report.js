@@ -11,9 +11,9 @@ const Report = () => {
   const [dashboardData, setDashboardData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isData, setIsData] = useState(true);
-  const [scoreData, setScoreData] = useState({});
+  const [rateData, setRateData] = useState({});
   const [activityOptions, setActivityOptions] = useState({});
-  const [scoreOptions, setScoreOptions] = useState({});
+  const [rateOptions, setRateOptions] = useState({});
   const [activityData, setActivityData] = useState({});
   const [subjects, setSubjects] = useState([]);
   const [subjectGradeId, setSubjectGradeId] = useState(null);
@@ -86,11 +86,11 @@ const Report = () => {
             }]
           });
 
-          setScoreData({
-            labels: data.totalReportByReason.labels,
+          setRateData({
+            labels: data.rateRoports.labels,
             datasets: [{
-              label: "Số lượng báo cáo",
-              data: data.totalReportByReason.data,
+              label: "Tỷ lệ báo cáo",
+              data: data.rateRoports.data,
               borderColor: '#FF6666',
               backgroundColor: 'rgba(255, 102, 102, 0.2)',
               tension: 0.3,
@@ -110,7 +110,7 @@ const Report = () => {
             scales: { y: { beginAtZero: true } }
           });
 
-          setScoreOptions({
+          setRateOptions({
             plugins: {
               title: {
                 display: true,
@@ -213,7 +213,7 @@ const Report = () => {
                 <div className="card" ref={activityCardRef}>
                   <div className="card-body">
                     <div className="activity-chart">
-                      <Line data={scoreData} options={scoreOptions} />
+                      <Line data={rateData} options={rateOptions} />
                     </div>
                   </div>
                 </div>

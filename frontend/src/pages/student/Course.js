@@ -6,7 +6,9 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { fetchStudentChapters } from '../../services/ChapterService';
 
 // Component cho Badge
-const LessonBadge = ({ averageScore, averageTime }) => {
+const LessonBadge = ({ averageScore, averageTime,id }) => {
+    const navigate = useNavigate();
+    const { gradeId, subjectId } = useParams();
     if (averageScore == null || averageTime == null) {
         return null;
     }
@@ -14,6 +16,7 @@ const LessonBadge = ({ averageScore, averageTime }) => {
     return (
         <div className={styles.lessonbadge}>
             {averageScore.toFixed(2)}đ / {averageTime.toFixed(2)}s
+            <p className={styles.history} onClick={() => navigate(`/student/grade/${gradeId}/subject/${subjectId}/lesson/${id}/history`)}>Lịch sử</p>
         </div>
     );
 }
@@ -24,19 +27,20 @@ const LessonItem = ({ id, number, title, averageScore, averageTime }) => {
     const { gradeId, subjectId } = useParams();
 
     const handlePractice = (id) => {
-        navigate(`/student/grade/${gradeId}/subject/${subjectId}/course/practice/${id}`)
+        navigate(`/student/grade/${gradeId}/subject/${subjectId}/lesson/${id}/practice`)
     }
 
     return (
-        <div className={styles.lessonItem} onClick={() => handlePractice(id)}>
+        <div className={styles.lessonItem}>
             <div className={`${styles.lessonNumber}`}>{number}</div>
-            <div className={styles.lessonInfo}>
+            <div className={styles.lessonInfo} onClick={() => handlePractice(id)}>
                 <div className={styles.lessonIcon}>📄</div>
                 <div className={styles.lessonTitle}>{title}</div>
             </div>
             <LessonBadge
                 averageScore={averageScore}
                 averageTime={averageTime}
+                id={id}
             />
         </div>
     );

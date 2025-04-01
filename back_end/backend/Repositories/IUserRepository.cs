@@ -16,5 +16,6 @@ namespace backend.Repositories
         Task<int> GetTotalStudentByDate(DateTime date, int? gradeId = null);
         Task<int> CreateUserAndGetUserIdAsync(User user);
         Task<List<User>> GetInactiveStudentsFor3DaysAsync(DateTime threeDaysAgo);
+        Task<bool> CanChangeGradeAsync(int userId);
     }
 }

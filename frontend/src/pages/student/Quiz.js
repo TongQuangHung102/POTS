@@ -32,6 +32,7 @@ const Quiz = () => {
     const [startTime, setStartTime] = useState(new Date().toISOString());
 
     const [isReport, setIsReport] = useState(false);
+    const [isQuestionBank, setIsQuestionBank] = useState(false);
     const [reportReason, setReportReason] = useState();
     const [reasons, setReasons] = useState([]);
 
@@ -111,6 +112,7 @@ const Quiz = () => {
                 if (mode === "test") {
                     setQuestions(result.data);
                     setUserAnswers(Array(result.data.length).fill(null));
+                    setIsQuestionBank(true);
                 }
                 else {
                     console.log(result.data.questions);
@@ -133,14 +135,14 @@ const Quiz = () => {
     }, [loading, isLoading]);
 
     useEffect(() => {
-        if(mode === "test"){
+        if(isQuestionBank){
             const fetchReasons = async () => {
                 const data = await getReportReasons();
                 setReasons(data);
             };
             fetchReasons();
         }
-    }, []);
+    }, [isQuestionBank]);
 
 
     const handleAnswerClick = (questionIndex, answerIndex) => {
@@ -174,9 +176,6 @@ const Quiz = () => {
             setTotalTime(elapsedTime);
         }
 
-        setScore(totalScore);
-        setShowScore(true);
-
         if (mode !== "test" && byAI) {
             const data = {
                 correctAnswers: totalScore,
@@ -195,22 +194,28 @@ const Quiz = () => {
                 console.error("Lỗi khi gửi kết quả:", error);
             }
         } else {
-            const data = {
-                startTime: startTime,
-                endTime: endTime,
-                score: totalScore,
-                testId: testId,
-                userId: user.userId,
-            };
-            try {
-                await submitTestResult(data);
-                console.log("Gửi kết quả bài kiểm tra thành công:", data);
-            } catch (error) {
-                console.error("Lỗi khi gửi kết quả bài kiểm tra:", error);
+            if(mode === 'test'){
+                const data = {
+                    startTime: startTime,
+                    endTime: endTime,
+                    score: totalScore,
+                    testId: testId,
+                    userId: user.userId,
+                };
+                try {
+                    await submitTestResult(data);
+                    console.log("Gửi kết quả bài kiểm tra thành công:", data);
+                } catch (error) {
+                    console.error("Lỗi khi gửi kết quả bài kiểm tra:", error);
+                }
+            }else{
+                setIsQuestionBank(true);
             }
+         
         }
         setTimeLeft(0);
-
+        setScore(totalScore);
+        setShowScore(true);
     };
 
     const handleReport = (question) => {
@@ -278,7 +283,7 @@ const Quiz = () => {
                             className={styles.submitButton}
                             onClick={restartQuiz}
                         >
-                            Làm lại bài kiểm tra
+                            Tiếp lục luyện tập
                         </button>
                     </div>
                 ) : (
@@ -321,7 +326,7 @@ const Quiz = () => {
                             questions={questions}
                             userAnswers={userAnswers}
                             isPremium={isPremium}
-                            mode={mode}
+                            isQuestionBank={isQuestionBank}
                             onReport={(question) => handleReport(question)}
                         />
                     ) : (

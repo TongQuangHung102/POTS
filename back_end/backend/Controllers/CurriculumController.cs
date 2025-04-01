@@ -49,7 +49,7 @@ namespace backend.Controllers
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Lỗi máy chủ nội bộ", error = ex.Message });
+                return StatusCode(500, new {error = ex.Message });
             }
         }
 

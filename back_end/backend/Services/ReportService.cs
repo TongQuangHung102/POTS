@@ -132,6 +132,23 @@ namespace backend.Services
             var(labels, data) = await _reportRepository.GetReportStatisticsByReason(subjectGradeId);
             var listReport = await _reportRepository.GetTop5PendingReports(subjectGradeId);
 
+            var labelsWeek = new List<string>();
+            var dataRate = new List<double>();
+
+            for (int i = 4; i >= 0; i--) 
+            {
+                var startOfWeek = DateTime.UtcNow.Date.AddDays(-(int)DateTime.UtcNow.DayOfWeek).AddDays(-7 * i);
+
+                int questionCount = await _reportRepository.CountReportsByWeek(subjectGradeId, i);
+                int reportCount = await _questionRepository.CountQuestionsUsedByWeek(subjectGradeId, i);
+
+                double rate = (questionCount > 0) ? (double)reportCount / questionCount : 0;
+                Console.WriteLine("aaaaaaaaaaaaaaaaaaaaaa" + questionCount + "và " + reportCount);
+
+                labelsWeek.Add(startOfWeek.ToString("dd/MM/yyyy"));
+                dataRate.Add(rate);
+            }
+
             var dataDashboard = new ReportDashboard
             {
                 TotalReport = totalReport,
@@ -151,6 +168,11 @@ namespace backend.Services
                     ReportCount = r.ReportCount,
                     Status = r.Status
                 }).ToList(),
+                RateRoports = new RateRoportDto
+                {
+                    Data = dataRate,
+                    Labels= labelsWeek
+                }
             };
             return dataDashboard;
         }

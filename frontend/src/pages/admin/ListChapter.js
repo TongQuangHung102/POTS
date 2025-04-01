@@ -193,7 +193,7 @@ const ListChapter = () => {
               </td>
             </tr>
           ))
-        ) : (
+          ) : (
             <tr>
               <td colSpan="5" style={{ textAlign: "center", fontStyle: "italic", color: "gray" }}>
                 Chưa có chương nào.
@@ -226,7 +226,7 @@ const ListChapter = () => {
                 onChange={(e) => {
                   const value = e.target.value;
                   setSelectedChapter({ ...selectedChapter, chapterName: value });
-                  
+
                   if (value.trim() === "") {
                     setChapterNameError("Tên chương không được để trống.");
                   } else {
@@ -235,26 +235,25 @@ const ListChapter = () => {
                 }}
               />
             </label>
-            <label>Học kỳ:</label>
             <div className="semester-selection">
-              <label>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <label>Học kỳ 1</label>
                 <input
                   type="radio"
                   value={1}
                   checked={selectedChapter?.semester === 1}
                   onChange={() => setSelectedChapter({ ...selectedChapter, semester: 1 })}
                 />
-                Học kỳ 1
-              </label>
-              <label>
+              </div>
+              <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                <label>Học kỳ 2</label>
                 <input
                   type="radio"
                   value={2}
                   checked={selectedChapter?.semester === 2}
                   onChange={() => setSelectedChapter({ ...selectedChapter, semester: 2 })}
                 />
-                Học kỳ 2
-              </label>
+              </div>
             </div>
             <label>
               Trạng thái:
