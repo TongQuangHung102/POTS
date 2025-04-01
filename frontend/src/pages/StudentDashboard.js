@@ -33,7 +33,7 @@ const StudentDashboard = () => {
           setDashboardData(data);
           setIsLoading(false);
           console.log(subjectGradeId);
-  
+
           setActivityData({
             labels: data.activity.labels,
             datasets: [{
@@ -43,7 +43,7 @@ const StudentDashboard = () => {
               borderRadius: 5
             }]
           });
-  
+
           setScoreData({
             labels: data.scoreTime.labels,
             datasets: [{
@@ -63,7 +63,7 @@ const StudentDashboard = () => {
               fill: false
             }]
           });
-  
+
           setActivityOptions({
             plugins: {
               title: {
@@ -75,7 +75,7 @@ const StudentDashboard = () => {
             },
             scales: { y: { beginAtZero: true } }
           });
-  
+
           setScoreOptions({
             plugins: {
               title: {
@@ -87,7 +87,7 @@ const StudentDashboard = () => {
             },
             scales: { y: { beginAtZero: true } }
           });
-  
+
           setRank(data.percentiles[1]);
         })
         .catch(err => {
@@ -96,7 +96,7 @@ const StudentDashboard = () => {
         });
     }
   }, [subjectGradeId]); // Chạy khi subjectGradeId thay đổi
-  
+
   const fetchSubjectGrades = async () => {
     try {
       setIsLoading(true);
@@ -112,11 +112,11 @@ const StudentDashboard = () => {
       setIsLoading(false);
     }
   };
-  
+
   useEffect(() => {
     fetchSubjectGrades();
   }, []);
-  
+
 
 
   const activityCardRef = useRef(null);
@@ -197,23 +197,23 @@ const StudentDashboard = () => {
 
             <div className='row'>
               <div className='col-md-4'>
-              <div className="upcoming-submission">
-                <div className="card-item">
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                    <h5 className="mb-4">Thống kê môn</h5>
+                <div className="upcoming-submission">
+                  <div className="card-item">
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                      <h5 className="mb-4">Thống kê môn</h5>
+                    </div>
+                    {subjectGrades.length > 0 ? (
+                      <select value={subjectGradeId} onChange={(e) => setSubjectGradeId(Number(e.target.value))}>
+                        {subjectGrades.map((g) => (
+                          <option key={g.id} value={g.id}>
+                            {g.name}
+                          </option>
+                        ))}
+                      </select>
+                    ) : (
+                      <p>Không có khối nào để quản lý</p>
+                    )}
                   </div>
-                  {subjectGrades.length > 0 ? (
-                    <select value={subjectGradeId} onChange={(e) => setSubjectGradeId(Number(e.target.value))}>
-                      {subjectGrades.map((g) => (
-                        <option key={g.id} value={g.id}>
-                          {g.name}
-                        </option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p>Không có khối nào để quản lý</p>
-                  )}
-                </div>
                 </div>
               </div>
               <div className='col-md-8'>

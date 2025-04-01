@@ -1,6 +1,6 @@
 .packageContainer {
   max-width: 1200px;
-  margin: 0 auto;
+  margin-left: var(--sidebar-width);
   padding: 2rem;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }

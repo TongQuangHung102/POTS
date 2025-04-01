@@ -1,6 +1,6 @@
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
-import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare, BiLogOut, BiSolidReport  } from "react-icons/bi";
+import { BiBookOpen, BiSolidDashboard, BiAlignRight, BiSolidHourglass, BiSolidUserDetail, BiPackage, BiInfoSquare, BiLogOut, BiSolidReport } from "react-icons/bi";
 import { useAuth } from "../hooks/useAuth";
 
 const Sidebar = () => {
@@ -35,6 +35,7 @@ const Sidebar = () => {
     student: [
       { path: "/student/dashboard", icon: <BiSolidDashboard />, label: "Dashboard" },
       { path: `/student/grade/${gradeId}`, icon: <BiAlignRight />, label: "Luyện tập" },
+      { path: "/student/package", icon: <BiPackage />, label: "Gói" },
       { path: "/student/profile", icon: <BiInfoSquare />, label: "Thông tin cá nhân" },
     ],
     content_manager: [
