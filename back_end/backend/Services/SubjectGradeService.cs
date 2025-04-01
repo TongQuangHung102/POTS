@@ -20,8 +20,14 @@ namespace backend.Services
 
         public async Task<SubjectGrade> GetBySubjectGradeAsync(int gradeId, int subjectId)
         {
-            return await _subjectGradeRepository.GetByGradeAndSubjectAsync(gradeId, subjectId);
+            var subjectGrade = await _subjectGradeRepository.GetByGradeAndSubjectAsync(gradeId, subjectId);
+            if (subjectGrade == null)
+            {
+                throw new Exception("Chưa có môn học nào ở khối này!");
+            }
+            return subjectGrade;
         }
+
 
         public async Task<SubjectGrade> GetTestBySubjectGradeAsync(int gradeId, int subjectId)
         {

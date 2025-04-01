@@ -42,6 +42,8 @@ import ParentLayout from '../pages/parent/ParentLayout';
 import UserProfile from '../pages/UserProfile';
 import Report from '../pages/content_manager/Report';
 import HomePage from '../pages/HomePage';
+import PracticeHistory from '../pages/student/PracticeHistory';
+import PracticeDetails from '../pages/student/PracticeDetails';
 const AppRoutes = () => {
     const { user, loading } = useAuth();
 
@@ -60,8 +62,8 @@ const AppRoutes = () => {
             <Route path='/choose-role' element={<ChooseRole />}></Route>
             <Route path='/choose-grade' element={<ChooseGrade />}></Route>
             <Route path='/forgot-password' element={<ForgotPasswordForm />}></Route>
-            <Route path='/profile' element={<UserProfile />}></Route>
             <Route path='/home-page' element={<HomePage />}></Route>
+
 
 
 
@@ -89,6 +91,7 @@ const AppRoutes = () => {
                 <Route path='/admin/grades/:gradeId/subject/:subjectId/test/:testId/questions' element={<ManageQuestionTest />}></Route>
                 <Route path='/admin/grades/:gradeId/subject/:subjectId/chapters/:chapterId/lessons/:lessonId/questions' element={<QuestionManage />}></Route>
                 <Route path='/admin/grades/:gradeId/subject/:subjectId/chapters/:chapterId/lessons/:lessonId/list-aiquestion' element={<ListAIQuestion />} />
+                <Route path='/admin/profile' element={<UserProfile />}></Route>
             </Route>
 
             <Route path='/student' element={<StudentLayout />}>
@@ -102,7 +105,9 @@ const AppRoutes = () => {
                 <Route path="/student/grade/:gradeId" element={<ChooseSubject />} />
                 <Route path="/student/grade/:gradeId/subject/:subjectId/course" element={<Course />} />
                 <Route path="/student/test" element={<Test />} />
-                <Route path='/student/grade/:gradeId/subject/:subjectId/course/practice/:lessonId' element={<Quiz />}></Route>
+                <Route path='/student/grade/:gradeId/subject/:subjectId/lesson/:lessonId/practice' element={<Quiz />}></Route>
+                <Route path='/student/grade/:gradeId/subject/:subjectId/lesson/:lessonId/history' element={<PracticeHistory />}></Route>
+                <Route path='/student/grade/:gradeId/subject/:subjectId/lesson/:lessonId/history/practice/:practiceId' element={<PracticeDetails />}></Route>
                 <Route path='/student/grade/:gradeId/subject/:subjectId/course/test/:testId' element={<Quiz />}></Route>
                 <Route path='/student/profile' element={<UserProfile />}></Route>
             </Route>
@@ -114,7 +119,7 @@ const AppRoutes = () => {
                 <Route path="/content_manage/grades/:gradeId" element={<ListSubjectGrades />} />
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/chapters/:chapterId/lessons/:lessonId/questions' element={<QuestionManage />}></Route>
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/chapters/:chapterId/lessons/:lessonId/add-question' element={<AddQuestionForm />}></Route>
-                <Route path="/content_manage/grades/:gradeId" element={<ListChapter />} />
+                <Route path="/content_manage/grades/:gradeId/subject/:subjectId" element={<ListChapter />} />
                 <Route path="/content_manage/grades/:gradeId/subject/:subjectId/chapters/:chapterId" element={<ListLesson />} />
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/list_tests' element={<ListTest />}></Route>
                 <Route path='/content_manage/grades/:gradeId/subject/:subjectId/test/:testId/questions' element={<ManageQuestionTest />}></Route>

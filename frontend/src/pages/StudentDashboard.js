@@ -130,7 +130,7 @@ const StudentDashboard = () => {
   }
 
   return (
-    <div className="dashboard-container bg-light">
+    <div className="dashboard-container">
       <div className="main-content">
         <div className="row">
           {/* Stats Row */}

@@ -5,6 +5,7 @@ using backend.Helpers;
 using backend.Models;
 using backend.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Runtime.ConstrainedExecution;
 
 namespace backend.Services
 {
@@ -341,6 +342,25 @@ namespace backend.Services
                 IsVerified = true,
             };
             await _userParentStudentRepository.CreateParentStudentAsync(userParent);
+        }
+
+        public async Task ChangeGradeAsync(ChangeGradeDto changeGrade)
+        {
+            var user = await _userRepository.GetUserByIdAsync(changeGrade.UserId);
+            if (user == null)
+            {
+                throw new Exception("Người dùng không tồn tại");
+            }
+            var currentDate = DateTime.Now;
+            var canChange = await _userRepository.CanChangeGradeAsync(user.UserId);
+            if (!canChange) {
+                throw new Exception("Không thể đổi lớp vào thời điểm này. Vui lòng đợi 6 tháng hoặc khoảng thời gian từ tháng 6 đến tháng 8 hàng năm");
+            }
+
+            user.GradeId = changeGrade.GradeId;
+            user.LastGradeChangeDate = currentDate;
+
+            await _userRepository.UpdateUserAsync(user);
         }
     }
 }

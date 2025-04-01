@@ -42,6 +42,16 @@ namespace backend.Repositories
           return await _attemptDAO.GetLastAttempt(userId, lessonId);
         }
 
+        public async Task<PracticeAttempt> GetPracticeAttemptDetailAsync(int practiceId)
+        {
+            return await _attemptDAO.GetPracticeAttemptDetailAsync(practiceId);
+        }
+
+        public async Task<(List<PracticeAttempt> Attempts, int TotalCount)> GetPracticeAttemptsByLessonAndUserAsync(int lessonId, int userId, int pageNumber, int pageSize)
+        {
+            return await _attemptDAO.GetPracticeAttemptsByLessonAndUserAsync(lessonId, userId, pageNumber, pageSize);
+        }
+
         public async Task<List<(int UserId, double AverageScore, double TotalPracticeTime)>> GetStudentDataAsync(int gradeId)
         {
             return await _attemptDAO.GetStudentDataAsync(gradeId);

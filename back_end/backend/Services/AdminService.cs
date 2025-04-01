@@ -12,14 +12,21 @@ namespace backend.Services
         private readonly IPracticeRepository _practiceRepository;
         private readonly IQuestionRepository _questionRepository;
         private readonly IGradeRepository _gradeRepository;
+        private readonly IUserParentStudentRepository _userParentStudentRepository;
 
-        public AdminService(IUserRepository userRepository, ISubscriptionPlanRepository subscriptionPlanRepository, IPracticeRepository practiceRepository, IQuestionRepository questionRepository, IGradeRepository gradeRepository)
+        public AdminService(IUserRepository userRepository, 
+            ISubscriptionPlanRepository subscriptionPlanRepository, 
+            IPracticeRepository practiceRepository, 
+            IQuestionRepository questionRepository, 
+            IGradeRepository gradeRepository, 
+            IUserParentStudentRepository userParentStudentRepository)
         {
             _userRepository = userRepository;
             _subscriptionPlanRepository = subscriptionPlanRepository;
             _practiceRepository = practiceRepository;
             _questionRepository = questionRepository;
             _gradeRepository = gradeRepository;
+            _userParentStudentRepository = userParentStudentRepository;
         }
 
         public async Task<AdminDashboardDto> GetAdminDashboardData(int? gradeId)
@@ -27,6 +34,7 @@ namespace backend.Services
             var today = DateTime.Today;
 
             var totalStudent = await _userRepository.GetTotalUsersAsync(1, null, gradeId);
+            var totalParent = await _userParentStudentRepository.GetParentCountAsync(gradeId);
             var newStudent = await _userRepository.GetTotalNewStudent(3, gradeId);
             var totalQuestion = await _questionRepository.GetTotalQuestionsAsync(null, null, null, null, null);
             var subscriptionPlans = await _subscriptionPlanRepository.GetAllAsync();
@@ -71,6 +79,7 @@ namespace backend.Services
             {
                 TotalStudent = totalStudent,
                 TotalQuestion = totalQuestion,
+                TotalParent = totalParent,
                 NewStudent = newStudent,
                 ContentManageAssigns = listGrade.ToList(),
                 SubscriptionPlanDashboards = listSubscription.ToList(),
