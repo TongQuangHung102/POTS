@@ -41,8 +41,8 @@ const AdminDashboard = () => {
         setDataTime({
           labels: data.activityTime.labels,
           datasets: [{
-            label: "Tổng Thời Gian Luyệt Tập (Phút)",
-            data: data.activityTime.data,
+            label: "Tổng doanh thu",
+            data: [0,0,0,0,0,0,0],
             backgroundColor: "rgba(75, 192, 192, 0.2)",
             borderColor: "rgba(75, 192, 192, 1)",
             borderWidth: 1
@@ -104,7 +104,7 @@ const AdminDashboard = () => {
         },
         title: {
           display: true,
-          text: 'Tổng Thời Gian Luyện Tập'
+          text: 'Doanh thu bán gói'
         }
       },
       scales: {
@@ -112,7 +112,7 @@ const AdminDashboard = () => {
           beginAtZero: true,
           title: {
             display: true,
-            text: 'Thời gian (Phút)'
+            text: 'Nghìn đồng'
           }
         },
         x: {
@@ -139,7 +139,7 @@ const AdminDashboard = () => {
     <div className="main-content">
       <Row>
         <Col md={12}>
-          <Row className="mb-4">
+          <Row>
             <Col md={3}>
               <Card className="stats-card">
                 <small className="text-danger">Tổng số học sinh</small>
@@ -154,22 +154,22 @@ const AdminDashboard = () => {
             </Col>
             <Col md={3}>
               <Card className="stats-card">
-                <small className="text-primary">Tổng số câu hỏi</small>
-                <div className="stats-number">{dashboardData.totalQuestion}</div>
+                <small className="text-primary">Tổng số phụ huynh</small>
+                <div className="stats-number">{dashboardData.totalParent}</div>
               </Card>
             </Col>
             <Col md={3}>
               <Card className="stats-card">
-                <small className="text-primary">Tổng số phụ huynh</small>
-                <div className="stats-number">90</div>
+                <small className="text-primary">Tổng số doanh thu</small>
+                <div className="stats-number">0đ</div>
               </Card>
             </Col>
           </Row>
         </Col>
         <Col md={12}>
-          <Row className="mb-4">
+          <Row>
             <Col md={6}>
-              <Card className="shadow">
+              <Card>
                 <Card.Body>
                   <div id="chart-container">
                     <Chart id="progressChart" type="line" data={dataTotalStudent} options={progressConfig.options} />
@@ -178,7 +178,7 @@ const AdminDashboard = () => {
               </Card>
             </Col>
             <Col md={6}>
-              <Card className="shadow">
+              <Card>
                 <Card.Body>
                   <div id="time-chart-container">
                     <Chart id="timeChart" type="bar" data={dataTime} options={timeConfig.options} />
@@ -195,7 +195,7 @@ const AdminDashboard = () => {
                 <Card.Body>
                   <div className="card-item">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <h5 className="mb-4">Khối</h5>
+                      <h5>Khối</h5>
                     </div>
                     <div>
                       <select value={gradeId ?? ""} onChange={e => setGradeId(e.target.value || null)}>
@@ -216,7 +216,7 @@ const AdminDashboard = () => {
                 <Card.Body>
                   <div className="card-item">
                     <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-                      <h5 className="mb-4">Quản lý khối</h5>
+                      <h5>Quản lý khối</h5>
                       <p>Quản lý</p>
                     </div>
                     <Table hover responsive>
@@ -228,11 +228,11 @@ const AdminDashboard = () => {
                         </tr>
                       </thead>
                       <tbody>
-                        {dashboardData.contentManageAssigns.map((user, index) => (
+                        {dashboardData.contentManageAssigns.slice(0, 3).map((user, index) => (
                           <tr key={index}>
                             <td>
                               <div className="d-flex align-items-center">
-                                <BiSolidUserCheck size={20}></BiSolidUserCheck >
+                                <BiSolidUserCheck size={20} />
                                 <div>{user.name}</div>
                               </div>
                             </td>
@@ -240,6 +240,7 @@ const AdminDashboard = () => {
                             <td>{user.gradeAssign}</td>
                           </tr>
                         ))}
+
                       </tbody>
 
                     </Table>

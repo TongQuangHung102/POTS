@@ -37,6 +37,11 @@ namespace backend.Repositories
             return await _userParentStudentDAO.GetParentByStudentIdAsync(studentId);
         }
 
+        public async Task<int> GetParentCountAsync(int? gradeId)
+        {
+            return await _userParentStudentDAO.GetParentCountAsync(gradeId);
+        }
+
         public async Task UpdateParentStudentAsync(UserParentStudent request)
         {
             await _userParentStudentDAO.UpdateParentStudentAsync(request);

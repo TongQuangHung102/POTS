@@ -6,6 +6,11 @@
     padding-left: 30px;
     margin-left: var(--sidebar-width);
 }
+
+.practiceDetails{
+    margin-left: var(--sidebar-width);
+}
+
 .back{
     border-bottom: 1px solid gray;
     padding-bottom: 10px;
@@ -196,10 +201,9 @@
 }
 
 .resultCard {
-    margin-bottom: 10px;
-    padding: 10px;
-    border: 1px solid #ddd;
-    border-radius: 5px;
+    margin-bottom: 25px;
+    padding: 15px 20px 20px 20px;
+    border: 1px solid #ececec;
 }
 
 .resultContainer {

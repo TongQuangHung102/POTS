@@ -15,6 +15,7 @@ namespace backend.Repositories
         Task<List<Question>> GetQuestionsPractice(int count, int lessonId, int levelId);
         Task<int> CountQuestionInGrade(int gradeId);
         Task<List<Question>> GetQuestionsByChapterAutoAsync(ChapterQuestionAutoRequest chapterRequest);
-
+        Task MarkQuestionsAsUsed(List<int> questionIds);
+        Task<int> CountQuestionsUsedByWeek(int subjectGradeId, int weekOffset);
     }
 }

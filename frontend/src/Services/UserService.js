@@ -144,3 +144,28 @@ export const createAccount = async (data) => {
           throw error; 
       }
   };
+
+  export const changeGrade = async (userId, gradeId) => {
+    try {
+        const response = await fetch(`https://localhost:7259/api/User/change-grade`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+                userId: userId,
+                gradeId: gradeId,
+            }),
+        });
+
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.error || "Có lỗi xảy ra khi đổi lớp.");
+        }
+
+        return await response.json();
+    } catch (error) {
+        console.error("Lỗi khi gọi API:", error);
+        throw error;
+    }
+};

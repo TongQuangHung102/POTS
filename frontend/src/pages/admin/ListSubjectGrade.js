@@ -18,6 +18,8 @@ const ListSubjectGrades = () => {
   const [subject, setSubject] = useState([]);
   const [selectSubject, setSelectSubject] = useState([]);
 
+  const roleId = sessionStorage.getItem('roleId');
+
   const navigate = useNavigate();
   //get du lieu
 
@@ -145,10 +147,14 @@ const ListSubjectGrades = () => {
               <td>{subject.name}</td>
               <td>
                 <button>
-               <Link to={`/admin/grades/${gradeId}/subject/${subject.id}`}>Chương trình</Link>
+                  {roleId === 3 ? ( <Link to={`/admin/grades/${gradeId}/subject/${subject.id}`}>Chương trình</Link>) 
+                  : 
+                  (<Link to={`/content_manage/grades/${gradeId}/subject/${subject.id}`}>Chương trình</Link>)}
                 </button>
                 <button>
-               <Link to={`/admin/grades/${gradeId}/subject/${subject.id}/list_tests`}>Bài kiểm tra</Link>
+                  {roleId === 3 ? (<Link to={`/admin/grades/${gradeId}/subject/${subject.id}/list_tests`}>Bài kiểm tra</Link>) 
+                  : 
+                  (<Link to={`/content_manage/grades/${gradeId}/subject/${subject.id}/list_tests`}>Bài kiểm tra</Link>)}
                 </button>
               </td>
             </tr>

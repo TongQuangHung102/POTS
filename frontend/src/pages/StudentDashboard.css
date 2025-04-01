@@ -1,9 +1,160 @@
+.dashboard-container{
+  background-color: white !important;
+}
 .stats-card {
-    padding: 20px;
-    border-radius: 12px;
-    background-color: #ffffff;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-    height: 100px;
+  padding: 20px;
+  border-radius: 12px;
+  background-color: #ffffff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  height: 100px;
+}
+
+.stats-number {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.stats-select {
+  width: 100%;
+  padding: 8px;
+  border-radius: 10px;
+  height: 40px;
+  margin: 0 !important;
+}
+
+.activity-chart {
+  height: 22vw;
+  margin: 0px !important;
+}
+
+.progress-circle {
+  width: 15vw;
+  height: 15vw;
+  margin: 15px auto;
+}
+
+.profile-image {
+  width: 100px;
+  height: 100px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 4px solid #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.upcoming-submission {
+  height: 150px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.submission-icon {
+  width: 48px;
+  height: 48px;
+  background-color: #f0f7ff;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+}
+
+.due-date {
+  color: #ff6b6b;
+  font-size: 14px;
+}
+
+.card {
+  border-radius: 12px;
+  border: none !important;
+  margin-bottom: 20px;
+}
+
+.card-body {
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.loading-dashboard{
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 18px;
+  font-weight: bold;
+  color: #333;
+}
+
+.student-list table {
+  width: 100%;
+  border-collapse: separate; 
+  border-spacing: 5px 10px;
+
+}
+
+.student-list th, td {
+  border: none !important;
+  border-radius: 20px;
+}
+
+.student-list th, .student-list td {
+  border: 1px solid #ddd;
+  padding: 1px;
+
+}
+
+.student-list tr {
+  background-color: #fafafa;
+}
+
+.upcoming-submission-parent{
+  height: 200px;
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.upcoming-submission-report{
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+.package-using{
+  text-align: center;
+}
+
+.package-using h5{
+  color: #57489b;
+  font-size: 25px;
+}
+
+.notification{
+  display: flex;
+  justify-content: flex-end;
+}
+
+.new-notification{
+  animation: blink 4s infinite;
+  color: #ff0000;
+  padding: 2px 5px 2px 2px;
+}
+
+
+
+@keyframes blink {
+  0% { opacity: 1; }
+  50% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 15px;
+>>>>>>> frontend/src/pages/StudentDashboard.css
   }
   
   .stats-number {

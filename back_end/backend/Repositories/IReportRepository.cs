@@ -16,6 +16,6 @@ namespace backend.Repositories
         Task<List<Report>> GetTop5PendingReports(int subjectGradeId);
         Task<(List<string> Labels, List<int> Data)> GetReportStatisticsByReason(int subjectGradeId);
         Task<List<Report>> GetReportsValidByDateRange(DateTime fromDate, int subjectGradeId);
-
+        Task<int> CountReportsByWeek(int subjectGradeId, int weekOffset);
     }
 }

@@ -210,7 +210,7 @@ const ParentDashboard = () => {
   }
 
   return (
-    <div className="dashboard-container bg-light">
+    <div className="dashboard-container">
       <div className="main-content">
         <div class="row mb-3">
           <div class="col-md-3">

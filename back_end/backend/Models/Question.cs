@@ -15,6 +15,8 @@ namespace backend.Models
         public int CorrectAnswer { get; set; }
         public bool IsVisible { get; set; }
         public bool CreateByAI { get; set; }
+        public bool IsUsed { get; set; } = false;
+        public DateTime? UsedAt { get; set; }
         public int LessonId { get; set; }
 
         [ForeignKey("LessonId")]

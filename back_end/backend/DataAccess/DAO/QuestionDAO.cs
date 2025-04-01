@@ -177,6 +177,36 @@ namespace backend.DataAccess.DAO
             return questions;
         }
 
+        public async Task MarkQuestionsAsUsed(List<int> questionIds)
+        {
+            var questions = await _context.Questions
+                                          .Where(q => questionIds.Contains(q.QuestionId))
+                                          .ToListAsync();
+
+            foreach (var question in questions)
+            {
+                question.IsUsed = true;
+                question.UsedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> CountQuestionsUsedByWeek(int subjectGradeId, int weekOffset)
+        {
+            var today = DateTime.UtcNow.Date;
+            var startOfWeek = today.AddDays(-(int)today.DayOfWeek).AddDays(-7 * weekOffset);
+            var endOfWeek = startOfWeek.AddDays(7);
+
+            var count = await _context.Questions
+                .Where(q => q.Lesson.Chapter.SubjectGradeId == subjectGradeId
+                            && q.IsUsed == true
+                            && q.UsedAt >= startOfWeek
+                            && q.UsedAt < endOfWeek)
+                .CountAsync();
+
+            return count;
+        }
 
 
     }
