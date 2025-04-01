@@ -36,5 +36,6 @@ namespace backend.Models
         public virtual ICollection<CompetitionResult> CompetitionResults { get; set; }
         public virtual ICollection<StudentTest> StudentTests { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
     }
 }

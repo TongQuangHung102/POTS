@@ -43,5 +43,34 @@ namespace backend.Services
                 await smtpClient.SendMailAsync(mailMessage);
             }
         }
+
+        public async Task SendEmailLinkAccountAsync(string email, string code)
+        {
+            var subject = "Code liên kết tài khoản";
+            var body = $"Mã liên kết là {code}";
+
+            using (var smtpClient = new SmtpClient(_smtpHost))
+            {
+                smtpClient.Credentials = new NetworkCredential(_smtpUser, _smtpPassword);
+                smtpClient.Port = 587;
+                smtpClient.EnableSsl = true;
+
+                var mailMessage = new MailMessage(_smtpUser, email, subject, body);
+                await smtpClient.SendMailAsync(mailMessage);
+            }
+        }
+
+        public async Task SendEmailNotificationAsync(string email, string subject, string body)
+        {
+            using (var smtpClient = new SmtpClient(_smtpHost))
+            {
+                smtpClient.Credentials = new NetworkCredential(_smtpUser, _smtpPassword);
+                smtpClient.Port = 587;
+                smtpClient.EnableSsl = true;
+
+                var mailMessage = new MailMessage(_smtpUser, email, subject, body);
+                await smtpClient.SendMailAsync(mailMessage);
+            }
+        }
     }
 }

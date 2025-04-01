@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import { data, useLocation, useParams } from "react-router-dom";
 import styles from "./Quiz.module.css";
 import { fetchTestQuestions } from "../../services/TestQuestion";
+import { getReportReasons } from "../../services/ReportService";
 import { fetchPracticeQuestions, submitPracticeResult, submitTestResult } from "../../services/PracticeService";
 
 
@@ -31,8 +32,8 @@ const Quiz = () => {
     const [startTime, setStartTime] = useState(new Date().toISOString());
 
     const [isReport, setIsReport] = useState(false);
-    const [reportReason, setReportReason] = useState("");
-
+    const [reportReason, setReportReason] = useState();
+    const [reasons, setReasons] = useState([]);
 
     const { user, loading } = useAuth();
     const location = useLocation();
@@ -97,7 +98,6 @@ const Quiz = () => {
 
         setIsLoading(true);
 
-
         const fetchQuestions = async () => {
             let result;
             if (mode === "test") {
@@ -132,6 +132,16 @@ const Quiz = () => {
         hasFetched.current = true;
     }, [loading, isLoading]);
 
+    useEffect(() => {
+        if(mode === "test"){
+            const fetchReasons = async () => {
+                const data = await getReportReasons();
+                setReasons(data);
+            };
+            fetchReasons();
+        }
+    }, []);
+
 
     const handleAnswerClick = (questionIndex, answerIndex) => {
         const newUserAnswers = [...userAnswers];
@@ -140,11 +150,19 @@ const Quiz = () => {
     };
 
     const handleSubmit = async () => {
-
         let totalScore = 0;
+        let studentAnswers = [];
+        
         userAnswers.forEach((answer, index) => {
-            if (answer !== null && questions[index].correctAnswer === (answer + 1)) {
-                totalScore += 1;
+            if (answer !== null) {
+                let isCorrect = questions[index].correctAnswer === (answer + 1);
+                if (isCorrect) {
+                    totalScore += 1;
+                }
+                studentAnswers.push({
+                    questionId: questions[index].questionId,
+                    selectedAnswer: answer + 1,
+                });
             }
         });
 
@@ -159,16 +177,18 @@ const Quiz = () => {
         setScore(totalScore);
         setShowScore(true);
 
-        if (mode !== "test") {
+        if (mode !== "test" && byAI) {
             const data = {
                 correctAnswers: totalScore,
                 level: 2,
                 timePractice: elapsedTime,
                 userId: user.userId,
                 lessonId: lessonId,
-                sampleQuestion: sampleQuestion
+                sampleQuestion: sampleQuestion,
+                answers: studentAnswers,
             };
             try {
+                console.log(data);
                 await submitPracticeResult(data);
                 console.log("Gửi kết quả thành công:", data);
             } catch (error) {
@@ -201,30 +221,36 @@ const Quiz = () => {
     const handleClose = () => {
         setSelectedQuestion(null);
         setIsReport(false);
-      };
+    };
 
-      const handleReportSubmit = async () => {
+    const handleReportSubmit = async () => {
         if (!reportReason.trim()) {
             alert("Vui lòng nhập lý do báo cáo!");
             return;
         }
 
         try {
-            await fetch("https://localhost:7259/api/Report/add-report", {
+            const response = await fetch("https://localhost:7259/api/Report/add-report", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    questionId: selectedQuestion.questionId, 
+                    questionId: selectedQuestion.questionId,
                     reason: reportReason,
-                    userId: user.userId, 
+                    userId: user.userId,
                 }),
             });
-
-            alert("Báo cáo đã được gửi!");
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.log(errorData);
+                alert(errorData.details || "Đã xảy ra lỗi khi gửi báo cáo.");
+                return;
+            }
+            const responseData = await response.json();
+            alert(responseData.message || "Báo cáo đã được gửi!");
             setIsReport(false);
             setReportReason("");
         } catch (error) {
-            console.error("Lỗi khi gửi báo cáo:", error);
+            alert("Đã xảy ra lỗi, vui lòng thử lại sau.");
         }
     };
 
@@ -334,12 +360,18 @@ const Quiz = () => {
 
                         <label>
                             Lý do báo cáo:
-                            <textarea
+                            <select
                                 value={reportReason}
                                 onChange={(e) => setReportReason(e.target.value)}
-                                placeholder="Nhập lý do báo cáo..."
-                                className={styles.textarea}
-                            />
+                                className={styles.select}
+                            >
+                                <option value="">Chọn lý do...</option>
+                                {reasons.map((reason, index) => (
+                                    <option key={index} value={reason.id}>
+                                        {reason.name}
+                                    </option>
+                                ))}
+                            </select>
                         </label>
 
                         <div className="button-group">

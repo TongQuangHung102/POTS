@@ -1,4 +1,5 @@
 ﻿using backend.DataAccess.DAO;
+using backend.Dtos.Auth;
 using backend.Dtos.Users;
 using backend.Helpers;
 using backend.Models;
@@ -11,12 +12,16 @@ namespace backend.Services
     {
         private readonly IUserRepository _userRepository;
         private readonly PasswordEncryption _passwordEncryption;
-        public UserService(IUserRepository userRepository, PasswordEncryption passwordEncryption)
+        private readonly SendMailService _sendMailService;
+        private readonly IUserParentStudentRepository _userParentStudentRepository;
+
+        public UserService(IUserRepository userRepository, PasswordEncryption passwordEncryption, SendMailService sendMailService, IUserParentStudentRepository userParentStudentRepository)
         {
             _userRepository = userRepository;
             _passwordEncryption = passwordEncryption;
+            _sendMailService = sendMailService;
+            _userParentStudentRepository = userParentStudentRepository;
         }
-
 
         public async Task<IActionResult> GetUsersAsync(int? roleId, string? email, int page, int pageSize)
         {
@@ -141,11 +146,38 @@ namespace backend.Services
             }
         }
 
+        public async Task ChangePassword(int userId, string oldPassword, string newPassword)
+        {
+            try
+            {
+                var user = await _userRepository.GetUserByIdAsync(userId);
+                if (user == null)
+                    throw new KeyNotFoundException("Người dùng không tồn tại.");
+
+                if (user.GoogleId != null)
+                    throw new InvalidOperationException("Tài khoản này đăng nhập bằng Google, không thể đổi mật khẩu.");
+
+                if (!_passwordEncryption.VerifyPassword(oldPassword, user.Password))
+                    throw new UnauthorizedAccessException("Mật khẩu cũ không đúng.");
+
+                if (_passwordEncryption.VerifyPassword(newPassword, user.Password))
+                    throw new ArgumentException("Mật khẩu mới không được trùng với mật khẩu cũ.");
+
+                user.Password = _passwordEncryption.HashPassword(newPassword);
+                await _userRepository.UpdateUserAsync(user);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Lỗi khi đổi mật khẩu: {ex.Message}");
+                throw;
+            }
+        }
+
+
         public async Task<IActionResult> CreateUserAsync(UserDto userDto)
         {
             try
             {
-
                 var existingUser = await _userRepository.GetUserByEmailAsync(userDto.Email);
                 if (existingUser != null)
                 {
@@ -269,5 +301,46 @@ namespace backend.Services
             }
         }
 
+        public async Task<User> GetAllInfoUserById(int userId)
+        {
+            var user = await _userRepository.GetAllInfomationUser(userId);
+            return user;
+        }
+
+        public async Task CreateStudentAccountAsync(CreateAccountByParent model)
+        {
+            var existingUser = await _userRepository.GetUserByEmailAsync(model.Email);
+            if (existingUser != null)
+            {
+                throw new Exception("Email đã tồn tại, vui lòng dùng email khác");
+            }
+
+            var hashedPassword = _passwordEncryption.HashPassword(model.Password);
+            var user = new User
+            {
+                UserName = model.Username,
+                Email = model.Email,
+                Password = hashedPassword,
+                Role = 1,
+                IsActive = false,
+                CreateAt = DateTime.UtcNow,
+                EmailVerificationToken = Guid.NewGuid().ToString(),
+                TokenExpiry = DateTime.UtcNow.AddHours(24),
+                GradeId = model.GradeId
+            };
+
+            var userId = await _userRepository.CreateUserAndGetUserIdAsync(user);
+            await _sendMailService.SendConfirmationEmailAsync(user.Email, user.EmailVerificationToken);
+
+            var userParent = new UserParentStudent
+            {
+                ParentId = model.ParentId,
+                StudentId = userId,
+                ExpiryTime = null,
+                VerificationCode = "0",
+                IsVerified = true,
+            };
+            await _userParentStudentRepository.CreateParentStudentAsync(userParent);
+        }
     }
 }

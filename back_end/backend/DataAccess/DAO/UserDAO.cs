@@ -123,5 +123,22 @@ namespace backend.DataAccess.DAO
                 .Where(u => u.Role == roleId)
                 .ToListAsync();
         }
+        public async Task<int> CreateUserAndGetUserIdAsync(User user)
+        {
+            _context.Users.Add(user);
+            await _context.SaveChangesAsync();
+            return user.UserId; 
+        }
+
+        public async Task<List<User>> GetInactiveStudentsFor3DaysAsync(DateTime threeDaysAgo)
+        {
+            return await _context.Users
+                .Where(u => u.Role == 1 &&
+                            !_context.PracticeAttempts
+                                .Any(p => p.UserId == u.UserId && p.CreateAt > threeDaysAgo) &&
+                            !_context.StudentTests
+                                .Any(e => e.UserId == u.UserId && e.EndTime > threeDaysAgo))
+                .ToListAsync();
+        }
     }
 }

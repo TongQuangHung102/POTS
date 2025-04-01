@@ -128,6 +128,7 @@ namespace backend.Controllers
                 {
                     question.QuestionText,
                     question.CorrectAnswer,
+                    question.QuestionId,
                     AnswerQuestions = question.AnswerQuestions.Select(a => new
                     {
                         a.AnswerText,

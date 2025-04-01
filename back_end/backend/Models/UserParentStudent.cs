@@ -17,5 +17,11 @@ namespace backend.Models
 
         [ForeignKey("ParentId")]
         public virtual User Parent { get; set; }
+
+        public bool IsVerified { get; set; } = false; 
+
+        public string VerificationCode { get; set; } 
+
+        public DateTime? ExpiryTime { get; set; } 
     }
 }

@@ -12,9 +12,9 @@ namespace backend.Repositories
             _attemptDAO = attemptDAO;
         }
 
-        public async Task AddPracticeAttemp(PracticeAttempt practiceAttempt)
+        public async Task<int> AddPracticeAttempt(PracticeAttempt practiceAttempt)
         {
-            await _attemptDAO.AddPracticeAttemp(practiceAttempt);
+            return await _attemptDAO.AddPracticeAttempt(practiceAttempt);
         }
 
         public async Task<double> GetAveragePracticeScoreAsync(int subjectGradeId, int userId)

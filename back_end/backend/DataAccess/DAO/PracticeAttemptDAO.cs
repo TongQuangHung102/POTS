@@ -19,12 +19,13 @@ namespace backend.DataAccess.DAO
             .ToListAsync();
         }
 
-        public async Task AddPracticeAttemp(PracticeAttempt practiceAttempt)
+        public async Task<int> AddPracticeAttempt(PracticeAttempt practiceAttempt)
         {
-             _context.PracticeAttempts.AddAsync(practiceAttempt);
-            await _context.SaveChangesAsync();
-        } 
+            await _context.PracticeAttempts.AddAsync(practiceAttempt);
+            await _context.SaveChangesAsync(); 
 
+            return practiceAttempt.PracticeId; 
+        }
         public async Task<PracticeAttempt> GetLastAttempt(int userId, int lessonId)
         {
             return await _context.PracticeAttempts
@@ -152,7 +153,6 @@ namespace backend.DataAccess.DAO
 
             return studentData.Select(s => (s.UserId, s.AverageScore, s.TotalPracticeTime)).ToList();
         }
-
 
 
     }

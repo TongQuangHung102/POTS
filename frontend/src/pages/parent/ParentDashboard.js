@@ -2,9 +2,14 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from "react-router-dom";
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, ArcElement, Tooltip } from 'chart.js';
 import { Bar, Doughnut, Line } from 'react-chartjs-2';
-import { BiBookmark } from "react-icons/bi";
+import { BiMessageRoundedDetail } from "react-icons/bi";
 import { ProgressBar } from "react-bootstrap";
 import '../../pages/StudentDashboard.css';
+import { getStudentsByUserId } from '../../services/ParentService';
+import { formatDateTime } from '../../utils/timeUtils';
+import NotificationDropdown from '../../components/Notification';
+import { getNotifications, markAllAsRead } from '../../services/NotificationService';
+import { initSignalR, stopSignalR } from '../../services/SignalRService'
 ChartJS.register(CategoryScale, LinearScale, BarElement, ArcElement, Tooltip);
 
 const ParentDashboard = () => {
@@ -25,8 +30,21 @@ const ParentDashboard = () => {
 
   const userId = sessionStorage.getItem('userId');
 
+  const [isOpen, setIsOpen] = useState(false);
+  const [notifications, setNotifications] = useState([]);
+  const [hasUnreadNotification, setHasUnreadNotification] = useState(false);
+  const [newNotification, setNewNotification] = useState(0);
+  const isFirstRender = useRef(true);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    initSignalR(setNewNotification); // 🚀 Kết nối SignalR và truyền state setter vào đây!
+
+    return () => {
+        stopSignalR(); // 🛑 Ngắt kết nối SignalR khi component unmount
+    };
+}, []);
 
   useEffect(() => {
     if (subjectGradeId) { // Chỉ fetch khi subjectGradeId đã có giá trị
@@ -99,7 +117,7 @@ const ParentDashboard = () => {
           setIsLoading(false);
         });
     }
-  }, [subjectGradeId]); // Chạy khi subjectGradeId thay đổi
+  }, [subjectGradeId, selectedStudent]); // Chạy khi subjectGradeId thay đổi
 
   const fetchSubjectGrades = async () => {
     try {
@@ -118,18 +136,31 @@ const ParentDashboard = () => {
 
   const fetchListStudent = async () => {
     try {
-      const response = await fetch(`https://localhost:7259/api/UserParentStudent/get-students/${userId}`);
-      const data = await response.json();
-      setListStudent(data);
-      console.log(data);
-      if (data.length > 0) {
-        setSelectedStudent(data[0].userId);
-        setGradeId(data[0].gradeId)
+      const studentData = await getStudentsByUserId(userId);
+      setListStudent(studentData);
+      if (studentData.length > 0) {
+        setSelectedStudent(studentData[0].userId);
+        setGradeId(studentData[0].gradeId)
       }
     } catch (error) {
       console.error("Có lỗi khi lấy dữ liệu lớp", error);
     }
   };
+
+  useEffect(() => {
+    const fetchNotifications = async () => {
+      try {
+        const data = await getNotifications(userId);
+        const hasUnread = data.some(noti => !noti.isRead);
+        setHasUnreadNotification(hasUnread);
+        setNotifications(data);
+      } catch (error) {
+        console.error("Lỗi khi tải thông báo:", error);
+      }
+    };
+
+    fetchNotifications();
+  }, [newNotification]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -146,23 +177,30 @@ const ParentDashboard = () => {
     }
   }, [selectedStudent]);
 
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
+    if (isOpen) return;
+
+    const markRead = async () => {
+      await markAllAsRead(userId);
+      setNotifications(prev =>
+        prev.map(n => ({ ...n, isRead: true }))
+      );
+      setHasUnreadNotification(false);
+    };
+
+    markRead();
+  }, [isOpen]);
+
 
 
   const activityCardRef = useRef(null);
   const performanceCardRef = useRef(null);
 
-  const formatDateTime = (dateString) => {
-    if (!dateString) return "Chưa đăng nhập";
-    return new Date(dateString).toLocaleString("vi-VN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit",
-      hour12: false
-    });
-  };
 
   if (isLoading) {
     return <div className="loading-dashboard">Đang tải dữ liệu...</div>;
@@ -196,6 +234,12 @@ const ParentDashboard = () => {
                 <option disabled>Vui lòng chọn học sinh</option>
               )}
             </select>
+          </div>
+          <div class="col-md-6">
+            <div className='notification'>
+              {hasUnreadNotification && (<p className='new-notification'>Bạn có thông báo mới!</p>)}
+              <BiMessageRoundedDetail size={30} style={{ cursor: "pointer" }} onClick={() => setIsOpen(!isOpen)} />
+            </div>
           </div>
         </div>
         <div className="row">
@@ -311,6 +355,8 @@ const ParentDashboard = () => {
             </div>
           </div>
         </div>
+
+        {isOpen && <NotificationDropdown notifications={notifications} />}
       </div>
     </div>
   );

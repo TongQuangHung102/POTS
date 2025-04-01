@@ -21,13 +21,15 @@ namespace backend.Services
         private readonly ICurriculumRepository _curriculumRepository;
         private readonly IPracticeRepository _practiceRepository;
         private readonly HttpClient _httpClient;
+        private readonly IPracticeQuestionRepository _practiceQuestionRepository;
 
-        public QuestionService(IQuestionRepository questionRepository, HttpClient httpClient, ICurriculumRepository curriculumRepository, IPracticeRepository practiceRepository)
+        public QuestionService(IQuestionRepository questionRepository, ICurriculumRepository curriculumRepository, IPracticeRepository practiceRepository, HttpClient httpClient, IPracticeQuestionRepository practiceQuestionRepository)
         {
             _questionRepository = questionRepository;
-            _httpClient = httpClient;
             _curriculumRepository = curriculumRepository;
             _practiceRepository = practiceRepository;
+            _httpClient = httpClient;
+            _practiceQuestionRepository = practiceQuestionRepository;
         }
 
         public async Task<QuestionResponseDto> GetAllQuestionsAsync(int? chapterId, int? lessonId, int? levelId,string searchTerm, bool? isVisible, int page, int pageSize)
@@ -211,21 +213,41 @@ namespace backend.Services
                         throw new Exception("AI API trả về danh sách rỗng hoặc không hợp lệ.");
                     }
 
-                    var questions = aiResponse.Questions.Select(q => new Question
+                    var questions = new List<Question>();
+
+                    foreach (var question in aiResponse.Questions)
                     {
-                        QuestionText = q.QuestionText,
-                        LevelId = q.LevelId,
-                        CorrectAnswer = q.CorrectAnswer,
-                        CreateAt = DateTime.Now,
-                        IsVisible = true,
-                        CreateByAI = true,
-                        LessonId = questionRequest.lessonId,
-                        AnswerQuestions = q.AnswerQuestions.Select(a => new AnswerQuestion
+                        var practiceQuestion = new PracticeQuestion
                         {
-                            AnswerText = a.AnswerText,
-                            Number = a.Number
-                        }).ToList()
-                    }).ToList();
+                            QuestionText = question.QuestionText,
+                            CorrectAnswer = question.CorrectAnswer,
+                            LessonId = questionRequest.lessonId,
+                            CreateAt = DateTime.Now
+                        };
+
+                        var pQ = await _practiceQuestionRepository.CreateAsync(practiceQuestion);
+
+                        var answerPracticeQuestion = question.AnswerQuestions.Select(n => new AnswerPracticeQuestion
+                        {
+                            AnswerText = n.AnswerText,
+                            Number = n.Number,
+                            QuestionId = pQ.QuestionId
+                        });
+
+                        await _practiceQuestionRepository.AddAnswerQuestionsAsync(answerPracticeQuestion.ToList());
+
+                        questions.Add(new Question
+                        {
+                            QuestionText = question.QuestionText,
+                            CorrectAnswer = question.CorrectAnswer,
+                            QuestionId = pQ.QuestionId,
+                            AnswerQuestions = question.AnswerQuestions.Select(a => new AnswerQuestion
+                            {
+                                AnswerText = a.AnswerText,
+                                Number = a.Number
+                            }).ToList()
+                        });
+                    }
                     return (questions, byAi);
                 }
                 else
