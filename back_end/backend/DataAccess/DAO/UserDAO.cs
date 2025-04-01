@@ -38,7 +38,7 @@ namespace backend.DataAccess.DAO
 
         public async Task<int> GetTotalUsersAsync(int? roleId, string email, int? gradeId = null)
         {
-            var query = _context.Users.AsQueryable();
+            var query = _context.Users.Where(u => u.IsActive == true).AsQueryable();
 
             if (roleId.HasValue)
             {
@@ -140,5 +140,36 @@ namespace backend.DataAccess.DAO
                                 .Any(e => e.UserId == u.UserId && e.EndTime > threeDaysAgo))
                 .ToListAsync();
         }
+
+        public async Task<bool> CanChangeGradeAsync(int userId)
+        {
+            var user = await _context.Users.FindAsync(userId); 
+            if (user == null)
+            {
+                return false; 
+            }
+
+            var currentDate = DateTime.Now;
+
+            if (currentDate.Month >= 6 && currentDate.Month <= 8)
+            {
+                return true;
+            }
+
+            if (user.LastGradeChangeDate == null)
+            {
+                return true; 
+            }
+
+            var timeSinceLastChange = currentDate - user.LastGradeChangeDate.Value;
+            if (timeSinceLastChange.TotalDays >= 180)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+
     }
 }

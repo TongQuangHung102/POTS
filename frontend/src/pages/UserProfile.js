@@ -1,7 +1,7 @@
 // UserProfile.jsx
 import React, { useState, useEffect } from 'react';
 import styles from './UserProfile.module.css';
-import { getUserProfileById, changePassword, linkChildAccount, verifyChildAccount, reSentCode, unlinkStudent, createAccount } from '../services/UserService';
+import { getUserProfileById, changePassword, linkChildAccount, verifyChildAccount, reSentCode, unlinkStudent, createAccount, changeGrade } from '../services/UserService';
 import { getStudentsByUserId } from '../services/ParentService';
 import { formatDateTime, getTodayFormatted } from '../utils/timeUtils';
 import { fetchGrades } from '../services/GradeService';
@@ -9,6 +9,7 @@ import { fetchGrades } from '../services/GradeService';
 const UserProfile = () => {
     const userId = sessionStorage.getItem('userId');
     const role = sessionStorage.getItem('roleId');
+    const gradeId = sessionStorage.getItem('gradeId');
     const [isChangePassword, setIsChangePassword] = useState(false);
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
@@ -22,6 +23,8 @@ const UserProfile = () => {
     const [message, setMessage] = useState("");
     const [isAddChildAccount, setIsAddChildAccount] = useState(false);
     const [isCreateChildAccount, setIsCreateChildAccount] = useState(false);
+    const [isChangeGrade, setIsChangeGrade] = useState(false);
+    const [changeGradeId, setChangeGradeId] = useState();
     const [isVerify, setIsVerify] = useState(false);
     const [emailLink, setEmailLink] = useState("");
     const [code, setCode] = useState("");
@@ -59,14 +62,14 @@ const UserProfile = () => {
     };
 
     useEffect(() => {
-        if (isCreateChildAccount) {
+        if (isCreateChildAccount || isChangeGrade) {
             const fetchData = async () => {
                 const data = await fetchGrades();
                 if (data) setGrades(data);
             };
             fetchData();
         }
-    }, [isCreateChildAccount]);
+    }, [isCreateChildAccount,isChangeGrade ]);
 
     const fetchStudents = async () => {
         try {
@@ -87,6 +90,7 @@ const UserProfile = () => {
     useEffect(() => {
         if (userId) {
             fetchUserProfile();
+            setChangeGradeId(gradeId);
         }
     }, [userId]);
 
@@ -229,6 +233,28 @@ const UserProfile = () => {
         alert(result.message);
     }
 
+    const handleChangeGrade = async () => {
+        if(gradeId === changeGradeId){
+            alert("Vui lòng chọn lớp khác lớp hiện tại");
+            return;
+        }
+
+        const isConfirmed = window.confirm("Bạn có chắc chắn muốn đổi sang khối mới?");
+        if (!isConfirmed) {
+            return;
+        }
+        try {
+            const result = await changeGrade(user.userId, changeGradeId);
+            alert(result.message);
+            sessionStorage.setItem("gradeId", changeGradeId);
+            setIsChangeGrade(false);
+            fetchStudents();
+
+        } catch (error) {
+            alert(error.message);
+        }
+    }
+
 
     if (loading || !user) return <p>Đang tải...</p>;
     if (error) return <p>{error}</p>;
@@ -320,6 +346,35 @@ const UserProfile = () => {
                         <input type="text" value={formatDateTime(user.createAt)} />
                     </div>
                 </div>)}
+                {role == 1 && (<div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                        <button className='btn btn-primary' onClick={() => setIsChangeGrade(true)}>Thay đổi khối</button>
+                    </div>
+                </div>)}
+
+                {isChangeGrade && (<div className={styles.formRow}>
+                    <div className={styles.formGroup}>
+                        <select
+                            value={changeGradeId}
+                            onChange={(e) =>
+                                setChangeGradeId(
+                                    e.target.value
+                                )
+                            }
+                        >
+                            {grades.filter(g => g.gradeIsVisible).map(cls => (
+                                <option key={cls.gradeId} value={cls.gradeId}>
+                                    {cls.gradeName}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+                    <div className={styles.formGroupBtn}>
+                        <button className='btn btn-success m-1' onClick={handleChangeGrade}>Xác nhận</button>
+                        <button className='btn btn-danger' onClick={() => setIsChangeGrade(false)}>Hủy</button>
+                    </div>
+
+                </div>)}
 
                 {role != 1 && (<div className={styles.formRow}>
                     <div className={styles.formGroup}>
@@ -359,6 +414,7 @@ const UserProfile = () => {
                         <button className={styles.addEmailButton} onClick={() => setIsCreateChildAccount(true)}>+ Tạo tài khoản mới</button>
                     </div>
                     )}
+
                     {isAddChildAccount && (<div>
                         <input
                             type="email"
@@ -425,12 +481,12 @@ const UserProfile = () => {
                                 setCreateChildAccount({ ...createChildAccount, password: e.target.value })
                             }
                         />
-                         <label>Xác nhận mật khẩu</label>
+                        <label>Xác nhận mật khẩu</label>
                         <input
                             type="password"
                             value={cfPassword}
                             onChange={(e) =>
-                                setCfPassword(e.target.value )
+                                setCfPassword(e.target.value)
                             }
                         />
                         <label>

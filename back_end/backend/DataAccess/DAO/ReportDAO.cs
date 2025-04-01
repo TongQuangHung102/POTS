@@ -121,6 +121,23 @@ namespace backend.DataAccess.DAO
                 .ToListAsync();
         }
 
+        //dashboard-report
+        public async Task<int> CountReportsByWeek(int subjectGradeId, int weekOffset)
+        {
+            var today = DateTime.UtcNow.Date;
+            var startOfWeek = today.AddDays(-(int)today.DayOfWeek).AddDays(-7 * weekOffset); 
+            var endOfWeek = startOfWeek.AddDays(7); 
+
+            var count = await _dbContext.Reports
+                .Where(r => r.Question.Lesson.Chapter.SubjectGradeId == subjectGradeId
+                            && r.CreatedAt >= startOfWeek
+                            && r.CreatedAt < endOfWeek) 
+                .CountAsync();
+
+            return count;
+        }
+
+
 
 
     }

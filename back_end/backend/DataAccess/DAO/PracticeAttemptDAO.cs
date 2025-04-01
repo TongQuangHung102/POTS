@@ -154,6 +154,42 @@ namespace backend.DataAccess.DAO
             return studentData.Select(s => (s.UserId, s.AverageScore, s.TotalPracticeTime)).ToList();
         }
 
+        //lay lich su cac lan lam bai cua học sinh
+        public async Task<(List<PracticeAttempt> Attempts, int TotalCount)> GetPracticeAttemptsByLessonAndUserAsync(
+            int lessonId, int userId, int pageNumber, int pageSize)
+        {
+            var query = _context.PracticeAttempts
+                .Where(pa => pa.LessonId == lessonId && pa.UserId == userId)
+                .OrderByDescending(pa => pa.CreateAt);
+
+            int totalCount = await query.CountAsync();
+
+            var attempts = await query
+                .Skip((pageNumber - 1) * pageSize)
+                .Take(pageSize)
+                .Select(pa => new PracticeAttempt
+                {
+                    PracticeId = pa.PracticeId,
+                    CorrectAnswers = pa.CorrectAnswers,
+                    TimePractice = pa.TimePractice,
+                    CreateAt = pa.CreateAt,
+                })
+                .ToListAsync();
+
+            return (attempts, totalCount);
+        }
+
+        //lay chi tiet lan lam bai do
+        public async Task<PracticeAttempt> GetPracticeAttemptDetailAsync(int practiceId)
+        {
+            return await _context.PracticeAttempts
+                .Where(pa => pa.PracticeId == practiceId)
+                .Include(pa => pa.StudentAnswers) 
+                    .ThenInclude(sa => sa.PracticeQuestion)
+                        .ThenInclude(qa => qa.AnswerPracticeQuestions)
+                .FirstOrDefaultAsync();
+        }
+
 
     }
 }

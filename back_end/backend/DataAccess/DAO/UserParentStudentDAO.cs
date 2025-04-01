@@ -61,5 +61,23 @@ namespace backend.DataAccess.DAO
             return parent;
         }
 
+        public async Task<int> GetParentCountAsync(int? gradeId)
+        {
+            var query = _dbContext.UserParentStudents
+                .Where(ups => ups.IsVerified)
+                .Select(ups => new
+                {
+                    ups.ParentId,
+                    Student = _dbContext.Users.FirstOrDefault(s => s.UserId == ups.StudentId)
+                });
+            if (gradeId.HasValue)
+            {
+                query = query.Where(ups => ups.Student != null && ups.Student.GradeId == gradeId.Value);
+            }
+            var result = await query.ToListAsync(); 
+            return result.Select(ups => ups.ParentId).Distinct().Count();
+        }
+
+
     }
 }

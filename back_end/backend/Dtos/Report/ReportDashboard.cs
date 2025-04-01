@@ -8,12 +8,19 @@
         public int PendingReport { get; set; }
         public TotalReportByReasonDto TotalReportByReason { get; set; }
         public List<ReportInDashboard> ReportInDashboards { get; set; }
+        public RateRoportDto RateRoports { get; set; }
     }
 
     public class TotalReportByReasonDto
     {
         public List<string> Labels { get; set; }
         public List<int> Data { get; set; }
+    }
+
+    public class RateRoportDto
+    {
+        public List<string> Labels { get; set; }
+        public List<double> Data { get; set; }
     }
 
     public class ReportInDashboard
