@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-
+import styles from './ListPackageStudent.module.css';
 
 const ListPackageStudent = () => {
     const [packages, setPackages] = useState([]);
@@ -26,66 +26,86 @@ const ListPackageStudent = () => {
         fetchPackages();
     }, []);
 
+    // Hàm xác định màu thẻ dựa trên chỉ số
+    const getCardColor = (index) => {
+        const colors = ['blue', 'purple', 'orange'];
+        return colors[index % colors.length];
+    };
+
     const handleBuyPackage = (planId) => {
-        // Mở một popup hoặc chuyển hướng đến trang thanh toán
         console.log(`Mua gói khóa học có ID: ${planId}`);
     };
 
     return (
-        <div className='package-list-container'>
-            <h2>Danh Sách Khóa Học</h2>
+        <div className={styles.packageContainer}>
+            <h2 className={styles.packageTitle}>Danh Sách Khóa Học</h2>
+
             {errorMessage && (
-                <div className='error-message'>{errorMessage}</div>
+                <div className={styles.errorMessage}>{errorMessage}</div>
             )}
-            <table className='package-table'>
-                <thead>
-                    <tr>
-                        <th>Tên Gói</th>
-                        <th>Giá</th>
-                        <th>Mô tả</th>
-                        <th>Trạng thái</th>
-                        <th>Hành động</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {packages.length > 0 ? (
-                        packages.map((pkg) => (
-                            <tr key={pkg.planId}>
-                                <td>{pkg.planName}</td>
-                                <td>{pkg.price} VNĐ</td>
-                                <td>{pkg.description}</td>
-                                <td>
-                                    {pkg.isVisible ? (
-                                        <span style={{ color: "green" }}>Còn Hàng</span>
-                                    ) : (
-                                        <span style={{ color: "red" }}>Hết Hàng</span>
-                                    )}
-                                </td>
-                                <td>
-                                    {pkg.isVisible && (
-                                        <button
-                                            className='buy-button'
-                                            onClick={() => handleBuyPackage(pkg.planId)}
-                                        >
-                                            Mua
-                                        </button>
-                                    )}
-                                    <Link
-                                        to={`/student/package/${pkg.planId}`}
-                                        className='detail-link'
+
+            <div className={styles.packageGrid}>
+                {packages.length > 0 ? (
+                    packages.map((pkg, index) => (
+                        <div
+                            key={pkg.planId}
+                            className={`${styles.packageCard} ${styles[getCardColor(index)]}`}
+                        >
+                            <div className={styles.priceCircle}>
+                                <div className={styles.price}>
+                                    <span className={styles.currency}>₫</span>
+                                    {Math.floor(pkg.price / 1000)}
+                                    <span className={styles.decimal}>.000</span>
+                                </div>
+                                <div className={styles.period}>Mỗi Tháng</div>
+                            </div>
+
+                            <div className={styles.packageDetails}>
+                                <div className={styles.featureItem}>
+                                    <span>Tên gói:</span> {pkg.planName}
+                                </div>
+                                <div className={styles.featureItem}>
+                                    <span>Thông tin:</span> {pkg.description}
+                                </div>
+                                <div className={styles.featureItem}>
+                                    <span>Thời Hạn:</span> {pkg.duration || 'N/A'} ngày
+                                </div>
+                                <div className={styles.featureItem}>
+                                    <span>Phân Tích AI:</span> {pkg.isAIAnalysis ? 'Có' : 'Không'}
+                                </div>
+                                <div className={styles.featureItem}>
+                                    <span>Cá Nhân Hóa:</span> {pkg.isPersonalization ? 'Có' : 'Không'}
+                                </div>
+                                <div className={styles.featureItem}>
+                                    <span>Dùng Thử:</span> 30 Ngày Miễn Phí
+                                </div>
+                            </div>
+
+                            <div className={styles.packageActions}>
+                                {pkg.isVisible ? (
+                                    <button
+                                        className={styles.buyButton}
+                                        onClick={() => handleBuyPackage(pkg.planId)}
                                     >
-                                        Xem Chi Tiết
-                                    </Link>
-                                </td>
-                            </tr>
-                        ))
-                    ) : (
-                        <tr>
-                            <td colSpan='5'>Không có dữ liệu</td>
-                        </tr>
-                    )}
-                </tbody>
-            </table>
+                                        Mua Ngay <span className={styles.arrow}>»</span>
+                                    </button>
+                                ) : (
+                                    <span className={styles.unavailable}>Hết Hàng</span>
+                                )}
+
+                                <Link
+                                    to={`/student/package/${pkg.planId}`}
+                                    className={styles.detailLink}
+                                >
+                                    Xem Chi Tiết
+                                </Link>
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className={styles.noData}>Không có dữ liệu</div>
+                )}
+            </div>
         </div>
     );
 };
