@@ -55,6 +55,10 @@
     border-radius: 5px;
     cursor: pointer;
   }
+
+  .action-buttons{
+    margin-top: 0 !important;
+  }
   
   .action-buttons button:hover {
     background-color: #ff9c1a;

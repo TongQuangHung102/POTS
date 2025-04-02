@@ -15,6 +15,8 @@ namespace backend.Models
         public int CorrectAnswer { get; set; }
         public bool IsVisible { get; set; }
         public bool CreateByAI { get; set; }
+        public bool IsUsed { get; set; } = false;
+        public DateTime? UsedAt { get; set; }
         public int LessonId { get; set; }
 
         [ForeignKey("LessonId")]
@@ -24,8 +26,7 @@ namespace backend.Models
         public virtual ICollection<ContestQuestion> ContestQuestions { get; set; }
         public virtual ICollection<TestQuestion> TestQuestions { get; set; }
         public virtual ICollection<TestSubmission> TestSubmissions { get; set; }
-        public virtual ICollection<StudentAnswer> StudentAnswers { get; set; }
-
+        public virtual ICollection<Report> Reports { get; set; }
 
     }
 }

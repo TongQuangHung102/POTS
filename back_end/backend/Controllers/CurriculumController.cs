@@ -1,4 +1,5 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Curriculum;
+using backend.Models;
 using backend.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -11,23 +12,77 @@ namespace backend.Controllers
     {
         private readonly ChapterService _chapterService;
         private readonly LessonService _lessonService;
+        private readonly SubjectGradeService _subjectGradeService;
 
-        public CurriculumController(ChapterService chapterService, LessonService lessonService)
+        public CurriculumController(ChapterService chapterService, LessonService lessonService, SubjectGradeService subjectGradeService)
         {
             _chapterService = chapterService;
             _lessonService = lessonService;
+            _subjectGradeService = subjectGradeService;
         }
-     
-        [HttpGet("get-chapter-by-grade")]
-        public async Task<ActionResult<List<ChapterDto>>> GetAllChapter(int gradeId)
+
+        [HttpGet("get-chapter-by-grade/{gradeId}/subject/{subjectId}")]
+        public async Task<IActionResult> GetAllChapter(int gradeId, int subjectId)
         {
             try
             {
-                var chapters = await _chapterService.GetAllChaptersAsync(gradeId);
+                var subjectGrade = await _subjectGradeService.GetBySubjectGradeAsync(gradeId, subjectId);
+                if (subjectGrade == null)
+                {
+                    return NoContent(); 
+                }
+
+                return Ok(new
+                {
+                    subjectGradeId = subjectGrade.Id,
+                    gradeName = subjectGrade.Grade.GradeName,
+                    subjectName = subjectGrade.Subject.SubjectName,
+                    chapters = subjectGrade.Chapters.Select(c => new
+                    {
+                        chapterId = c.ChapterId,
+                        chapterName = c.ChapterName,
+                        order = c.Order,
+                        semester = c.Semester,
+                        isVisible = c.IsVisible
+                    })
+                });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new {error = ex.Message });
+            }
+        }
+
+        [HttpGet("get-chapter-and-num-question-by-grade/{gradeId}/subject/{subjectId}")]
+        public async Task<IActionResult> GetAllChapterAndNumQuestion(int gradeId, int subjectId)
+        {
+            try
+            {
+                var chapters = await _chapterService.GetChaptersWithQuestionLevelsAsync(gradeId, subjectId);
+                if (chapters == null || chapters.Count == 0)
+                {
+                    return NoContent();
+                }
+
+                return Ok(chapters);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { message = "Lỗi máy chủ nội bộ", error = ex.Message });
+            }
+        }
+
+        [HttpGet("get-student-chapter/{gradeId}/subject/{subjectId}/student/{studentId}")]
+        public async Task<ActionResult<List<ChapterDto>>> GetStudentChapter(int gradeId,int subjectId, int studentId)
+        {
+            var subjectGrade = await _subjectGradeService.GetBySubjectGradeAsync(gradeId, subjectId);
+            try
+            {
+                var chapters = await _chapterService.GetFilteredChaptersAsync(subjectGrade.Id, studentId);
 
                 if (chapters == null || !chapters.Any())
                 {
-                    return NoContent(); 
+                    return NoContent();
                 }
 
                 return Ok(chapters);
@@ -39,18 +94,29 @@ namespace backend.Controllers
         }
 
         [HttpGet("get-lesson-by-chapterId")]
-        public async Task<ActionResult<List<LessonDto>>> GetAllLessonByChapterId(int chapterId)
+        public async Task<IActionResult> GetAllLessonByChapterId(int chapterId)
         {
             try
             {
-                var lessons = await _lessonService.GetAllLessonByChapterIdAsync(chapterId);
+                var chapter = await _chapterService.GetChapterByIdAsync(chapterId);
 
-                if (lessons == null || !lessons.Any())
+                if (chapter == null)
                 {
                     return NoContent();
                 }
 
-                return Ok(lessons);
+                return Ok(new
+                {
+                    chapterId = chapter.ChapterId,
+                    chapterName = "Chương " + chapter.Order + ": " + chapter.ChapterName,
+                    lessons = chapter.Lessons.Select(c => new
+                    {
+                        lessonId = c.LessonId,
+                        lessonName = c.LessonName,
+                        order = c.Order,
+                        isVisible = c.IsVisible
+                    })
+                });
             }
             catch (Exception ex)
             {
@@ -58,12 +124,14 @@ namespace backend.Controllers
             }
         }
 
+
+
         [HttpPost("add-chapters")]
         public async Task<IActionResult> AddChapters([FromBody] AddChaptersRequest chaptersRequest)
         {
             try
             {
-                await _chapterService.AddChaptersAsync(chaptersRequest.GradeId,chaptersRequest.Semester, chaptersRequest.Input);
+                await _chapterService.AddChaptersAsync(chaptersRequest.subjectgradeId, chaptersRequest.Semester, chaptersRequest.Input);
                 return Ok("Chương được thêm thành công!");
             }
             catch (ArgumentException ex)
@@ -114,7 +182,15 @@ namespace backend.Controllers
                 await _lessonService.AddLessonsFromStringAsync(request.ChapterId, request.Input);
                 return Ok("Bài được thêm mới thành công");
             }
+            catch (ArgumentException ex)
+            {
+                return BadRequest(ex.Message);
+            }
             catch (InvalidOperationException ex)
+            {
+                return BadRequest(ex.Message);
+            }
+            catch (FormatException ex)
             {
                 return BadRequest(ex.Message);
             }

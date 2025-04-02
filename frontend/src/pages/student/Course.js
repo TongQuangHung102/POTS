@@ -2,33 +2,46 @@ import React, { useState, useEffect } from 'react';
 import styles from './Course.module.css';
 import TestPage from './Test';
 import BackLink from '../../components/BackLink';
-import { useNavigate } from 'react-router-dom'; 
+import { useNavigate, useParams } from 'react-router-dom';
+import { fetchStudentChapters } from '../../services/ChapterService';
 
 // Component cho Badge
-const LessonBadge = () => (
-    <img
-        className={styles.lessonbadge}
-        src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZD0iTTEyIDJDNi40ODggMiAyIDYuNDg4IDIgMTJzNC40ODggMTAgMTAgMTAgMTAtNC40ODggMTAtMTBTMTcuNTEyIDIgMTIgMnptMCAxOGMtNC40MTEgMC04LTMuNTg5LTgtOHMzLjU4OS04IDgtOCA4IDMuNTg5IDggOC0zLjU4OSA4LTggOHoiIGZpbGw9IiM2Njg1RTEiLz48cGF0aCBkPSJNMTIgMThjLTMuMzA5IDAtNi0yLjY5MS02LTZzMi42OTEtNiA2LTYgNiAyLjY5MSA2IDYtMi42OTEgNi02IDZ6IiBmaWxsPSIjRTdFQ0ZGIi8+PC9zdmc+"
-        alt="Badge"
-    />
-);
-
-// Component cho mỗi bài học
-const LessonItem = ({ id, number, title }) => {
+const LessonBadge = ({ averageScore, averageTime,id }) => {
     const navigate = useNavigate();
-
-    const handlePractice = (id) =>{
-        navigate(`/student/course/practice/${id}`)
+    const { gradeId, subjectId } = useParams();
+    if (averageScore == null || averageTime == null) {
+        return null;
     }
 
     return (
-        <div className={styles.lessonItem} onClick={() => handlePractice(id)}>
+        <div className={styles.lessonbadge}>
+            {averageScore.toFixed(2)}đ / {averageTime.toFixed(2)}s
+            <p className={styles.history} onClick={() => navigate(`/student/grade/${gradeId}/subject/${subjectId}/lesson/${id}/history`)}>Lịch sử</p>
+        </div>
+    );
+}
+
+// Component cho mỗi bài học
+const LessonItem = ({ id, number, title, averageScore, averageTime }) => {
+    const navigate = useNavigate();
+    const { gradeId, subjectId } = useParams();
+
+    const handlePractice = (id) => {
+        navigate(`/student/grade/${gradeId}/subject/${subjectId}/lesson/${id}/practice`)
+    }
+
+    return (
+        <div className={styles.lessonItem}>
             <div className={`${styles.lessonNumber}`}>{number}</div>
-            <div className={styles.lessonInfo}>
+            <div className={styles.lessonInfo} onClick={() => handlePractice(id)}>
                 <div className={styles.lessonIcon}>📄</div>
                 <div className={styles.lessonTitle}>{title}</div>
             </div>
-            <LessonBadge />
+            <LessonBadge
+                averageScore={averageScore}
+                averageTime={averageTime}
+                id={id}
+            />
         </div>
     );
 };
@@ -54,12 +67,14 @@ const CourseSection = ({ title, order, lessons, initialExpanded = false }) => {
             </div>
 
             <div className={styles.lessonContainer}>
-            {lessons.map((lesson, index) => (
+                {lessons.map((lesson, index) => (
                     <LessonItem
                         key={index}
                         number={lesson.number}
                         title={lesson.title}
-                        id= {lesson.id}
+                        id={lesson.id}
+                        averageScore={lesson.averageScore}
+                        averageTime={lesson.averageTime}
                     />
                 ))}
 
@@ -74,29 +89,31 @@ const CourseProgress = () => {
     const [sections, setSections] = useState([]);
     const [tests, setTests] = useState([]);
     const [viewTests, setViewTests] = useState(false);
+    const { subjectId } = useParams();
     const gradeId = sessionStorage.getItem("gradeId");
-    const API_URL = `https://localhost:7259/api/Curriculum/get-chapter-by-grade?gradeId=${gradeId}`;
+    const userId = sessionStorage.getItem("userId");
 
     const navigate = useNavigate();
 
     useEffect(() => {
         const fetchData = async () => {
             try {
-                const response = await fetch(API_URL);
-                const data = await response.json();
-
-                const formattedSections = data.filter(chapter => chapter.isVisible)
-                .map(chapter => ({
-                    order: chapter.order,
-                    title: chapter.chapterName,
-                    initialExpanded: false,
-                    lessons: chapter.lessons.filter(lesson => lesson.isVisible)
-                    .map(lesson => ({
-                        number: String(lesson.order).padStart(2, "0"),
-                        title: lesson.lessonName,
-                        id: lesson.lessonId
-                    }))
-                }));
+                const data = await fetchStudentChapters(gradeId, subjectId, userId)
+                console.log(data);
+                const formattedSections = data
+                    .map(chapter => ({
+                        order: chapter.order,
+                        title: chapter.name,
+                        initialExpanded: false,
+                        lessons: chapter.lessons
+                            .map(lesson => ({
+                                number: String(lesson.order).padStart(2, "0"),
+                                title: lesson.lessonName,
+                                id: lesson.lessonId,
+                                averageScore: lesson.averageScore,
+                                averageTime: lesson.averageTime
+                            }))
+                    }));
 
                 setSections(formattedSections);
             } catch (error) {
@@ -107,25 +124,25 @@ const CourseProgress = () => {
         fetchData();
     }, []);
 
-    useEffect(()=> {
-        const fetchTest = async () =>{
+    useEffect(() => {
+        const fetchTest = async () => {
             if (!gradeId) {
                 console.error("Không tìm thấy gradeId trong session!");
                 return;
             }
-    
-            const API_URL = `https://localhost:7259/api/Test/get-test-by-grade/${gradeId}`;
-        
+
+            const API_URL = `https://localhost:7259/api/Test/get-test-by-grade/${gradeId}/subject/${subjectId}`;
+
             try {
                 const response = await fetch(API_URL);
                 if (!response.ok) {
                     throw new Error("Lỗi khi lấy danh sách bài kiểm tra");
                 }
-        
+
                 const testList = await response.json();
-                const visibleTests = testList.filter(test => test.isVisible);
+                const visibleTests = testList.data.filter(test => test.isVisible);
                 setTests(visibleTests);
-                
+
             } catch (error) {
                 console.error("Lỗi khi lấy dữ liệu bài kiểm tra:", error);
             }
@@ -133,26 +150,26 @@ const CourseProgress = () => {
         fetchTest();
     }, []);
 
-   
-    
+
+
 
     return (
         <div className='main-content'>
             <div className={styles.courseContainer}>
-            <div className={styles.courseHeader}>
+                <div className={styles.courseHeader}>
                     <div className={styles.headerLeft}>
-                        <BackLink/>
+                        <BackLink />
                     </div>
                     <div className={styles.headerRight}>
-                    <button 
-                            className={styles.courseButton} 
+                        <button
+                            className={styles.courseButton}
                             onClick={() => setViewTests(false)}
                         >
                             Chương trình học
                         </button>
 
-                     <button 
-                            className={styles.courseButton} 
+                        <button
+                            className={styles.courseButton}
                             onClick={() => setViewTests(true)}
                         >
                             Đề kiểm tra

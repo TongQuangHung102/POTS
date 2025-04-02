@@ -11,6 +11,9 @@ using Microsoft.AspNetCore.Authentication;
 using System.Security.Claims;
 using Microsoft.AspNetCore.Authentication.Google;
 using backend.Helpers;
+using backend.BackgroundTasks;
+using backend.Hubs;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,18 +61,99 @@ builder.Services.AddScoped<TestQuestionService>();
 builder.Services.AddScoped<PracticeAttemptDAO>();
 builder.Services.AddScoped<IPracticeRepository, PracticeRepository>();
 builder.Services.AddScoped<PracticeAttemptService>();
+builder.Services.AddScoped<AIQuestionDAO>();
+builder.Services.AddScoped<IAIQuestionRepository, AIQuestionRepository>();
+builder.Services.AddScoped<AIQuestionService>();
+builder.Services.AddScoped<IStudentPerformanceRepository, StudentPerformanceRepository>();
+builder.Services.AddScoped<StudentPerformanceDAO>();
+builder.Services.AddScoped<StudentService>();
+builder.Services.AddScoped<StudentPerformanceService>();
+builder.Services.AddScoped<StudentTestService>();
+builder.Services.AddScoped<IStudentTestRepository, StudentTestRepository>();
+builder.Services.AddScoped<StudentTestDAO>();
+builder.Services.AddScoped<AdminService>();
+builder.Services.AddScoped<ContentManageService>();
+builder.Services.AddScoped<ReportService>();
+builder.Services.AddScoped<ReportDAO>();
+builder.Services.AddScoped<IReportRepository, ReportRepository>();
+builder.Services.AddScoped<ISubjectGradeRepository, SubjectGradeRepository>();
+builder.Services.AddScoped<SubjectGradeDAO>();
+builder.Services.AddScoped<SubjectGradeService>();
+builder.Services.AddScoped<ISubjectRepository, SubjectRepository>();
+builder.Services.AddScoped<SubjectDAO>();
+builder.Services.AddScoped<SubjectService>();
+builder.Services.AddScoped<IUserParentStudentRepository, UserParentStudentRepository>();
+builder.Services.AddScoped<UserParentStudentDAO>();
+builder.Services.AddScoped<UserParentStudentService>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<NotificationDAO>();
+builder.Services.AddScoped<NotificationService>();
 builder.Services.AddScoped<StudentPerformanceDAO>();
 builder.Services.AddScoped<IStudentPerformanceRepository, StudentPerformanceRepository>();
+builder.Services.AddScoped<PracticeQuestionService>();
+builder.Services.AddScoped<PracticeQuestionDAO>();
+builder.Services.AddScoped<IPracticeQuestionRepository, PracticeQuestionRepository>();
+builder.Services.AddScoped<StudentAnswersService>();
+builder.Services.AddScoped<StudentAnswerDAO>();
+builder.Services.AddScoped<IStudentAnswerRepository, StudentAnswerRepository>();
+
+builder.Services.AddHostedService<CheckInactiveStudentsService>();
+
+builder.Services.AddHttpClient();
+builder.Services.AddSignalR(options =>
+{
+    options.EnableDetailedErrors = true;
+});
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.PropertyNameCaseInsensitive = true;
+    });
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowSpecificOrigin",
-        builder => builder.WithOrigins("http://localhost:3000") 
+        policy => policy
+            .WithOrigins("http://localhost:3000") 
+            .AllowAnyMethod()
+            .AllowAnyHeader()
             .AllowCredentials()
-                          .AllowAnyHeader()
-                          .AllowAnyMethod());
+    );
 });
 
+
 var key = Encoding.ASCII.GetBytes("UltraSecureKey_ForJWTAuth!987654321@2025$");
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+})
+.AddJwtBearer(options =>
+{
+    options.TokenValidationParameters = new TokenValidationParameters
+    {
+        ValidateIssuerSigningKey = true,
+        IssuerSigningKey = new SymmetricSecurityKey(key),
+        ValidateIssuer = false,
+        ValidateAudience = false,
+
+    };
+    options.Events = new JwtBearerEvents
+    {
+        OnMessageReceived = context =>
+        {
+            var accessToken = context.Request.Query["access_token"];
+            var path = context.HttpContext.Request.Path;
+            if (!string.IsNullOrEmpty(accessToken)
+                && path.StartsWithSegments("/hubs/spreadhub"))
+            {
+                context.Token = accessToken;
+            }
+            return Task.CompletedTask;
+        }
+    };
+});
+
 
 builder.Services.AddHttpClient();
 builder.Services.AddAuthorization();
@@ -94,11 +178,15 @@ app.UseHttpsRedirection();
 
 app.UseCors("AllowSpecificOrigin");
 
+app.UseWebSockets();
+
 app.UseAuthentication();
 
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.MapHub<NotificationHub>("/notificationHub").RequireAuthorization();
 
 app.Run();
 

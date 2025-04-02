@@ -19,6 +19,7 @@ namespace backend.Models
         public bool IsActive { get; set; }
         public string? EmailVerificationToken { get; set; }
         public DateTime? TokenExpiry { get; set; }
+        public DateTime? LastGradeChangeDate { get; set; }
 
         [ForeignKey("Role")]
         public virtual Role RoleNavigation { get; set; }
@@ -36,5 +37,6 @@ namespace backend.Models
         public virtual ICollection<CompetitionResult> CompetitionResults { get; set; }
         public virtual ICollection<StudentTest> StudentTests { get; set; }
         public virtual ICollection<Payment> Payments { get; set; }
+        public virtual ICollection<Notification> Notifications { get; set; }
     }
 }

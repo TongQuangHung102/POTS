@@ -35,3 +35,43 @@ export const submitPracticeResult = async (data) => {
         throw error;
     }
 };
+
+export const submitTestResult = async (data) => {
+    try {
+        const response = await fetch(`https://localhost:7259/api/StudentTest/add-student-test`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        if (!response.ok) {
+            throw new Error("Có lỗi khi gửi dữ liệu về API");
+        }
+        return await response.json();
+    } catch (error) {
+        throw error;
+    }
+};
+
+export const saveStudentAnswers = async (answers) => {
+    try {
+      const response = await fetch(`https://localhost:7259/api/StudentAnswer/save-answers`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(answers),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Lỗi: ${response.statusText}`);
+      }
+  
+      return await response.json();
+    } catch (error) {
+      console.error("Lỗi khi lưu câu trả lời:", error);
+      throw error;
+    }
+  };

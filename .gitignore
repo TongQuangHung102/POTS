@@ -40,3 +40,4 @@ obj/
 
 # Visual Studio temporary files and configurations
 .vs/
+__pycache__/

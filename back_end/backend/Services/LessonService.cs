@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Curriculum;
 using backend.Models;
 using backend.Repositories;
 using System.Text.RegularExpressions;
@@ -24,6 +24,16 @@ namespace backend.Services
                 Order = l.Order,
                 IsVisible = l.IsVisible,
             }).ToList();
+        }
+
+        public async Task<Lesson> GetLessonWithQuestionsByIdAsync(int id)
+        {
+            return await _curriculumRepository.GetLessonWithQuestionsByIdAsync(id);
+        }
+
+        public async Task<Lesson> GetLessonWithQuestionsAIByIdAsync(int id)
+        {
+            return await _curriculumRepository.GetLessonWithQuestionsAIByIdAsync(id);
         }
 
         public async Task AddLessonsFromStringAsync(int chapterId, string input)

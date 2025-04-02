@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import styles from './QuestionManage.module.css';
+import BackLink from '../../components/BackLink';
 
 const QuestionManage = () => {
     // State chứa danh sách câu hỏi từ API
-    const { lessonId, gradeId, chapterId } = useParams();
+    const { lessonId,subjectId, gradeId, chapterId } = useParams();
+    const [lessonName, setLessonName] = useState('');
     const [questions, setQuestions] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -19,9 +21,11 @@ const QuestionManage = () => {
 
     // State cho phân trang
     const [currentPage, setCurrentPage] = useState(1);
-    const questionsPerPage = 1;
+    const questionsPerPage = 5;
     const [searchTerm, setSearchTerm] = useState('');
     const totalPages = Math.ceil(totalQuestions / questionsPerPage);
+
+    const roleId = sessionStorage.getItem('roleId');
 
     const navigate = useNavigate();
 
@@ -48,7 +52,6 @@ const QuestionManage = () => {
     // Gọi API để lấy dữ liệu câu hỏi
 
     const fetchQuestions = async () => {
-
         setLoading(true);
         setError(null);
 
@@ -66,6 +69,7 @@ const QuestionManage = () => {
 
             if (!response.ok) throw new Error('Lỗi khi lấy dữ liệu');
             const data = await response.json();
+            setLessonName(data.lessonName);
             setTotalQuestions(data.totalQuestions);
             const formattedQuestions = data.data.map(q => ({
                 id: q.questionId,
@@ -84,7 +88,7 @@ const QuestionManage = () => {
             setQuestions(formattedQuestions);
         } catch (error) {
             setError(error.message);
-        } finally {
+        }finally {
             setLoading(false);
         }
     };
@@ -111,6 +115,20 @@ const QuestionManage = () => {
     };
 
     const handleSave = async () => {
+        if (!editingQuestion.question.trim()) {
+            setErrorMessage("Câu hỏi không được để trống.");
+            return;
+        }
+        
+        if (editingQuestion.options.some(opt => !opt.text.trim())) {
+            setErrorMessage("Tất cả câu trả lời phải được điền.");
+            return;
+        }
+    
+        if (!editingQuestion.correctAnswer) {
+            setErrorMessage("Hãy chọn một đáp án đúng.");
+            return;
+        }
         try {
             const requestBody = {
                 questionText: editingQuestion.question,
@@ -142,8 +160,7 @@ const QuestionManage = () => {
 
             setSuccessMessage(result.message);
             alert("Cập nhật thành công!");
-            fetchQuestions();
-
+            await fetchQuestions();
             setIsEditing(false);
         } catch (error) {
             setErrorMessage(error.message)
@@ -155,15 +172,33 @@ const QuestionManage = () => {
         setEditingQuestion(null);
     };
     const handleAddQuestion = () => {
-        navigate(`/content_manage/grades/${gradeId}/chapters/${chapterId}/lessons/${lessonId}/add-question`);
+        if(roleId === '3'){
+            navigate(`/admin/grades/${gradeId}/subject/${subjectId}/chapters/${chapterId}/lessons/${lessonId}/add-question`);
+        }else{
+            navigate(`/content_manage/grades/${gradeId}/subject/${subjectId}/chapters/${chapterId}/lessons/${lessonId}/add-question`);
+        }
     };
+    const goToAIQuestions = () => {
+        if(roleId === '3'){
+            navigate(`/admin/grades/${gradeId}/subject/${subjectId}/chapters/${chapterId}/lessons/${lessonId}/list-aiquestion`, { state: { lessonName } });
+        }else{
+            navigate(`/content_manage/grades/${gradeId}/subject/${subjectId}/chapters/${chapterId}/lessons/${lessonId}/list-aiquestion`, { state: { lessonName } });
+        }
+    };
+
+    if (loading) return <div className={styles.loading}>
+        <p>Đang tải câu hỏi...</p>
+    </div>
 
     return (
         <div className={styles.questionManager}>
-            <h1>Quản Lý Câu Hỏi</h1>
+            <h2>Quản Lý Câu Hỏi {lessonName}</h2>
+            <BackLink></BackLink>
             <div className={styles.groupbtn}>
                 <button onClick={handleAddQuestion}>Thêm câu hỏi</button>
-                <button>Tạo câu hỏi bằng AI</button>
+                <button onClick={() => goToAIQuestions(lessonName)}>
+                    Danh sách câu hỏi AI
+                </button>
             </div>
             <div className={styles.toolbar}>
 
@@ -198,12 +233,11 @@ const QuestionManage = () => {
             <div className={styles.questionList}>
                 {questions.map(q => (
                     <div key={q.id} className={styles.questionItem}>
-                        <div className={styles.questionHeader}>
+                        <div className={styles.questionHeader} onClick={() => toggleQuestion(q.id)}>
                             <span className={styles.questionText}>{q.question}</span>
                             <div className={styles.questionActions}>
                                 <span className={`${q.isVisible ? styles.isVisible : styles.inactive}`}> {q.isVisible ? "Hiển Thị" : "Ẩn"}</span>
-                                <button className={styles.editButton} onClick={() => handleEdit(q)}>Chỉnh sửa</button>
-                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`} onClick={() => toggleQuestion(q.id)}>▼</span>
+                                <span className={`${styles.expandIcon} ${q.isExpanded ? styles.expanded : ''}`}>▼</span>
                             </div>
                         </div>
 
@@ -225,6 +259,7 @@ const QuestionManage = () => {
                                             </div>
                                         ))}
                                     </div>
+                                    <button className='btn btn-success m-1' onClick={() => handleEdit(q)}>Chỉnh sửa</button>
                                 </div>
                             </div>
                         )}

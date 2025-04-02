@@ -1,16 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useNavigate  } from 'react-router-dom';
 import styles from './ManageQuestionTest.module.css';
-import { fetchChapters } from '../../services/ChapterService';
+import { fetchChaptersWithNumQuestion } from '../../services/ChapterService';
 import { fetchLessons } from '../../services/LessonService';
 import { fetchLevels } from '../../services/LevelService';
+import { fetchTestQuestions, GenerateTest, UpdateTestQuestions, AddQuestionsToTest } from '../../services/TestQuestion'
 import BackLink from '../../components/BackLink';
 
 const ManageQuestionTest = () => {
 
-    const { testId, gradeId } = useParams();
+    const { testId, gradeId, subjectId } = useParams();
+    const navigate = useNavigate();
 
     const [testQuestions, setTestQuestions] = useState([]);
+    const [initialQuestions, setInitialQuestions] = useState([]);
     const [questionBank, setQuestionBank] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -20,11 +23,16 @@ const ManageQuestionTest = () => {
     const [chapterId, setChapterId] = useState('');
     const [totalQuestions, setTotalQuestions] = useState(0);
     const [isEditing, setIsEditing] = useState(false);
-    const [editingQuestion, setEditingQuestion] = useState(null);
+    const [isShowModal, setIsShowModal] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [successMessage, setSuccessMessage] = useState('');
     const [chapters, setChapters] = useState([]);
     const [lessons, setLessons] = useState([]);
+    const [isModified, setIsModified] = useState(false);
+
+
+    const [selectedChapters, setSelectedChapters] = useState([]);
+    const [questionsConfig, setQuestionsConfig] = useState({});
 
 
     // State cho phân trang
@@ -33,6 +41,7 @@ const ManageQuestionTest = () => {
     const [searchTerm, setSearchTerm] = useState('');
     const totalPages = Math.ceil(totalQuestions / questionsPerPage);
 
+    //lay ngan hang cau hoi
     useEffect(() => {
         const fetchData = async () => {
             try {
@@ -62,32 +71,33 @@ const ManageQuestionTest = () => {
             fetchData();
         }, 300);
         return () => clearTimeout(delayDebounce);
-    }, [chapterId, lessonId, levelId, searchTerm,currentPage]);
+    }, [chapterId, lessonId, levelId, searchTerm, currentPage]);
 
+    //lay cau hoi trong test
     useEffect(() => {
         const fetchQuestions = async () => {
-            try {
-                const response = await fetch(`https://localhost:7259/api/TestQuestion/get-test-questions?testId=${testId}`);
-                if (!response.ok) throw new Error("Lỗi khi lấy dữ liệu");
+            const data = await fetchTestQuestions(testId);
 
-                const data = await response.json();
-                if (data.length === 0) return;
-                setTestQuestions(data);
-                setIsEditing('true');
-            } catch (err) {
-                setError(err.message);
-            } finally {
-                setLoading(false);
+            if (data.error) {
+                setTestQuestions([]);
             }
-        };
+            else {
+                console.log(data);
+                setTestQuestions(data.data)
+                setInitialQuestions(data.data);
+                setIsEditing(true);
+            }
 
+        };
         fetchQuestions();
     }, []);
 
+    //lay danh sach chapter, lesson, level
     useEffect(() => {
         const loadChapters = async () => {
-            const data = await fetchChapters(gradeId);
+            const data = await fetchChaptersWithNumQuestion(gradeId, subjectId);
             setChapters(data);
+
         };
         const loadLevels = async () => {
             const data = await fetchLevels();
@@ -101,82 +111,108 @@ const ManageQuestionTest = () => {
         if (!chapterId) return;
         const loadLessons = async () => {
             const data = await fetchLessons(chapterId);
-            setLessons(data);
+            setLessons(data.lessons);
+            console.log(data)
         };
         loadLessons();
     }, [chapterId]);
+
+    useEffect(() => {
+        setIsModified(JSON.stringify(testQuestions) !== JSON.stringify(initialQuestions));
+    }, [testQuestions, initialQuestions]);
 
     const addQuestionToTest = (question) => {
         if (!testQuestions.some(q => q.questionId === question.questionId)) {
             setTestQuestions([...testQuestions, question]);
         }
+        setIsModified(true);
     };
 
     const removeQuestionFromTest = (questionId) => {
         setTestQuestions(testQuestions.filter(question => question.questionId !== questionId));
+        setIsModified(true);
     };
 
     const addQuestionsToTest = async () => {
-        if (testQuestions.length === 0) {
-            alert("Chưa có câu hỏi nào được chọn!");
-            return;
-        }
-
-        const payload = {
-            testId: testId, 
-            questionIds: testQuestions.map(q => q.questionId)
-        };
-
-        try {
-            const response = await fetch("https://localhost:7259/api/TestQuestion/add-questions", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify(payload)
-            });
-
-            if (!response.ok) {
-                throw new Error("Có lỗi xảy ra khi thêm câu hỏi vào bài kiểm tra!");
-            }
-
-            const result = await response.json();
-            alert("Thêm câu hỏi thành công!");
-            console.log("Server Response:", result);
-
-        } catch (error) {
-            console.error("Error:", error);
-            alert("Lỗi: " + error.message);
-        }
+        await AddQuestionsToTest(testId, testQuestions)
+        navigate(0);
     };
 
     const updateTestQuestions = async () => {
-        const payload = {
-            testId: testId,
-            questionIds: testQuestions.map(q => q.questionId)
-        };
+        await UpdateTestQuestions(testId, testQuestions)
+    };
+
+    //modal add question auto
+
+    const handleAuto = () => {
+        setIsShowModal(true);
+    };
+
+    const handleClose = () => {
+        setIsShowModal(false);
+    };
+
+
+    const handleAddChapter = (chapterId) => {
+        if (!selectedChapters.includes(chapterId)) {
+            setSelectedChapters([...selectedChapters, chapterId]);
+            setQuestionsConfig({ ...questionsConfig, [chapterId]: {} });
+        }
+    };
+
+    const handleInputChange = (chapterId, levelId, value) => {
+        setQuestionsConfig({
+            ...questionsConfig,
+            [chapterId]: {
+                ...questionsConfig[chapterId],
+                [levelId]: parseInt(value) || 0,
+            },
+        });
+    };
+
+    const handleRemoveChapter = (chapterId) => {
+        setSelectedChapters(selectedChapters.filter((id) => id !== chapterId));
+        const newConfig = { ...questionsConfig };
+        delete newConfig[chapterId];
+        setQuestionsConfig(newConfig);
+    };
+
+    const handleConfirm = async () => {
+        if (selectedChapters.length === 0) {
+            alert("Vui lòng chọn ít nhất một chương!");
+            return;
+        }
+
+        const formattedData = selectedChapters.map((chapterId) => ({
+            chapterId,
+            levelRequests: Object.entries(questionsConfig[chapterId] || {}).map(
+                ([levelId, questionCount]) => ({
+                    levelId: parseInt(levelId),
+                    questionCount,
+                })
+            ),
+        })).filter(chapter => chapter.levelRequests.length > 0);
+
+        if (formattedData.length === 0) {
+            alert("Mỗi chương phải có ít nhất một câu hỏi!");
+            return;
+        }
         try {
-            const response = await fetch("https://localhost:7259/api/TestQuestion/update-questions", {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-            });
-    
-            const data = await response.json();
-    
-            if (!response.ok) {
-                throw new Error(data.message || "Cập nhật thất bại");
-            }
-    
-            alert("Cập nhật câu hỏi thành công!");
-        } catch (error) {
-            console.error("Lỗi:", error.message);
+            const result = await GenerateTest(formattedData);
+            console.log(result);
+            alert("Thêm tự động thành công!");
+            setTestQuestions(result);
+            setIsShowModal(false);
+        }
+        catch (error) {
             alert(error.message);
         }
     };
 
+    const getChapterInfo = (chapterId) => {
+        const chapter = chapters.find((c) => c.chapterId === chapterId);
+        return chapter ? `Chương ${chapter.order}: ${chapter.chapterName}` : "Không tìm thấy chương";
+    };
 
     return (
         <div className={styles.container}>
@@ -186,16 +222,19 @@ const ManageQuestionTest = () => {
                 <div className={styles.testQuestions}>
                     <h3>Câu hỏi bài kiểm tra</h3>
                     {testQuestions.length === 0 ? (
-                        <p className={styles.emptyMessage}>Chưa có câu hỏi nào được thêm vào bài kiểm tra</p>
+                        <div>
+                            <p className={styles.emptyMessage}>Chưa có câu hỏi nào được thêm vào bài kiểm tra</p>
+                            <button className='btn btn-success' onClick={handleAuto}>Thêm câu hỏi tự động</button>
+                        </div>
                     ) : (
                         <ul className={styles.questionList}>
                             {testQuestions.map(question => (
                                 <li key={question.questionId} className={styles.questionItem}>
                                     <div className={styles.questionContent}>
                                         <div className={styles.questionHeader}>
-                                                <span className={styles.questionLevel}>
-                                                    {question.level.levelName}
-                                                </span>
+                                            <span className={styles.questionLevel}>
+                                                {question.level.levelName}
+                                            </span>
                                             <span className={styles.questionLesson}>
                                                 {question.lesson.lessonName}
                                             </span>
@@ -224,7 +263,7 @@ const ManageQuestionTest = () => {
                                         className={styles.removeButton}
                                         onClick={() => removeQuestionFromTest(question.questionId)}
                                     >
-                                        Xóa
+                                        ❌
                                     </button>
                                 </li>
                             ))}
@@ -232,12 +271,12 @@ const ManageQuestionTest = () => {
                                 Tổng số câu hỏi : {testQuestions.length}
                             </div>
                             {isEditing ? (
-                                <button className={styles.addButton} onClick={updateTestQuestions}>
-                                Lưu
-                            </button>) : (
-                                <button className={styles.addButton} onClick={addQuestionsToTest}>
-                                Thêm vào bài kiểm tra
-                            </button>)}
+                                <button className='btn btn-primary' onClick={updateTestQuestions} disabled={!isModified}>
+                                    Lưu
+                                </button>) : (
+                                <button className="btn btn-primary" onClick={addQuestionsToTest}>
+                                    Thêm vào bài kiểm tra
+                                </button>)}
 
                         </ul>
                     )}
@@ -249,11 +288,15 @@ const ManageQuestionTest = () => {
                     <div className={styles.toolbar}>
                         <select className={styles.commonInput} value={chapterId} onChange={(e) => setChapterId(e.target.value)}>
                             <option value="">Chọn Chương</option>
-                            {chapters?.filter((c) => c.isVisible).map((c) => (
-                                <option key={c.chapterId} value={c.chapterId}>
-                                    Chương {c.order}: {c.chapterName}
-                                </option>
-                            ))}
+                            {chapters && chapters.length > 0 ? (
+                                chapters.filter((c) => c.isVisible).map((c) => (
+                                    <option key={c.chapterId} value={c.chapterId}>
+                                        Chương {c.order}: {c.chapterName}
+                                    </option>
+                                ))
+                            ) : (
+                                <option disabled>Đang tải...</option>
+                            )}
                         </select>
 
                         <select className={styles.commonInput} value={lessonId} onChange={(e) => setLessonId(e.target.value)}>
@@ -320,35 +363,94 @@ const ManageQuestionTest = () => {
                                         }
                                     </div>
                                 </div>
-                                <button className={styles.addButton}>Thêm</button>
+                                <button className={styles.addButton}>➕</button>
                             </li>
                         ))}
                     </ul>
                     {/* Phân trang */}
-            <div className={styles.pagination}>
-                <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
-                    &laquo;
-                </button>
-
-                {[...Array(totalPages)].map((_, index) => {
-                    const pageNum = index + 1;
-                    return (
-                        <button
-                            key={pageNum}
-                            onClick={() => setCurrentPage(pageNum)}
-                            className={currentPage === pageNum ? styles.active : ""}
-                        >
-                            {pageNum}
+                    <div className={styles.pagination}>
+                        <button onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))} disabled={currentPage === 1}>
+                            &laquo;
                         </button>
-                    );
-                })}
 
-                <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
-                    &raquo;
-                </button>
-            </div>
+                        {[...Array(totalPages)].map((_, index) => {
+                            const pageNum = index + 1;
+                            return (
+                                <button
+                                    key={pageNum}
+                                    onClick={() => setCurrentPage(pageNum)}
+                                    className={currentPage === pageNum ? styles.active : ""}
+                                >
+                                    {pageNum}
+                                </button>
+                            );
+                        })}
+
+                        <button onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))} disabled={currentPage === totalPages}>
+                            &raquo;
+                        </button>
+                    </div>
                 </div>
             </div>
+
+            {isShowModal && (
+                <div className={styles.modal}>
+                    <div className={styles.modalContent}>
+
+                        <h3>Thêm câu hỏi tự động</h3>
+
+                        <div className={styles.selectChapter}>
+                            <select onChange={(e) => handleAddChapter(parseInt(e.target.value))}>
+                                <option value="">-- Chọn chương --</option>
+                                {chapters?.filter((c) => c.isVisible).map((chapter) => (
+                                    <option key={chapter.chapterId} value={chapter.chapterId}>
+                                        Chương {chapter.order}: {chapter.chapterName}
+                                    </option>
+                                ))}
+                            </select>
+                        </div>
+
+                        <div className={styles.selectedChapters}>
+                            {selectedChapters.map((chapterId) => {
+                                const chapter = chapters.find((c) => c.chapterId === chapterId);
+                             return (
+                                <div key={chapterId} className={styles.chapterRow}>
+                                    <span className={styles.chapterName}>
+                                        {getChapterInfo(chapterId)}
+                                    </span>
+                                    <div className={styles.levelInputs}>
+                                        {levels.map((level) => { 
+                                            const questionCount = chapter?.questionLevelCounts[level.levelId] || 0;
+                                            return (
+                                            <div key={level.levelId} className={styles.levelGroup}>
+                                                <label>{level.levelName}({questionCount})</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    onChange={(e) =>
+                                                        handleInputChange(chapterId, level.levelId, e.target.value)
+                                                    }
+                                                />
+                                            </div>
+                                        )})}
+                                    </div>
+                                    <button className={styles.removeButton} onClick={() => handleRemoveChapter(chapterId)}>
+                                        ❌
+                                    </button>
+                                </div>
+                            )})}
+                        </div>
+
+                        {/* Nút xác nhận & đóng */}
+                        <div className={styles.buttonGroup}>
+                            <button onClick={handleConfirm}>Xác nhận</button>
+                            <button onClick={handleClose}>Đóng</button>
+                        </div>
+                        {errorMessage && <p className="error-message">{errorMessage}</p>}
+                    </div>
+                </div>
+
+            )}
         </div>
     );
 };

@@ -1,4 +1,4 @@
-﻿using backend.Dtos;
+﻿using backend.Dtos.Curriculum;
 using backend.Models;
 using backend.Repositories;
 
@@ -55,7 +55,12 @@ namespace backend.Services
             existingGrade.Description = gradeDto.Description;
             existingGrade.IsVisible = gradeDto.IsVisible;
 
-            if (gradeDto.UserId != 0)
+            if(gradeDto.IsVisible == false || gradeDto.UserId == 0)
+            {
+                existingGrade.UserId = null;
+            }
+
+            if (gradeDto.UserId != 0 && gradeDto.IsVisible == true)
             {
                 existingGrade.UserId = gradeDto.UserId;
             }

@@ -35,13 +35,23 @@ namespace backend.Models
         public DbSet<Payment> Payments { get; set; }
         public DbSet<Level> Levels { get; set; }
         public DbSet<StudentAnswer> StudentAnswers { get; set; }
+        public DbSet<StudentTest> StudentTests { get; set; }
         public DbSet<TestCategory> TestCategories { get; set; }
         public DbSet<TestQuestion> TestQuestions { get; set; }
         public DbSet<TestSubmission> TestSubmissions { get; set; }
         public DbSet<Test> Tests { get; set; }
         public DbSet<Grades> Grades { get; set; }
+        public DbSet<Report> Reports { get; set; }
+        public DbSet<Subject> Subjects { get; set; }
+        public DbSet<SubjectGrade> SubjectGrades { get; set; }
+        public DbSet<UserParentStudent> UserParentStudents { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
+        public DbSet<PracticeQuestion> PracticeQuestions { get; set; }
+        public DbSet<AnswerPracticeQuestion> AnswerPracticeQuestions { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<StudentProgress>()
                 .HasKey(sp => new { sp.UserId, sp.LessonId });
 
@@ -85,21 +95,21 @@ namespace backend.Models
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<StudentAnswer>()
-                .HasOne(sa => sa.PracticeAttempts) 
-                .WithMany() 
-                .HasForeignKey(sa => sa.AttemptId)
+                .HasOne(sa => sa.PracticeAttempt)
+                .WithMany(pa => pa.StudentAnswers)
+                .HasForeignKey(sa => sa.PracticeId)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Chapter>()
-                .HasOne(c => c.Grade)
-                .WithMany(g => g.Chapters)
-                .HasForeignKey(c => c.GradeId)
-                .OnDelete(DeleteBehavior.Cascade);
+             .HasOne(c => c.SubjectGrade)
+             .WithMany(sg => sg.Chapters)
+             .HasForeignKey(c => c.SubjectGradeId)
+              .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Test>()
-               .HasOne(t => t.Grade)
+               .HasOne(t => t.SubjectGrade)
                .WithMany(g => g.Tests)
-               .HasForeignKey(t => t.GradeId)
+               .HasForeignKey(t => t.SubjectGradeId)
                .OnDelete(DeleteBehavior.Cascade);
 
             modelBuilder.Entity<User>()
@@ -107,6 +117,23 @@ namespace backend.Models
                 .WithMany(g => g.Users) 
                 .HasForeignKey(u => u.GradeId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+            modelBuilder.Entity<SubjectGrade>()
+                .HasOne(sg => sg.Subject)
+                .WithMany(s => s.SubjectGrades)
+                .HasForeignKey(sg => sg.SubjectId);
+
+
+            modelBuilder.Entity<SubjectGrade>()
+                .HasOne(sg => sg.Grade)
+                .WithMany(g => g.SubjectGrades)
+                .HasForeignKey(sg => sg.GradeId);
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.User) 
+                .WithMany(u => u.Notifications) 
+                .HasForeignKey(n => n.UserId)  
+                .OnDelete(DeleteBehavior.Cascade);
 
             base.OnModelCreating(modelBuilder);
         }

@@ -1,5 +1,4 @@
 ﻿using backend.DataAccess.DAO;
-using backend.Dtos;
 using backend.Services;
 using Microsoft.AspNetCore.Authentication.Google;
 using Microsoft.AspNetCore.Authentication;
@@ -10,6 +9,8 @@ using Microsoft.AspNetCore.Authorization;
 using static System.Net.WebRequestMethods;
 using backend.Models;
 using Google.Apis.Auth;
+using backend.Dtos.Auth;
+using backend.Dtos.AIQuestions;
 
 namespace backend.Controllers
 {
@@ -32,20 +33,20 @@ namespace backend.Controllers
         {
             try
             {
-                var result = await _registerService.Register(model);
-                return result;
+                await _registerService.RegisterAsync(model);
+                return Ok(new { message = "Đăng ký thành công, vui lòng kiểm tra email để xác thực tài khoản." });
             }
             catch (Exception ex)
             {
-                return StatusCode(500, new { message = "Đã xảy ra lỗi trong quá trình đăng ký.", error = ex.Message });
+                return BadRequest(new { message = ex.Message });
             }
         }
 
         [HttpGet("Confirm-email")]
         public async Task<IActionResult> ConfirmEmail([FromQuery] string token)
         {
-            var result = await _registerService.ConfirmEmailAsync(token);
-            return result;
+            var redirectUrl = await _registerService.ConfirmEmailAsync(token);
+            return Redirect(redirectUrl);
         }
 
         [HttpPost("Login")]

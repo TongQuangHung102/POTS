@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using backend.Dtos.Dashboard;
+using backend.Models;
 
 namespace backend.Repositories
 {
@@ -12,6 +13,9 @@ namespace backend.Repositories
         Task<int> AddQuestionAsync(Question question);
         Task AddAnswerQuestionsAsync(List<AnswerQuestion> answers);
         Task<List<Question>> GetQuestionsPractice(int count, int lessonId, int levelId);
-
+        Task<int> CountQuestionInGrade(int gradeId);
+        Task<List<Question>> GetQuestionsByChapterAutoAsync(ChapterQuestionAutoRequest chapterRequest);
+        Task MarkQuestionsAsUsed(List<int> questionIds);
+        Task<int> CountQuestionsUsedByWeek(int subjectGradeId, int weekOffset);
     }
 }

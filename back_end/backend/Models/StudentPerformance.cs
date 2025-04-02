@@ -7,7 +7,7 @@ namespace backend.Models
         public int UserId { get; set; }
         public int LessonId { get; set; }
         public double? avg_Accuracy { get; set; }
-        public TimeSpan? avg_Time_Per_Question { get; set; }
+        public double? avg_Time { get; set; }
         public DateTime LastAttempt { get; set; }
         [ForeignKey("LevelId")]
         public int LevelId { get; set; }

@@ -110,7 +110,6 @@
     padding: 15px 20px;
     border-bottom: 1px solid #f0f0f0;
     background-color: white;
-    cursor: pointer;
   }
   
   .lessonNumber {
@@ -131,6 +130,7 @@
     display: flex;
     flex-grow: 1;
     align-items: center;
+    cursor: pointer;
   }
   
   .lessonIcon {
@@ -145,10 +145,19 @@
   }
   
   .lessonbadge {
-    width: 30px;
+    width: 160px;
     height: 30px;
     margin-left: auto;
     opacity: 0.3;
+    display: flex;
+  }
+  .history{
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+  .history:hover{
+    color: #000000 !important;
   }
   
   .collapsed .lessonContainer {

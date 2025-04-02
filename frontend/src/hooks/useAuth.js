@@ -9,9 +9,9 @@ export function useAuth() {
     const token = sessionStorage.getItem('token');
     const roleId = sessionStorage.getItem('roleId');
     const userId = sessionStorage.getItem('userId')
-
+    const gradeId = sessionStorage.getItem('gradeId')
     if (token && roleId) {
-      setUser({ token, roleId, userId });
+      setUser({ token, roleId, userId, gradeId });
     } else {
       setUser(null); 
     }

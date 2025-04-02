@@ -1,4 +1,5 @@
-﻿using backend.Models;
+﻿using backend.Dtos.Dashboard;
+using backend.Models;
 using MailKit.Search;
 using Microsoft.EntityFrameworkCore;
 
@@ -22,11 +23,10 @@ namespace backend.DataAccess.DAO
             var query = _context.Questions
                 .Include(q => q.Level)
                 .Include(q => q.Lesson)
-                    .ThenInclude(l => l.Chapter)
+                .ThenInclude(l => l.Chapter)
                 .Include(q => q.AnswerQuestions)
                 .Include(q => q.ContestQuestions)
                 .Include(q => q.TestQuestions)
-                .Include(q => q.StudentAnswers)
                 .AsQueryable();
 
             if (chapterId.HasValue)
@@ -142,6 +142,70 @@ namespace backend.DataAccess.DAO
                 .Include(q => q.Lesson)
                 .Include(q => q.AnswerQuestions)
                 .ToListAsync();
+        }
+
+        public async Task<int> CountQuestionInSubjectGrade(int id)
+        {
+            return await _context.Questions
+                .Where(q => q.Lesson.Chapter.SubjectGrade.GradeId == id) 
+                .CountAsync();
+        }
+
+        public async Task<List<Question>> GetQuestionsByChapterAutoAsync(ChapterQuestionAutoRequest chapterRequest)
+        {
+            var questions = new List<Question>();
+
+            var lessonIds = await _context.Lessons
+                .Where(l => l.ChapterId == chapterRequest.ChapterId)
+                .Select(l => l.LessonId)
+                .ToListAsync();
+
+            foreach (var level in chapterRequest.LevelRequests)
+            {
+                var levelQuestions = await _context.Questions
+                    .Where(q => lessonIds.Contains(q.LessonId) && q.LevelId == level.LevelId)
+                    .OrderBy(q => Guid.NewGuid()) 
+                    .Take(level.QuestionCount)
+                    .Include(q => q.Level)
+                    .Include(q => q.Lesson)
+                    .Include(q => q.AnswerQuestions)
+                    .ToListAsync();
+
+                questions.AddRange(levelQuestions);
+            }
+
+            return questions;
+        }
+
+        public async Task MarkQuestionsAsUsed(List<int> questionIds)
+        {
+            var questions = await _context.Questions
+                                          .Where(q => questionIds.Contains(q.QuestionId))
+                                          .ToListAsync();
+
+            foreach (var question in questions)
+            {
+                question.IsUsed = true;
+                question.UsedAt = DateTime.UtcNow;
+            }
+
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task<int> CountQuestionsUsedByWeek(int subjectGradeId, int weekOffset)
+        {
+            var today = DateTime.UtcNow.Date;
+            var startOfWeek = today.AddDays(-(int)today.DayOfWeek).AddDays(-7 * weekOffset);
+            var endOfWeek = startOfWeek.AddDays(7);
+
+            var count = await _context.Questions
+                .Where(q => q.Lesson.Chapter.SubjectGradeId == subjectGradeId
+                            && q.IsUsed == true
+                            && q.UsedAt >= startOfWeek
+                            && q.UsedAt < endOfWeek)
+                .CountAsync();
+
+            return count;
         }
 
 
