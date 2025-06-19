@@ -1,0 +1,47 @@
+# Hệ điều hành
+.DS_Store
+Thumbs.db
+
+# Log file
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Thư mục build của React
+frontend/build/
+
+# Node.js
+node_modules/
+package-lock.json
+yarn.lock
+
+# File môi trường
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+venv/
+env/
+
+# Visual Studio
+.vscode/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+AI/chroma_db/chroma.sqlite3
+
+# .NET Core
+bin/
+obj/
+*.db
+*.sqlite
+
+# Visual Studio temporary files and configurations
+.vs/
+__pycache__/
+AI/chroma_db/
+AI/__pycache__/
+

@@ -1,0 +1,53 @@
+
+services:
+  client:
+    build:
+      context: ./frontend  # Dockerfile cho React nằm trong thư mục client
+    environment:
+      - REACT_APP_API_URL=${REACT_APP_API_URL}
+      - REACT_APP_APP_NAME=${REACT_APP_APP_NAME}
+    ports:
+      - "3000:80"  # React app chạy trên cổng 3000
+    networks:
+      - app-network
+
+  server:
+    build:
+      context: ./back_end/backend  # Dockerfile cho .NET API nằm trong thư mục server
+    ports:
+      - "7259:7259"  # .NET API chạy trên cổng 5000
+    networks:
+      - app-network
+    depends_on:
+      - client  # Đảm bảo client được xây dựng trước
+
+  ai:
+    build:
+      context: ./AI  # Dockerfile cho AI nằm trong thư mục ai
+    ports:
+      - "5000:5000"  # AI Python app chạy trên cổng 5001
+    networks:
+      - app-network
+    depends_on:
+      - server  # Đảm bảo server API đã chạy trước AI
+
+  sqlserver:
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    container_name: sqlserver
+    environment:
+      SA_PASSWORD: "Vuhuy3105@!"  # Đặt mật khẩu cho SA account
+      ACCEPT_EULA: "Y"  # Chấp nhận EULA của SQL Server
+    ports:
+      - "1450:1433"  # Mở cổng 1433 cho SQL Server
+    volumes:
+      - sql_data:/var/opt/mssql  # Lưu trữ dữ liệu của SQL Server
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  sql_data:

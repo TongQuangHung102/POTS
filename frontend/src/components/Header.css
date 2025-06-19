@@ -1,0 +1,22 @@
+.header-container {
+    margin: 0 auto;
+    align-items: center;
+    margin-bottom: 10px;
+    padding-right: 0px !important;
+  
+  }
+  
+  .header-card{
+    padding: 0 20px;
+    display: flex;
+    border-radius: 10px;
+    background-color: white;
+    justify-content: space-between;
+  }
+  
+  .search-container {
+    flex: 0 0 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }

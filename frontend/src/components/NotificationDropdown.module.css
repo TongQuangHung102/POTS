@@ -1,0 +1,50 @@
+.notificationDropdown {
+    position: absolute;
+    top: 50px;
+    right: 20px;
+    background: rgb(255, 255, 255);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    width: 20vw;
+    padding: 10px;
+    z-index: 1000;
+  }
+  
+  .notificationDropdown h3 {
+    margin: 0;
+    font-size: 16px;
+    border-bottom: 1px solid #ddd;
+    padding-bottom: 5px;
+  }
+  
+  .notificationDropdown ul {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0;
+    max-height: 300px; 
+    overflow-y: auto; 
+  }
+  
+  .notificationDropdown ul li {
+    font-size: 14px;
+    padding: 5px;
+    border-bottom: 1px solid #eee;
+  }
+  
+  .notificationDropdown ul li:last-child {
+    border-bottom: none;
+  }
+  .unread {
+    font-weight: bold;
+  }
+  
+  /* Đã đọc (nhạt hơn) */
+  .read {
+    font-weight: normal;
+    color: #929292;
+  }
+
+  .notificationDropdown p{
+    font-size: 12px;
+    color: #929292;
+  }

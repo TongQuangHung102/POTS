@@ -1,0 +1,180 @@
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  body {
+    background-color: #f5f7fa;
+    color: #333;
+  }
+  
+  .courseContainer {
+    margin: 0 auto;
+    background-color: white;
+    border-radius: 10px;
+    box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+  }
+  
+  .courseHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+    border-bottom: 1px solid #bcbcbc;
+    margin-bottom: 5px;
+}
+
+/* Chia header thành hai phần */
+.headerLeft {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+}
+
+.headerRight {
+    display: flex;
+    gap: 10px;
+}
+
+/* Nút bấm */
+.courseButton {
+    padding: 10px 15px;
+    font-size: 14px;
+    font-weight: bold;
+    color: white;
+    background-color: #1a5276;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+
+/* Hover & Active */
+.courseButton:hover {
+    background-color: #154360;
+}
+
+.courseButton:active {
+    transform: scale(0.95);
+}
+  
+  .courseSection {
+    width: 95%;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow: hidden;
+    margin: 20px auto;
+    box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #ffffff;
+    padding: 15px 20px;
+    cursor: pointer;
+    border-radius: 10px;
+    box-shadow: 3px 5px 15px rgba(0, 0, 0, 0.05);
+  }
+  
+  .sectionTitleContainer {
+    display: flex;
+    align-items: center;
+  }
+  
+  .sectionTitle {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1a5276;
+  }
+  
+  .sectionLessons {
+    font-size: 14px;
+    margin-top: 4px;
+    color: #555;
+  }
+  
+  .lessonContainer {
+    margin-top: 1px;
+    margin-left: 1px !important;
+  }
+  
+  .lessonItem {
+    display: flex;
+    align-items: center;
+    padding: 15px 20px;
+    border-bottom: 1px solid #f0f0f0;
+    background-color: white;
+  }
+  
+  .lessonNumber {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    color: #1a2d42;
+    font-weight: bold;
+    margin-right: 15px;
+    font-size: 14px;
+    flex-shrink: 0;
+  }
+  
+  .lessonInfo {
+    display: flex;
+    flex-grow: 1;
+    align-items: center;
+    cursor: pointer;
+  }
+  
+  .lessonIcon {
+    margin-right: 10px;
+    color: #555;
+  }
+  
+  .lessonTitle {
+    font-size: 16px;
+    font-weight: 500;
+    flex-grow: 1;
+  }
+  
+  .lessonbadge {
+    width: 170px;
+    height: 30px;
+    margin-left: auto;
+    opacity: 0.3;
+    display: flex;
+    justify-content: space-between;
+  }
+  .history{
+    margin-left: 10px;
+    cursor: pointer;
+  }
+
+  .history:hover{
+    color: #000000 !important;
+  }
+  
+  .collapsed .lessonContainer {
+    display: none;
+  }
+  
+  .expandIcon::before {
+    content: "▼";
+    font-size: 12px;
+    color: #777;
+    transition: transform 0.3s;
+  }
+  
+  .collapsed .expandIcon::before {
+    content: "▶";
+  }
+  
+  .lessonNumber { background-color: #d4d8dd; }
+  
